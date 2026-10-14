@@ -2423,6 +2423,17 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 .v4x{position:fixed;top:max(10px,env(safe-area-inset-top));right:10px;z-index:9999;border:0;border-radius:99px;padding:7px 14px;font-weight:900;font-size:.78rem;color:#fff;background:rgba(20,16,50,.92);box-shadow:0 2px 10px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.35) inset;cursor:pointer;width:auto}
 .v4modal .v4x.in{position:sticky;top:-6px;float:right;margin:-4px -4px 4px 8px;right:auto;z-index:5}
 .set-row.on{border-color:#ffd24a;box-shadow:0 0 12px rgba(255,210,74,.45)}
+
+.hm-fun{margin:0 0 10px}
+.hm-fun .fn-row{display:flex;gap:8px}
+.hm-fun .fn-row button{flex:1;display:flex;align-items:center;gap:8px;text-align:left;padding:9px 10px;border-radius:14px;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;font-weight:900;min-width:0}
+.hm-fun .fn-row button span{font-size:1.5rem}.hm-fun .fn-row b{display:block;font-size:.8rem}.hm-fun .fn-row small{display:block;font-size:.62rem;font-weight:700;color:#e9dcff;line-height:1.25}
+.hm-fun .fn-om.hot{border-color:#ffb84a;background:linear-gradient(100deg,rgba(255,120,60,.35),rgba(255,190,70,.25));box-shadow:0 0 12px rgba(255,170,60,.45)}
+.hm-fun .fn-om.done{border-color:#6be39a;background:rgba(80,200,130,.18)}
+.hm-fun .fn-cm{background:linear-gradient(100deg,rgba(60,140,255,.3),rgba(120,80,255,.25))!important}
+.fn-rc{display:flex;gap:6px;align-items:center;overflow-x:auto;margin-top:8px;scrollbar-width:none}.fn-rc::-webkit-scrollbar{display:none}
+.fn-c{flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:99px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.35);color:#fff;font-size:.68rem;font-weight:800;width:auto}
+.fn-c img{width:28px;height:28px;border-radius:50%;object-fit:cover}.fn-c i{font-style:normal}
 </style>
 </head>
 <body>
@@ -3670,12 +3681,14 @@ const Store = {
 window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters(){ return lockedCharacters; }, get ELEMS(){ return ELEMS; }, get SKILL_RETUNE(){ return SKILL_RETUNE; }, headlessBattle, withHeadless };
 
 const patchNotes = [
-  {tag:"new", title:"新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
+  {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "👑 EX超高難度ステージ6つ（NORMAL全クリアで解放。敵は攻×1.7〜2.5・HP×2.0〜3.7）。初クリアでEX装備『神殺しの剣・終焉の鎧・覇王の紋章』と『神の書（技を一気にLv5）』が手に入る（ガチャには出ません）",
     "⚒ 装備の強化：コインで+1〜+5、1段階ごとに効果+12%（最大+60%）。装備画面から強化できます",
     "🎒 新しい装備を13個追加（N〜SSR。武器・防具・アクセ）＋EX装備3個＋神の書",
     "🔗 キャラ作成：画像のURLを貼って読み込めるように（配信元が許可していない画像は取り込めないことがあります。その場合は従来の『画像を選ぶ』で）",
     "🎮 クエスト・塔・EX・今日の討伐は、挑戦ボタンを押したあとに出撃キャラを選ぶ画面が出ます（おまかせ／属性有利順。連続挑戦ONのときは自動）",
+    "🌐 みんなのキャラ：キャラ作成の「みんなに公開」をONにすると、リンクを知っている全員のガチャ（Rランク）に追加されます（公開には付属の worker.js の設定が必要。未設定でも共有コードで友達のキャラをガチャに追加できます）。作った本人はいつでも削除できます",
+    "🔮 ホームに「今日のおみくじ」（コイン＋大吉・吉は攻撃UP、ラッキーキャラで勝つと🪙ボーナス）と「最近使ったキャラ」（1タップで出撃）、「みんなのキャラ」ボタンを追加",
     "🆕 新キャラ2体：シオン（闇・SSR／新技：炎渦の護り・宝石の共鳴・血月の刃など）、ホムラ（火・SR／咆哮で敵の攻防DOWN・業火の薙ぎ払いなど）。ガチャ・クエスト敵・図鑑に登場。対CPU・全キャラ総当たりの勝率はシオン約58〜60%（SSRで最上位）、ホムラ約53%（SRで平均より上）で、全体の平均50%・上下幅は維持",
     "✕ ポップアップ（作成画面・実績・ランキング・装備選択など）すべてに「✕ 閉じる」ボタンを追加。ガチャの装置画面には「⏩ とばして結果へ」も",
     "🔒 装備をつけたキャラは、自動バランス調整（勝つと弱く・負けると強く）の対象外になります（※開発側の手動バランス調整は全キャラ共通のため対象外にできません）",
@@ -8610,6 +8623,7 @@ function applyToFighter(f){
   if(lb){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * lm, def: f.evo.def * lm }); }
   const hpMax = Math.round(f.maxHp * (1 + b.hp) * lm); f.maxHp = hpMax; f.hp = hpMax;
   f.eqSpd = 1 + b.spd; f._bk = bookLevels(name); f._v4 = true;
+  try{ const om = omToday(); if(om && om.buff > 0 && om.up) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + om.up) }); }catch(e){}
 }
 let pendingQuest = null;
 const _startBattle = startBattle;
@@ -9536,8 +9550,8 @@ function renderHero(){
       <div class="v4tile" style="--a:#2a7ad0;--b:#14306a;--d:1.2s" onclick="V4.open('dex')"><span class="ic">📖</span>図鑑</div>
       <div class="v4tile" style="--a:#c0603a;--b:#5a2a1a;--d:1.8s" onclick="V4.open('gear')"><span class="ic">🎒</span>装備・強化</div></div>
     <div class="hm-sub" id="v4sub"><button onclick="V47.achOpen()">🏅 実績${(() => { try{ const n = achReady(); return n ? '<i class="fr">' + n + '</i>' : ''; }catch(e){ return ''; } })()}</button><button onclick="V47.quick()">🎲 おまかせ</button><button onclick="V47.more()">⋯ その他</button></div>
-    ${todayStripHTML()}${rankCardHTML()}${nextGoalHTML()}${dailyHTML()}${banner}<div class="hm-sec" id="v4sec">キャラを選んで出撃！</div>`;
-  const old = $('v4hero'), oldT = $('v4tiles'), oldB = $('v4sec'); if(old) old.remove(); if(oldT) oldT.remove(); document.querySelectorAll('.hm-ban,.hm-next,.hm-tick,.hm-dm,.rk-card,.hm-today,#v4sec,#v4sub,#v4go').forEach(e => e.remove()); void oldB;
+    ${todayStripHTML()}${funHTML()}${rankCardHTML()}${nextGoalHTML()}${dailyHTML()}${banner}<div class="hm-sec" id="v4sec">キャラを選んで出撃！</div>`;
+  const old = $('v4hero'), oldT = $('v4tiles'), oldB = $('v4sec'); if(old) old.remove(); if(oldT) oldT.remove(); document.querySelectorAll('.hm-ban,.hm-next,.hm-tick,.hm-dm,.rk-card,.hm-today,.hm-fun,#v4sec,#v4sub,#v4go').forEach(e => e.remove()); void oldB;
   scr.insertAdjacentHTML('afterbegin', html);
 }
 function todayStripHTML(){
@@ -9557,7 +9571,7 @@ function todayStripHTML(){
 }
 function heroNext(){ heroIdx = (heroIdx + 1) % Math.max(1, roster.length); try{ renderHero(); }catch(e){} }
 updateSelectHeader = function(){
-  _ush();
+  _ush(); commKeep();
   try{
     if(selectMode === 'player'){
       renderHero();
@@ -10073,6 +10087,7 @@ function ccBuild(){
       ${lab.map((l, i) => `<div style="margin:6px 0"><div class="v4small">${l}</div><select class="cc-in cc-sel" onchange="V47.setEf(${i},+this.value)"><option value="-1" ${cc.ef[i] < 0 ? 'selected' : ''}>効果：🎲ランダム</option>${(i < 4 ? CC_SK_L : CC_UL_L).map((n, k) => `<option value="${k}" ${cc.ef[i] === k ? 'selected' : ''}>効果：${n}</option>`).join('')}</select><div style="display:flex;gap:6px;margin-top:4px"><input class="cc-in" id="ccSk${i}" maxlength="14" placeholder="空欄ならランダム" value="${esc(cc.names[i])}" oninput="V47.setSk(${i},this.value)"><button class="secondary cc-dice" onclick="V47.rSk(${i})">🎲</button></div><div id="ccSd${i}">${ccSkDesc(i)}</div></div>`).join('')}</div>
     <div class="v4card"><div class="v4small">パッシブ（常に働く性格スキル）</div><select class="cc-in cc-sel" onchange="V47.setPas(+this.value)"><option value="-1" ${(cc.pas == null || cc.pas < 0) ? 'selected' : ''}>🎲ランダム</option>${CC_PAS.map((x, i) => `<option value="${i}" ${cc.pas === i ? 'selected' : ''}>${x[2]}</option>`).join('')}</select><div class="v4small" id="ccPd" style="margin-top:4px">${cc.pas != null && cc.pas >= 0 ? esc(PASSIVE_TYPES[CC_PAS[cc.pas][0]](CC_PAS[cc.pas][1])) : '保存時にランダムで決まります'}</div></div>
     <div class="v4card"><div class="v4row"><div class="v4sp v4small">能力（完全ランダム）</div><button class="secondary cc-dice" style="width:auto;padding:4px 10px" onclick="V47.rStats()">🎲 振り直す</button></div><div id="ccStats"></div></div>
+    <label class="v4small" style="display:block;margin:6px 0"><input type="checkbox" id="ccPub" ${commOK ? 'checked' : 'disabled'}> 🌐 みんなに公開する（全員のガチャにRランクで追加）${commOK ? '' : '<br>※いまはサーバーにつながっていないため、公式のゲームURLで開いたときに使えます'}</label>
     <div class="btnrow" style="display:flex;gap:8px"><button class="secondary" style="flex:1" onclick="V47.rAll()">🎲 全部ランダム</button><button style="flex:1" onclick="V47.save()">✅ 作成して保存</button></div>
     <button class="secondary" style="width:100%;margin-top:8px" onclick="V47.shareOpen()">🔗 友達とキャラを共有（共有コード）</button>
     <div class="v4small" style="margin-top:6px;text-align:center">作成済み ${mineLoad().length}/${MINE_MAX}体　／　削除はキャラ詳細の「🗑️ このキャラを削除」</div>`;
@@ -10116,6 +10131,7 @@ function ccUrl(){
   im.src = u;
 }
 function ccSave(){
+  const pubWanted = !!($('ccPub') && $('ccPub').checked);
   let name = (cc.name || '').trim().slice(0, 10);
   if(!name){ for(let i = 0; i < 30; i++){ name = ccName(); if(!charData(name)) break; } }
   if(charData(name)){ toast('同じ名前のキャラがいます。別の名前にしてください'); return; }
@@ -10129,6 +10145,7 @@ function ccSave(){
   if(curModal){ curModal.remove(); curModal = null; }
   cc = null; try{ renderRoster(); updateSelectHeader(); }catch(e){}
   toast(`🎉 「${esc(name)}」を作成して保存しました！（HP${m.stats.hp} 攻${m.stats.atk}）`);
+  if(pubWanted) commPublish(m);
 }
 
 /* ---- 作ったキャラの共有コード（この端末のキャラを友達の端末へ） ---- */
@@ -10166,24 +10183,24 @@ function ccShareOpen(){
     <div class="v4card"><div class="v4small">② 共有コードで追加する</div>
       <textarea id="ccIn" class="cc-in" style="width:100%;height:70px;margin-top:6px" placeholder="友達からもらったコードを貼り付け"></textarea>
       <button style="width:100%;margin-top:6px" onclick="V47.shareAdd()">📥 このコードのキャラを追加</button></div>
+    <div class="v4card"><div class="v4small">③ みんなに公開（サーバー接続時）</div><button class="secondary" style="width:100%;margin-top:6px" ${commOK ? '' : 'disabled'} onclick="V47.commPub()">🌐 作ったキャラをまとめて公開</button></div>
     <button class="secondary" style="width:100%" onclick="V47.open()">← キャラ作成にもどる</button>`);
 }
 function ccShareMake(){
-  const code = 'CBA1:' + b64e(JSON.stringify(mineLoad())), o = $('ccOut'); o.style.display = 'block'; o.value = code; o.select();
+  const code = 'CBA1:' + b64e(JSON.stringify(mineLoad().map(m => { const x = Object.assign({}, m); delete x.tok; delete x.pid; return x; }))), o = $('ccOut'); o.style.display = 'block'; o.value = code; o.select();
   try{ navigator.clipboard.writeText(code).then(() => toast('📋 コードをコピーしました'), () => toast('下のコードを長押ししてコピーしてください')); }catch(e){ toast('下のコードを長押ししてコピーしてください'); }
 }
 function ccShareAdd(){
   const raw = ($('ccIn').value || '').trim(); if(!raw.startsWith('CBA1:')){ toast('共有コードが正しくありません'); return; }
   let arr; try{ arr = JSON.parse(b64d(raw.slice(5))); }catch(e){ toast('コードを読み取れませんでした'); return; }
   if(!Array.isArray(arr)) { toast('コードを読み取れませんでした'); return; }
-  const mine = mineLoad(); let add = 0, skip = 0;
-  arr.slice(0, 10).forEach(x => { const m = ccSanitize(x); if(!m || charData(m.name) || mine.some(y => y.name === m.name) || mine.length >= MINE_MAX){ skip++; return; } mine.push(m); add++; });
-  if(!add){ toast(`追加できるキャラがありませんでした（同名・上限・不正：${skip}件）`); return; }
-  try{ localStorage.setItem(LS_MINE, JSON.stringify(mine)); }catch(e){ toast('保存できませんでした（容量不足）'); return; }
-  mine.slice(-add).forEach(m => { const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = 'R'; });
+  let add = 0, skip = 0; const keep = commLocal();
+  arr.slice(0, 10).forEach(x => { const m = ccSanitize(x); const c = m && commAdd(m, ''); if(!c){ skip++; return; } keep.push({ id: '', m }); add++; });
+  if(!add){ toast(`追加できるキャラがありませんでした（同名・不正：${skip}件）`); return; }
+  try{ localStorage.setItem(LS_COMM, JSON.stringify(keep.slice(-COMM_MAX))); }catch(e){ toast('保存できませんでした（容量不足）'); return; }
   try{ renderRoster(); updateSelectHeader(); }catch(e){}
   if(curModal){ curModal.remove(); curModal = null; }
-  toast(`🎉 ${add}体を追加しました${skip ? `（${skip}件はスキップ）` : ''}`);
+  toast(`🎉 ${add}体を「みんなのキャラ」に追加しました！ガチャで出ます${skip ? `（${skip}件はスキップ）` : ''}`);
 }
 const _dc = deleteCharacter;
 deleteCharacter = function(idx){
@@ -10191,6 +10208,7 @@ deleteCharacter = function(idx){
   if(c && c.isCustom){
     if(!confirm(`自分で作った「${c.name}」を削除しますか？\n(この操作は元に戻せません)`)) return;
     roster.splice(idx, 1);
+    try{ commDelete(mineLoad().find(m => m.name === c.name)); }catch(e){}
     try{ localStorage.setItem(LS_MINE, JSON.stringify(mineLoad().filter(m => m.name !== c.name))); }catch(e){}
     closeDetail(); renderRoster(); updateSelectHeader(); return;
   }
@@ -10963,7 +10981,7 @@ function targetOpen(){
 function targetSet(n){ S.targetPick = n || ''; save(); if(curModal && curModal.remove) curModal.remove(); view('gacha'); toast(n ? `🎯 「${n}」を狙います` : '日替わりピックアップに戻しました'); }
 function qdaily(){ startDaily(); }
 function qauto(on){ S.qAuto = !!on; save(); view('quest'); }
-Object.assign(window.V47, { col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
+Object.assign(window.V47, { omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
 
 
 /* ---------- Ver4.15 カットイン強化（バトル必殺技・ガチャ確定演出） ---------- */
@@ -11015,7 +11033,7 @@ playCutIn = function(side, actorData, moveName, kind){
 
 
 const _sb16 = startBattle;
-startBattle = function(){ try{ if(selected && selected.name && !selected.isCustom && S.lastChar !== selected.name){ S.lastChar = selected.name; save(); } }catch(e){} return _sb16.apply(this, arguments); };
+startBattle = function(){ try{ if(selected && selected.name && !selected.isCustom && S.lastChar !== selected.name){ S.lastChar = selected.name; save(); } if(selected && selected.name && !pvp.on){ const r = (S.recent || []).filter(n => n !== selected.name); r.unshift(selected.name); S.recent = r.slice(0, 6); save(); } }catch(e){} return _sb16.apply(this, arguments); };
 const _sp16 = spinScene;
 spinScene = function(ov, cb, dur){
   _sp16(ov, cb, dur);
@@ -11332,6 +11350,108 @@ spinScene = function(ov, cb, dur){
   try{ new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { scan(n); if(n.nodeType === 1 && n.matches && n.matches('.v4modal')) setTimeout(() => addX(n), 0); }))).observe(document.body, { childList:true }); }catch(e){}
 })();
 
+/* ---------- Ver4.23 みんなのキャラ（公開→全員のガチャに追加） ---------- */
+const LS_COMM = 'battleArena_comm_v1', COMM_API = '/api/chars', COMM_MAX = 60;
+let commOK = false, commChecked = false, commServerN = 0;
+const commEnabled = () => /^https?:$/.test(location.protocol) && !/claude\.ai|claudeusercontent/.test(location.host);
+const commLocal = () => { try{ const a = lsGet(LS_COMM, []); return Array.isArray(a) ? a : []; }catch(e){ return []; } };
+function commAdd(m, id){
+  try{
+    m = ccSanitize(m); if(!m || charData(m.name)) return null;
+    const c = mineBuild(m); c.isCustom = false; c.community = true; c.cid = id || ''; c.__m = m;
+    if(m.photo){ portraits[c.name] = m.photo; standees[c.name] = m.photo; fullCards[c.name] = m.photo; }
+    RAR_OVR[c.name] = 'R'; lockedCharacters.push(c); return c;
+  }catch(e){ return null; }
+}
+function commStartup(){
+  commLocal().forEach(x => commAdd(x.m, x.id));
+  try{ applyStoredUnlocks(); }catch(e){}
+  commSync();
+}
+function commKeep(){
+  try{
+    const mine = commLocal(), have = new Set(mine.map(x => x.m.name)); let ch = false;
+    roster.filter(c => c.community && c.__m && !have.has(c.name)).forEach(c => { mine.push({ id: c.cid || '', m: c.__m }); ch = true; });
+    if(ch){ if(mine.length > COMM_MAX) mine.splice(0, mine.length - COMM_MAX); localStorage.setItem(LS_COMM, JSON.stringify(mine)); }
+  }catch(e){}
+}
+async function commSync(){
+  if(!commEnabled()) return;
+  try{
+    const ac = new AbortController(), to = _origSetTimeout(() => ac.abort(), 6000);
+    const r = await fetch(COMM_API, { cache: 'no-store', signal: ac.signal }); clearTimeout(to);
+    if(!r.ok) throw 0; const j = await r.json(); if(!j || !Array.isArray(j.chars)) throw 0;
+    let add = 0; commOK = true; commChecked = true; commServerN = j.chars.length;
+    j.chars.forEach(x => { if(x && x.m && commAdd(x.m, x.id)) add++; });
+    if(add){ try{ updateSelectHeader(); }catch(e){} }
+    else { try{ const el = document.querySelector('.hm-fun'); if(el) updateSelectHeader(); }catch(e){} }
+  }catch(e){ commChecked = true; }
+}
+async function commPublish(m){
+  if(!commOK) return false;
+  try{
+    const tok = m.tok || (Math.random().toString(36).slice(2) + Math.random().toString(36).slice(2) + Date.now().toString(36));
+    const r = await fetch(COMM_API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ m: { name: m.name, role: m.role, emoji: m.emoji, c1: m.c1, c2: m.c2, quote: m.quote, element: m.element, stats: m.stats, skills: m.skills, ultimate: m.ultimate, passive: m.passive || null, photo: m.photo || null }, tok }) });
+    const j = await r.json().catch(() => ({}));
+    if(!r.ok){ toast('🌐 公開できませんでした：' + esc(j.error || r.status)); return false; }
+    const all = mineLoad(), t = all.find(x => x.name === m.name); if(t){ t.pid = j.id; t.tok = tok; localStorage.setItem(LS_MINE, JSON.stringify(all)); }
+    toast(`🌐 「${esc(m.name)}」をみんなに公開しました！（みんなのガチャに追加）`); commServerN++; return true;
+  }catch(e){ toast('🌐 公開できませんでした（通信できません）'); return false; }
+}
+async function commDelete(m){
+  if(!m || !m.pid || !m.tok) return;
+  try{ await fetch(COMM_API + '/' + encodeURIComponent(m.pid), { method: 'DELETE', headers: { 'x-token': m.tok } }); }catch(e){}
+}
+async function commPublishAll(){
+  const mine = mineLoad().filter(m => !m.pid); if(!mine.length){ toast('公開していないキャラはありません'); return; }
+  let n = 0; for(const m of mine){ if(await commPublish(m)) n++; }
+  if(n) toast(`🌐 ${n}体を公開しました`);
+}
+function commView(){
+  const all = allChars().filter(c => c.community), own = all.filter(c => isOwned(c.name)).length;
+  if(curModal) curModal.remove();
+  curModal = modal(`<div class="v4h" style="margin-top:0">🌐 みんなのキャラ</div>
+    <div class="v4small">${commOK ? `🟢 サーバーにつながっています（公開中 ${commServerN}体）。誰かが作って公開したキャラは、リンクを知っているみんなのガチャ（Rランク）に出ます。` : (commEnabled() ? '🔴 いまサーバーにつながっていません。共有コードでの追加は使えます。' : '⚪ このページではサーバー共有は使えません（公式のゲームURLで開いたときに使えます）。共有コードでの追加は使えます。')}</div>
+    <div class="btnrow" style="display:flex;gap:8px;margin:8px 0"><button style="flex:1" onclick="V47.open()">🎨 キャラを作る</button><button class="secondary" style="flex:1" ${commOK ? '' : 'disabled'} onclick="V47.commPub()">📤 作ったキャラを公開</button></div>
+    <div class="v4small" style="margin-bottom:6px">いま遊べるみんなのキャラ：${all.length}体（入手済み ${own}体）</div>
+    ${all.length ? all.map(c => { const im = portraitOf(c) || fullOf(c); return `<div class="v4slot">${im ? `<img class="pk-im" src="${im}">` : '<div class="pk-im"></div>'}<div class="v4sp"><b>${esc(c.name)}</b> ${elemBadge(c, 10)}<div class="v4small">HP${c.stats.hp} 攻${c.stats.atk}　${isOwned(c.name) ? '✅ 入手済み' : '🎰 ガチャで入手'}</div></div></div>`; }).join('') : '<div class="v4small" style="text-align:center">まだ誰も公開していません。最初の1体を作ってみよう！</div>'}
+    <button class="secondary" style="width:100%;margin-top:8px" onclick="V47.shareOpen()">🔗 共有コードで追加する</button>`);
+}
+
+/* ---------- Ver4.23 ホームの「今日のおまけ」（おみくじ・最近使ったキャラ・みんなのキャラ） ---------- */
+const OM = [['大吉', 300, 8, '✨'], ['吉', 160, 4, '🌟'], ['中吉', 110, 0, '⭐'], ['小吉', 70, 0, '🍀'], ['末吉', 40, 0, '🌱'], ['凶', 30, 0, '☁️']];
+const OM_W = [8, 22, 25, 22, 15, 8];
+const omToday = () => (S.om && S.om.d === todayKey()) ? S.om : null;
+function omDraw(){
+  if(omToday()){ toast('おみくじは1日1回です。また明日！'); return; }
+  let x = Math.random() * 100, k = 0; for(; k < OM.length - 1; k++){ x -= OM_W[k]; if(x < 0) break; }
+  const o = OM[k], lucky = roster.length ? roster[Math.floor(Math.random() * roster.length)].name : '';
+  S.om = { d: todayKey(), r: o[0], lucky, n: 0, buff: o[2] ? 3 : 0, up: o[2] / 100 }; S.coins += o[1]; save(); sfx(k <= 1 ? 'win' : 'buff');
+  const m = modal(`<div style="text-align:center"><div style="font-size:3rem">${o[3]}</div><div style="font-size:2rem;font-weight:900;color:#ffd24a">${o[0]}</div>
+    <div class="v4card"><div>🪙 コイン <b style="color:#ffd24a">+${o[1]}</b></div>${o[2] ? `<div class="v4small" style="color:#fff">🔮 次の3戦：攻撃力 +${o[2]}%</div>` : ''}
+    <div class="v4small" style="color:#fff">🍀 ラッキーキャラ：<b>${esc(lucky)}</b>（今日このキャラで勝つと🪙+40。1日5回まで）</div></div></div>`);
+  try{ updateSelectHeader(); }catch(e){}
+}
+function recentChars(){ return (S.recent || []).map(n => roster.find(c => c.name === n)).filter(Boolean).slice(0, 6); }
+function funHTML(){
+  try{
+    const om = omToday(), rc = recentChars(), cm = allChars().filter(c => c.community), lk = om && om.lucky;
+    let h = `<div class="hm-fun"><div class="fn-row">
+      <button class="fn-om ${om ? 'done' : 'hot'}" onclick="V47.omikuji()"><span>🔮</span><div><b>${om ? '今日は「' + om.r + '」' : '今日のおみくじ'}</b><small>${om ? (lk ? '🍀 ' + esc(lk) + ' で勝つと🪙+40（' + (om.n | 0) + '/5）' + (om.buff > 0 ? `／攻撃+${Math.round(om.up * 100)}% あと${om.buff}戦` : '') : '') : '引くとコインがもらえる！'}</small></div></button>
+      <button class="fn-cm" onclick="V47.commView()"><span>🌐</span><div><b>みんなのキャラ</b><small>${commOK ? `公開中${commServerN}体` : cm.length ? cm.length + '体 参加中' : '作って公開しよう'}</small></div></button></div>`;
+    if(rc.length) h += `<div class="fn-rc"><span class="v4small">最近使った</span>${rc.map(c => { const im = portraitOf(c) || fullOf(c); return `<button class="fn-c" data-n="${esc(c.name)}" onclick="V47.qb(this.dataset.n)">${im ? `<img src="${im}" alt="">` : ''}<i>${esc(c.name)}</i></button>`; }).join('')}</div>`;
+    return h + '</div>';
+  }catch(e){ return ''; }
+}
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state) return; const om = omToday();
+    if(om && info.won && om.lucky && state.p && state.p.data.name === om.lucky && (om.n | 0) < 5){ om.n = (om.n | 0) + 1; S.coins += 40; save(); later(() => toast(`🍀 ラッキーキャラ勝利ボーナス 🪙+40（${om.n}/5）`), 2600); }
+    if(om && om.buff > 0 && state.p){ om.buff--; save(); }
+  }catch(e){}
+});
+
+try{ commStartup(); }catch(e){ console.warn('comm', e); }
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
