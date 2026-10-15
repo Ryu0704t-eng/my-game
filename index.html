@@ -3702,7 +3702,8 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
-    "【不具合修正】バトル中に画面が急にホームへ戻ってしまうときのため、対戦を自動で保存するようにしました。戻ってしまっても、次に開いたときに「続きから再開」でHP・技の状態ごと続けられます。バトル中の「戻る」操作も無効にしました。",
+    "【お詫び】バトル中に読み込み直されてホームに戻る不具合のお詫びとして、全員にキャラガチャ10連分（🪙2500）を配布しました。",
+    "【不具合修正】バトル中に画面が急にホームへ戻ってしまうときのため、対戦を自動で保存するようにしました。戻ってしまっても、読み込み直された直後（5分以内）は自動で、それ以外は「続きから再開」で、HP・技の状態ごと続けられます。バトル中の「戻る」操作も無効にしました。",
     "【覚醒の改善】覚醒した瞬間に画面いっぱいの「覚醒！」演出が入り、覚醒中はキャラが光り、名前の横に「覚醒中」バッジが付きます。覚醒後の技も、キャラごとに違う組み合わせ（業火・氷・吸命・守り・雷など）になりました。",
     "【キャラ作成】技の効果すべてに説明文を付けました。選ぶ前から何をする技かわかり、選んだ後は詳しい数値も出ます。",
     "【図鑑】EXキャラ「アスラ」を図鑑に追加（未所持はシルエット）。EXの絞り込みも追加。",
@@ -11193,7 +11194,7 @@ function resumeGo(){
   }catch(e){ console.warn('resume', e); toast('対戦を再開できませんでした'); }
 }
 Hooks.on('battle:end', () => resumeClear());
-_origSetInterval(() => resumeSave(false), 1500);
+_origSetInterval(() => resumeSave(false), 800);
 document.addEventListener('visibilitychange', () => { if(document.hidden) resumeSave(true); });
 window.addEventListener('pagehide', () => resumeSave(true));
 Hooks.on('battle:start', () => { try{ history.pushState({ battle:1 }, ''); }catch(e){} });
@@ -11202,11 +11203,13 @@ window.addEventListener('popstate', () => {
 });
 later(() => {
   try{
-    const d = resumeRead(); if(!d || document.querySelector('.v4modal')) return;
+    const d = resumeRead(); if(!d) return;
+    if(Date.now() - d.t < 300e3){ resumeGo(); try{ toast('途中で読み込み直されたため、対戦を自動で再開しました'); }catch(e){} return; }
+    if(document.querySelector('.v4modal')) return;
     const a = d.p && d.p.data ? d.p.data.name : '', b = d.c && d.c.data ? d.c.data.name : '';
     modal(`<div style="text-align:center"><div class="v4h" style="margin-top:0">中断した対戦があります</div><div class="v4small" style="color:#fff">${esc(a)} VS ${esc(b)}（ターン${(d.rc || 0) + 1}）<br>途中のHPや技の状態から続けられます。</div><button style="width:100%;margin-top:8px" onclick="V47.resumeGo()">続きから再開</button><button class="secondary" style="width:100%;margin-top:6px" onclick="V47.resumeDrop()">破棄する</button></div>`);
   }catch(e){}
-}, 1800);
+}, 900);
 Object.assign(window.V47, { resumeGo, resumeDrop(){ resumeClear(); document.querySelectorAll('.v4modal').forEach(e => e.remove()); } });
 
 /* 経験値ステージ・コインステージ */
@@ -12136,6 +12139,10 @@ startBattle = function(){
 };
 
 if(!S.gift50){ S.gift50 = 1; S.coins += CHAR_COST * 50; save(); later(() => modal(`<div class="v4h" style="margin-top:0">初期配布プレゼント</div><div class="v4card"><div>キャラガチャ50連分 <b style="color:#ffd24a">🪙${CHAR_COST * 50}</b> をプレゼント！</div></div><div class="v4small" style="color:#fff">ガチャ画面の「50連」ですぐ引けます。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">ありがとう！</button>`), 2600); }
+if(!S.giftBug1){ S.giftBug1 = 1; S.coins += CHAR_COST * 10; save();
+  const showBug = () => { try{ if(document.getElementById('screen-battle').classList.contains('active')){ later(showBug, 4000); return; } modal(`<div class="v4h" style="margin-top:0">不具合のお知らせとお詫び</div><div class="v4small" style="color:#fff">バトル中に画面が読み込み直されてホームに戻ってしまう不具合がありました。ご迷惑をおかけしました。<br>対戦を自動で保存し、戻ってしまっても続きから再開できるようにしました。</div><div class="v4card" style="margin-top:8px">お詫びとして キャラガチャ10連分 <b style="color:#ffd24a">🪙${CHAR_COST * 10}</b> をプレゼント！</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">受け取る</button>`); }catch(e){} };
+  later(showBug, 3400);
+}
 if(S.reset425 === 1){ S.reset425 = 2; if(S.reset424 === 1) S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書・絆）と、装備の強化レベルを最初の状態に戻しました。コイン・持っている装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
 else if(S.reset424 === 1){ S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書のレベル・絆）を最初の状態に戻しました。コイン・装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
 
