@@ -2444,6 +2444,16 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 @keyframes x23Met{from{transform:translate(60px,-20px);opacity:1}to{transform:translate(-160px,520px);opacity:.2}}@keyframes x23Sak{from{transform:translate(0,0) rotate(0)}to{transform:translate(-40px,520px) rotate(360deg)}}@keyframes x23Fire{from{transform:translateY(560px) scale(.6);opacity:1}to{transform:translateY(40px) scale(1.4);opacity:0}}
 .x21-fs.fs-meteor{background:linear-gradient(180deg,rgba(10,10,50,.55),rgba(60,20,90,.25))}.x21-fs.fs-sakura{background:radial-gradient(circle,rgba(255,170,210,.3),transparent 70%)}.x21-fs.fs-fire{background:radial-gradient(circle at 50% 100%,rgba(255,110,20,.6),transparent 70%)}.x21-fs.fs-rainbow{background:linear-gradient(115deg,rgba(255,60,60,.35),rgba(255,220,60,.35),rgba(60,255,140,.35),rgba(60,160,255,.35),rgba(190,80,255,.35));animation-name:x21Fs,x21Fl}.x21-fs.fs-shadow{background:rgba(10,0,20,.65)}.x21-fs.fs-shadow::after{content:'🖐';position:absolute;bottom:-20%;font-size:9rem;filter:drop-shadow(0 0 20px #80f);animation:x23Hand 1.1s ease-out forwards}.x21-fs.fs-bell::after{content:'🔔';position:absolute;top:36%;font-size:5rem;animation:x23Ring .5s ease-in-out 2}
 @keyframes x23Hand{from{transform:translateY(60%)}to{transform:translateY(-70%) scale(1.2)}}@keyframes x23Ring{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
+
+.awk-badge{display:inline-block;margin-right:4px;padding:0 5px;border-radius:6px;background:linear-gradient(135deg,#ffd24a,#ff6a2a);color:#3a1200;font-size:.6rem;font-weight:900;animation:awkBadge .9s ease-in-out infinite alternate;vertical-align:middle}
+@keyframes awkBadge{from{box-shadow:0 0 2px #ffd24a}to{box-shadow:0 0 10px #ff7a2a}}
+.awk-on .standee-img{animation:awkGlow 1.1s ease-in-out infinite alternate}
+@keyframes awkGlow{from{filter:drop-shadow(0 0 6px #ffd24a) drop-shadow(0 0 14px #ff7a2a)}to{filter:drop-shadow(0 0 14px #fff2a8) drop-shadow(0 0 30px #ff5a1a)}}
+.awk-ban{position:fixed;inset:0;z-index:9000;pointer-events:none;display:flex;align-items:center;justify-content:center;text-align:center;background:radial-gradient(circle,rgba(255,235,150,.9),rgba(255,90,30,.4) 55%,transparent 78%);animation:awkFlash 2s ease-out forwards}
+.awk-ban b{display:block;font-size:2.8rem;font-weight:900;color:#fff;letter-spacing:.1em;text-shadow:0 0 12px #ff7a2a,0 0 30px #ffd24a,0 3px 0 #a02000;animation:awkZoom 2s ease-out forwards}
+.awk-ban small{display:block;margin-top:6px;font-size:.9rem;font-weight:800;color:#fff;text-shadow:0 1px 6px #000}
+@keyframes awkFlash{0%{opacity:0}12%{opacity:1}70%{opacity:1}100%{opacity:0}}
+@keyframes awkZoom{0%{transform:scale(.3)}25%{transform:scale(1.25)}40%{transform:scale(1)}100%{transform:scale(1.05)}}
 </style>
 </head>
 <body>
@@ -3692,6 +3702,10 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
+    "【不具合修正】バトル中に画面が急にホームへ戻ってしまうときのため、対戦を自動で保存するようにしました。戻ってしまっても、次に開いたときに「続きから再開」でHP・技の状態ごと続けられます。バトル中の「戻る」操作も無効にしました。",
+    "【覚醒の改善】覚醒した瞬間に画面いっぱいの「覚醒！」演出が入り、覚醒中はキャラが光り、名前の横に「覚醒中」バッジが付きます。覚醒後の技も、キャラごとに違う組み合わせ（業火・氷・吸命・守り・雷など）になりました。",
+    "【キャラ作成】技の効果すべてに説明文を付けました。選ぶ前から何をする技かわかり、選んだ後は詳しい数値も出ます。",
+    "【図鑑】EXキャラ「アスラ」を図鑑に追加（未所持はシルエット）。EXの絞り込みも追加。",
     "【ホーム整理】キャラ一覧・パッチノート・戦績・ランキング・今日のオススメ・チーム対抗・2人対戦のボタンを「⋯ その他」へ移動。ホームがスッキリ。",
     "【EXキャラ】唯一のEXキャラ「アスラ」を追加。EXステージをクリアすると稀にドロップ（ガチャには出ません）。一度きりの技「潜在能力全解放」で姿が変わり、HP全回復・全ステータス上昇・全ての技が強化されます。",
     "【技タイプ追加】キャラ作成で選べる技を大幅に追加（通常技20種・必殺技10種：二連斬・吸血・凍結・毒・火傷・気絶・反撃・封印・時間操作・不死鳥・超新星など）。",
@@ -8647,7 +8661,8 @@ function useBook(name, slot, id){
 /* ---------- キャラのレア度（図鑑・演出用の表示ランク。強さには影響しない） ---------- */
 function charRarity(name){ const h = nameHash(name + 'v4') % 100; return h < 10 ? 'SSR' : h < 38 ? 'SR' : h < 72 ? 'R' : 'N'; }
 function allChars(){ return roster.concat(lockedCharacters); }
-function charData(name){ return allChars().find(c => c.name === name) || null; }
+function exPlace(){ try{ if(!exPlace.c) exPlace.c = Object.assign({}, EXCHAR, { cardImg:portraits['アスラ'], img:standees['アスラ'], fullImg:fullCards['アスラ'] }); return exPlace.c; }catch(e){ return null; } }
+function charData(name){ return allChars().find(c => c.name === name) || (name === 'アスラ' ? exPlace() : null) || null; }
 const isOwned = name => roster.some(c => c.name === name);
 const portraitOf = c => c.cardImg || (typeof portraits !== 'undefined' && portraits[c.name]) || null;
 const standeeOf  = c => c.img || (typeof standees !== 'undefined' && standees[c.name]) || null;
@@ -9540,7 +9555,7 @@ function dexStats(name){
   return { app: s ? s.appearances : 0, wins: s ? s.wins : 0 };
 }
 function dexHTML(){
-  const all = allChars(); const own = all.filter(c => isOwned(c.name)).length;
+  const all = allChars().slice(); if(!all.some(c => c.name === 'アスラ')){ const ex = exPlace(); if(ex) all.push(ex); } const own = all.filter(c => isOwned(c.name)).length;
   let h = `<div class="v4card"><div class="v4row"><div class="v4sp"><b>収集率 ${own} / ${all.length}</b><div class="v4bar" style="margin-top:5px"><i style="width:${Math.round(own/all.length*100)}%"></i></div></div></div>
     <div class="v4small" style="margin-top:4px">タップで詳細。持っているキャラはカラー、未所持はモノクロ表示です（ガチャで入手）。</div></div><div class="v4zk">`;
   all.forEach(c => {
@@ -9554,7 +9569,7 @@ function dexDetail(name){
   const o = isOwned(name), r = charRarity(name), im = fullOf(c) || portraitOf(c); ensurePassive(c);
   const ce = evolveData(c, o ? evoLevelOf(name) : 0); const st = c.stats, ds = dexStats(name), evo = o ? evoLevelOf(name) : 0, el = ELEMS[c.element];
   if(!o){
-    curModal = modal(`<div style="text-align:center">${im ? `<img src="${im}" style="max-width:60%;max-height:34vh;filter:grayscale(1);opacity:.85">` : ''}<div class="v4h" style="color:#aaa">${esc(c.name)} 🔒</div><div class="v4small">${el ? el.name + '属性' : ''}　<span class="v4tag rar-${r}">${r}</span><br>まだ解放されていません。連勝ボーナス（2連勝ごと）で解放されます。</div></div>`);
+    curModal = modal(`<div style="text-align:center">${im ? `<img src="${im}" style="max-width:60%;max-height:34vh;filter:grayscale(1);opacity:.85">` : ''}<div class="v4h" style="color:#aaa">${esc(c.name)} 🔒</div><div class="v4small">${el ? el.name + '属性' : ''}　<span class="v4tag rar-${r}">${r}</span><br>${name === 'アスラ' ? 'まだ解放されていません。EXステージをクリアすると、稀にドロップします（唯一のEXキャラ）。' : 'まだ解放されていません。連勝ボーナス（2連勝ごと）で解放されます。'}</div></div>`);
     return;
   }
   const bar = (v, mx) => `<div class="v4bar" style="flex:1"><i style="width:${Math.min(100, Math.round(v / mx * 100))}%"></i></div>`;
@@ -10145,7 +10160,11 @@ function ccRenderStats(){
   const st = cc.stats, el = $('ccStats'); if(!el) return;
   el.innerHTML = [['HP', st.hp, 1050, st.hp], ['攻撃', st.atk, 240, st.atk], ['防御', st.def, 220, st.def], ['速さ', st.spd - 700, 200, st.spd], ['会心', st.crt - 600, 200, st.crt]].map(([l, v, m, t]) => `<div class="v4row" style="margin:3px 0"><span style="width:44px;font-size:.78rem">${l}</span><div class="v4bar" style="flex:1"><i style="width:${Math.min(100, Math.round(v / m * 100))}%"></i></div><span style="width:46px;text-align:right;font-size:.78rem">${t}</span></div>`).join('');
 }
-function ccSkDesc(i){ const x = i < 4 ? cc.sk[i] : cc.ul; return `<span class="v4small">${esc(x.desc)}（CT${x.cd}）</span>`; }
+function ccSkDesc(i){
+  const x = i < 4 ? cc.sk[i] : cc.ul; let sp = null; try{ sp = NEWT2[x.type]; }catch(e){}
+  const more = sp ? `<div class="v4small" style="color:#9fe3c0">効果：${esc(comboText(sp, x.mult ? { mult:x.mult } : null))}</div>` : '';
+  return `<span class="v4small">${esc(sp && sp.d ? sp.d : x.desc)}（CT${x.cd}）</span>${more}`;
+}
 function ccBuild(){
   const lab = ['技①（攻撃）', '技②', '技③', '技④', '必殺技'];
   const m = $('ccBox'); if(!m) return;
@@ -10891,8 +10910,23 @@ const NEWT2 = {
   awRally: { aw:1, n:'覚醒の闘気', selfAtk:.3, selfDef:.2, dur:3, cd:3 },
   awMulti: { aw:1, n:'覚醒の乱舞', m:[1.7, 1.7], hits:3, cd:3 },
   awUlt:   { aw:1, ult:1, n:'覚醒奥義', m:[2.2, 2.2], drain:.4, cd:4 },
+  awBurn:  { aw:1, n:'覚醒の業火', m:[1.4, 1.4], burn:[.07, 3], cd:3 },
+  awFrost: { aw:1, n:'覚醒の氷鎖', m:[1.35, 1.35], foeSpd:.3, foeDef:.15, dur:3, cd:3 },
+  awVamp:  { aw:1, n:'覚醒の吸命', m:[1.3, 1.3], drain:.6, cd:3 },
+  awGuard: { aw:1, n:'覚醒の守り', shield:.25, counter:2, selfDef:.3, dur:3, cd:3 },
+  awStun:  { aw:1, n:'覚醒の雷', m:[1.25, 1.25], stun:1, cd:4 },
+  awUlt2:  { aw:1, ult:1, n:'覚醒奥義・炎', m:[2.0, 2.0], burn:[.08, 3], cd:4 },
+  awUlt3:  { aw:1, ult:1, n:'覚醒奥義・氷', m:[2.0, 2.0], foeSpd:.3, foeAtk:.2, dur:3, cd:4 },
   unleash: { aw:1, n:'潜在能力全解放', unl:1, heal:1, cd:99 }
 };
+const NEWT2D = {
+  twin:'2回連続で斬りつける', flurry:'4回連続で撃ち込む', vamp:'与えたダメージの半分ぶん、HPを吸い取る', frost:'攻撃しつつ、敵の素早さを下げる', toxic:'攻撃して毒を与える。毎ターンじわじわ削る', flame:'攻撃して火傷を与える。毎ターン削る', shock:'攻撃して敵を1ターン気絶させる（CT長め）',
+  ironwall:'防御を上げて、反撃の構えを取る', rally:'攻撃と防御を同時に上げる', meditate:'HPを回復し、状態異常も治す', sacrifice:'自分のHPを削って大ダメージを与える', finisher:'敵のHPが少ないほど大ダメージ', timewarp:'他の技のCTを縮め、素早さを上げる', weaken:'敵の攻撃・防御・素早さをまとめて下げる',
+  mirror:'バリアを張り、反撃の構えも取る', adren:'HPを少し回復し、攻撃と素早さを上げる', seal:'軽く攻撃し、敵の技のCTを延ばす', bloom:'リジェネとバリアで粘り強く戦う', crush:'攻撃して敵の防御を下げる', pburn:'防御を貫く攻撃＋火傷',
+  uTwin:'6連続の大乱舞', uVamp:'大ダメージ＋HPを大きく吸収', uFreeze:'大ダメージ＋敵の素早さ・攻撃を下げる', uJudge:'雷で気絶させ、弱った敵には追撃', uPhoenix:'大回復＋攻防アップ＋リジェネ', uTime:'大ダメージ＋自分のCTリセット＋敵のCT延長', uSac:'反動つきの超ダメージ', uApoc:'火傷と毒を同時に与える', uFort:'バリア・反撃・回復・防御アップの鉄壁', uNova:'大ダメージ＋敵の強化解除＋攻撃アップ',
+  awDmg:'防御を一部無視する強力な一撃', awHeal:'HPを回復してバリアを張る', awRally:'攻撃と防御を大きく上げる', awMulti:'3回連続の乱舞', awUlt:'大ダメージ＋HP吸収', awBurn:'強力な攻撃＋火傷', awFrost:'攻撃して敵の素早さ・防御を下げる', awVamp:'攻撃してHPを大きく吸収', awGuard:'バリア・反撃・防御アップで固める', awStun:'攻撃して敵を気絶させる', awUlt2:'超大ダメージ＋火傷', awUlt3:'超大ダメージ＋敵の素早さ・攻撃を下げる'
+};
+Object.keys(NEWT2D).forEach(k => { if(NEWT2[k]) NEWT2[k].d = NEWT2D[k]; });
 const pcT = v => Math.round(v * 100) + '%';
 function comboText(sp, a){
   if(sp.unl) return '一度きり！HPが全回復・全ステータス上昇・全ての技が強化・イラストが覚醒';
@@ -10923,10 +10957,10 @@ function comboText(sp, a){
   return p.join(' / ');
 }
 (function(){
-  const ids = Object.keys(NEWT2), mk = (id, sp) => () => ({ type:id, mult: sp.m ? +(R_(sp.m[0], sp.m[1])).toFixed(2) : undefined, cd:sp.cd, desc:sp.n });
-  ids.forEach(id => { const sp = NEWT2[id]; CC_TYPES[id] = sp.n + '：' + comboText(sp, sp.m ? { mult:(sp.m[0] + sp.m[1]) / 2 } : null); });
-  ids.filter(id => !NEWT2[id].aw && !NEWT2[id].ult).forEach(id => { CC_SK.push(mk(id, NEWT2[id])); CC_SK_L.push(NEWT2[id].n); });
-  ids.filter(id => !NEWT2[id].aw && NEWT2[id].ult).forEach(id => { CC_UL.push(mk(id, NEWT2[id])); CC_UL_L.push(NEWT2[id].n); });
+  const ids = Object.keys(NEWT2), mk = (id, sp) => () => ({ type:id, mult: sp.m ? +(R_(sp.m[0], sp.m[1])).toFixed(2) : undefined, cd:sp.cd, desc:sp.d || sp.n });
+  ids.forEach(id => { const sp = NEWT2[id]; CC_TYPES[id] = (sp.d || sp.n) + '（' + comboText(sp, sp.m ? { mult:(sp.m[0] + sp.m[1]) / 2 } : null) + '）'; });
+  ids.filter(id => !NEWT2[id].aw && !NEWT2[id].ult).forEach(id => { CC_SK.push(mk(id, NEWT2[id])); CC_SK_L.push(NEWT2[id].n + '（' + NEWT2[id].d + '）'); });
+  ids.filter(id => !NEWT2[id].aw && NEWT2[id].ult).forEach(id => { CC_UL.push(mk(id, NEWT2[id])); CC_UL_L.push(NEWT2[id].n + '（' + NEWT2[id].d + '）'); });
   const IC = sp => sp.stun ? ['stun'] : sp.burn ? ['burn'] : sp.poison ? ['poison'] : sp.shield || sp.counter ? ['barrier'] : sp.heal || sp.regen ? ['heal'] : sp.selfAtk ? ['atk', 'up'] : sp.selfSpd ? ['spd', 'up'] : sp.foeAtk || sp.foeDef || sp.foeSpd ? ['atk', 'down'] : sp.exec || sp.pierce ? ['execute'] : sp.hits > 1 ? ['multi'] : ['execute'];
   const _el2 = effectLabel; effectLabel = function(a){ return (a && NEWT2[a.type]) ? comboText(NEWT2[a.type], a) : _el2(a); };
   const _ti2 = typeIcon; typeIcon = function(a, isAtk){ if(!isAtk && a && NEWT2[a.type]){ const k = IC(NEWT2[a.type]); return ic(k[0], k[1] || null, 15); } return _ti2(a, isAtk); };
@@ -11031,24 +11065,37 @@ function comboText(sp, a){
 })();
 
 /* 覚醒：HPが20%以下になると一度だけ全回復し、技がすべて覚醒技に変わる（CPU戦・クエスト） */
-const AW_SET = ['awDmg', 'awHeal', 'awRally', 'awMulti'];
+const AW_POOL = [['awDmg', 'awBurn', 'awVamp'], ['awMulti', 'awFrost', 'awStun'], ['awHeal', 'awGuard', 'awRally'], ['awRally', 'awStun', 'awBurn', 'awFrost', 'awHeal']];
+const AW_ULT = ['awUlt', 'awUlt2', 'awUlt3'];
+function awBanner(label, sub){
+  try{
+    const w = document.createElement('div'); w.className = 'awk-ban'; w.innerHTML = `<div><b>${label}</b><small>${esc(sub || '')}</small></div>`;
+    document.body.appendChild(w); later(() => w.remove(), 2000);
+  }catch(e){}
+}
 function awakenCheck(){
   try{
     if(!state || state.over || pvp.on) return;
     [['player', state.p], ['cpu', state.c]].forEach(([side, f]) => {
       if(!f || f._awk || (f.data && f.data.exChar) || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
       f._awk = 1;
-      const mkA = (id, orig, ult) => { const sp = NEWT2[id]; return { name:'覚醒・' + orig.name, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'覚醒技：' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) }; };
-      f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => mkA(AW_SET[i % AW_SET.length], s)), ultimate: mkA('awUlt', f.data.ultimate, true) });
+      const mkA = id => { const sp = NEWT2[id]; return { name:sp.n, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'覚醒技：' + (sp.d || '') + '（' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) + '）' }; };
+      const h = hashS(String(f.data.name)), pk = i => { const P = AW_POOL[Math.min(i, 3)]; return P[(h >> (i * 2)) % P.length]; };
+      f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => mkA(pk(i))), ultimate: mkA(AW_ULT[h % AW_ULT.length]) });
       f.hp = f.maxHp; f.burnTurns = 0; f.poisonTurns = 0; f.stunned = false;
       f.skillCd = f.skillCd.map(() => 0); f.ultCd = 0;
       ['atk', 'def', 'spd'].forEach(k => { if(f.mods[k] < 1){ f.mods[k] = 1; f.modTurns[k] = 0; } });
-      try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); }catch(e){}
+      try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(e){}
+      awBanner('覚醒！', f.data.name + ' ― HP全回復・技が覚醒技に変化');
       addLog(`🔥 ${f.data.name} が覚醒！HPが全回復し、技がすべて覚醒技に変わった！（一度だけ）`, 'result');
       try{ renderBattleUI(); }catch(e){}
     });
   }catch(e){ console.warn('awaken', e); }
 }
+const _fhAw = fighterHTML;
+fighterHTML = function(f, isP){ let h = _fhAw.apply(this, arguments); if(f && (f._awk || f._unl)) h = h.replace(/(<span class="name"[^>]*>)/, '$1<span class="awk-badge">' + (f._unl ? '解放中' : '覚醒中') + '</span>'); return h; };
+const _rbAw = renderBattleUI;
+renderBattleUI = function(){ const r = _rbAw.apply(this, arguments); try{ const fg = document.getElementById('stageFigures').children; [[fg[0], state.p], [fg[1], state.c]].forEach(([el, f]) => { if(el && f) el.classList.toggle('awk-on', !!(f._awk || f._unl)); }); }catch(e){} return r; };
 const _raAw = resolveAction;
 resolveAction = function(){ const r = _raAw.apply(this, arguments); awakenCheck(); return r; };
 const _frAw = finalizeRound;
@@ -11086,7 +11133,8 @@ function unleashApply(side, f){
   const up = x => x == null ? x : +(x * 1.12).toFixed(2);
   nd.skills = d.skills.map(s => s.type === 'unleash' ? Object.assign({}, s, { name:'潜在能力全解放（使用済み）', desc:'一度きりの技。すでに解放済み' }) : Object.assign({}, s, { name:'解放・' + s.name, mult:up(s.mult), val:up(s.val), cd:Math.max(1, (s.cd || 2) - 1) }));
   nd.ultimate = Object.assign({}, d.ultimate, { name:'解放・' + d.ultimate.name, mult:up(d.ultimate.mult), val:up(d.ultimate.val), cd:3 });
-  f.data = nd;
+  f.data = nd; f._unl = 1;
+  try{ awBanner('潜在能力全解放！', 'アスラ ― 姿が変わり、HP全回復'); }catch(e){}
   f.evo = Object.assign({}, f.evo, { atk:(f.evo.atk || 1) * 1.1, def:(f.evo.def || 1) * 1.08, crt:(f.evo.crt || 0) + .05 });
   f.eqSpd = (f.eqSpd || 1) * 1.05;
   f.maxHp = Math.round(f.maxHp * 1.05); f.hp = f.maxHp;
@@ -11114,6 +11162,52 @@ Hooks.on('battle:end', info => {
     later(() => modal(`<div style="text-align:center"><div class="v4h" style="margin-top:0">EXキャラ ドロップ！！</div><img src="${portraits['アスラ']}" style="width:100%;max-width:320px;border-radius:12px;border:2px solid #ffd24a"><div style="font-size:1.4rem;font-weight:900;color:#ffd24a;margin:6px 0">アスラ</div><div class="v4small" style="color:#fff">${msg}<br>唯一のEXキャラ。一度きりの「潜在能力全解放」で姿が変わる！</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">やったー！</button></div>`), 3200);
   }catch(e){ console.warn('ex drop', e); }
 });
+
+/* ---------- 対戦の自動保存と再開（バトル中に急にホームへ戻ったとき用） ---------- */
+const LS_RESUME = 'battleArena_resume_v1';
+const rsStrip = o => JSON.parse(JSON.stringify(o, (k, v) => (k === 'img' || k === 'cardImg' || k === 'fullImg') ? undefined : v));
+function resumeSave(force){
+  try{
+    if(!state || state.over || pvp.on || teamMode || !selected || !cpuFighterData || !state.p || !state.c) return;
+    const sc = document.getElementById('screen-battle'); if(!sc || !sc.classList.contains('active')) return;
+    if(state.turnLock && !force) return;
+    localStorage.setItem(LS_RESUME, JSON.stringify({ v:1, t:Date.now(), sel:rsStrip(selected), cpu:rsStrip(cpuFighterData), lv:cpuLevel, q:state.quest ? rsStrip(state.quest) : null, p:rsStrip(state.p), c:rsStrip(state.c), rc:state.roundCount, esc:state.escalation, field:state.field || null }));
+  }catch(e){}
+}
+function resumeClear(){ try{ localStorage.removeItem(LS_RESUME); }catch(e){} }
+function resumeRead(){ try{ const d = JSON.parse(localStorage.getItem(LS_RESUME)); if(d && d.v === 1 && Date.now() - d.t < 3600e3) return d; }catch(e){} return null; }
+function resumeGo(){
+  const d = resumeRead(); document.querySelectorAll('.v4modal').forEach(e => e.remove()); if(!d) return; resumeClear();
+  const base = n => allChars().find(c => c.name === n) || (n === 'アスラ' ? exPlace() : null);
+  const img = o => { const b = base(o.name); return Object.assign({}, o, b ? { img:b.img, cardImg:b.cardImg, fullImg:b.fullImg } : {}); };
+  const fx = f => Object.assign({}, f, { data:img(f.data) });
+  try{
+    selected = img(d.sel); cpuFighterData = img(d.cpu); if(d.lv) cpuLevel = d.lv; teamMode = false; pendingQuest = d.q || null;
+    startBattle();
+    Object.assign(state.p, fx(d.p)); Object.assign(state.c, fx(d.c));
+    state.roundCount = d.rc || 0; state.escalation = d.esc || 1; if(d.field) state.field = d.field;
+    try{ const fg = document.getElementById('stageFigures').children; [[fg[0], state.p, 0], [fg[1], state.c, 1]].forEach(([el, f, i]) => { if(el && f._unl){ const u = standees['アスラ・解放']; el.innerHTML = `<img class="standee-img${i ? ' cpuflip' : ''}" src="${u}">`; } }); }catch(e){}
+    try{ if(d.q && d.q.boss) setBoss(true); }catch(e){}
+    renderBattleUI(); try{ updateTurnBadge(); }catch(e){}
+    addLog(`⏪ 中断した対戦を再開しました（ターン${state.roundCount + 1}）`, 'result');
+  }catch(e){ console.warn('resume', e); toast('対戦を再開できませんでした'); }
+}
+Hooks.on('battle:end', () => resumeClear());
+_origSetInterval(() => resumeSave(false), 1500);
+document.addEventListener('visibilitychange', () => { if(document.hidden) resumeSave(true); });
+window.addEventListener('pagehide', () => resumeSave(true));
+Hooks.on('battle:start', () => { try{ history.pushState({ battle:1 }, ''); }catch(e){} });
+window.addEventListener('popstate', () => {
+  try{ const sc = document.getElementById('screen-battle'); if(state && !state.over && sc && sc.classList.contains('active')){ history.pushState({ battle:1 }, ''); toast('バトル中は戻れません'); } }catch(e){}
+});
+later(() => {
+  try{
+    const d = resumeRead(); if(!d || document.querySelector('.v4modal')) return;
+    const a = d.p && d.p.data ? d.p.data.name : '', b = d.c && d.c.data ? d.c.data.name : '';
+    modal(`<div style="text-align:center"><div class="v4h" style="margin-top:0">中断した対戦があります</div><div class="v4small" style="color:#fff">${esc(a)} VS ${esc(b)}（ターン${(d.rc || 0) + 1}）<br>途中のHPや技の状態から続けられます。</div><button style="width:100%;margin-top:8px" onclick="V47.resumeGo()">続きから再開</button><button class="secondary" style="width:100%;margin-top:6px" onclick="V47.resumeDrop()">破棄する</button></div>`);
+  }catch(e){}
+}, 1800);
+Object.assign(window.V47, { resumeGo, resumeDrop(){ resumeClear(); document.querySelectorAll('.v4modal').forEach(e => e.remove()); } });
 
 /* 経験値ステージ・コインステージ */
 const TRAIN = [
@@ -11296,8 +11390,8 @@ let dexF = { el:'', r:'', own:'', sort:'no', q:'', fav:false };
 function dexSet(k, v){ dexF[k] = v; view('dex'); }
 function favToggle(n){ S.fav = S.fav || {}; if(S.fav[n]) delete S.fav[n]; else S.fav[n] = 1; save(); if(curModal && curModal.remove) curModal.remove(); view('dex'); dexDetail(n); }
 function dexHTML(){
-  const all = allChars(); const own = all.filter(c => isOwned(c.name)).length; S.fav = S.fav || {};
-  const RO = { SSR:0, SR:1, R:2, N:3 };
+  const all = allChars().slice(); if(!all.some(c => c.name === 'アスラ')){ const ex = exPlace(); if(ex) all.push(ex); } const own = all.filter(c => isOwned(c.name)).length; S.fav = S.fav || {};
+  const RO = { EX:-1, SSR:0, SR:1, R:2, N:3 };
   let list = all.map((c, i) => ({ c, i }));
   if(dexF.el) list = list.filter(x => x.c.element === dexF.el);
   if(dexF.r) list = list.filter(x => charRarity(x.c.name) === dexF.r);
@@ -11311,10 +11405,10 @@ function dexHTML(){
   else if(dexF.sort === 'lb') list.sort((a, b) => (lbOf(b.c.name) | 0) - (lbOf(a.c.name) | 0) || a.i - b.i);
   const ch = (k, v, lab) => `<button class="dx-c ${dexF[k] === v ? 'on' : ''}" onclick="V47.dexSet('${k}','${v}')">${lab}</button>`;
   let h = `<div class="v4card"><div class="v4row"><div class="v4sp"><b>収集率 ${own} / ${all.length}</b><div class="v4bar" style="margin-top:5px"><i style="width:${Math.round(own / all.length * 100)}%"></i></div></div></div>
-    <div class="v4small" style="margin-top:4px">${['SSR','SR','R','N'].map(k => { const t = all.filter(c => charRarity(c.name) === k); return `<span class="v4tag rar-${k}">${k} ${t.filter(c => isOwned(c.name)).length}/${t.length}</span>`; }).join(' ')}<br>タップで詳細。未所持はモノクロですが、枠の色とバッジでレア度がわかります。</div></div>
+    <div class="v4small" style="margin-top:4px">${['EX','SSR','SR','R','N'].map(k => { const t = all.filter(c => charRarity(c.name) === k); return `<span class="v4tag rar-${k}">${k} ${t.filter(c => isOwned(c.name)).length}/${t.length}</span>`; }).join(' ')}<br>タップで詳細。未所持はモノクロですが、枠の色とバッジでレア度がわかります。</div></div>
     <div class="dx-bar"><input class="dx-s" id="dxQ" placeholder="🔍 名前で検索" value="${esc(dexF.q)}" onchange="V47.dexSet('q',this.value)">
     <div class="dx-row">${ch('el', '', '全属性')}${Object.keys(ELEMS).map(k => ch('el', k, ELEMS[k].name)).join('')}</div>
-    <div class="dx-row">${ch('r', '', '全レア')}${['SSR', 'SR', 'R', 'N'].map(k => ch('r', k, k)).join('')}${ch('own', '1', '所持')}${ch('own', '0', '未所持')}<button class="dx-c ${dexF.fav ? 'on' : ''}" onclick="V47.dexSet('fav',${!dexF.fav})">★お気に入り</button></div>
+    <div class="dx-row">${ch('r', '', '全レア')}${['EX', 'SSR', 'SR', 'R', 'N'].map(k => ch('r', k, k)).join('')}${ch('own', '1', '所持')}${ch('own', '0', '未所持')}<button class="dx-c ${dexF.fav ? 'on' : ''}" onclick="V47.dexSet('fav',${!dexF.fav})">★お気に入り</button></div>
     <div class="dx-row"><span class="v4small">並び：</span>${[['no', '図鑑順'], ['rar', 'レア度'], ['name', '名前'], ['own', '所持優先'], ['lb', '凸の数']].map(([k, l]) => ch('sort', k, l)).join('')}</div>
     <div class="v4small">${list.length}体を表示${(dexF.el || dexF.r || dexF.own || dexF.q || dexF.fav) ? '　<a href="#" onclick="V47.dexReset();return false" style="color:#8ad">条件をリセット</a>' : ''}</div></div><div class="v4zk">`;
   list.forEach(({ c }) => {
