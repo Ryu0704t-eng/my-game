@@ -3693,6 +3693,10 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【ホーム整理】キャラ一覧・パッチノート・戦績・ランキング・今日のオススメ・チーム対抗・2人対戦のボタンを「⋯ その他」へ移動。ホームがスッキリ。",
+    "【アカウント】「その他→アカウント切り替え」を追加。この端末の中で最大5つのセーブを使い分けられます。",
+    "【50連】キャラ・装備ガチャに50連ボタンを追加（通常より10%お得、結果は一覧で表示）。",
+    "【凸強化】最大5凸→10凸に。6凸以降も+2%ずつ強化（最大+25%）。3凸・6凸・10凸で会心率もアップ。",
+    "【リセット】装備の強化レベルも最初の状態に戻しました。",
     "【リセット】強化したキャラ（凸・進化・技の書のレベル・絆）を最初の状態に戻しました（1回だけ）。コイン・装備・解放済みキャラはそのままです。",
     "【名前変更】ライゴウ→ガープ。",
     "【装備】レアリティが高い装備ほどドロップしにくく。装備の強化は必要ランクLvとコイン（約1.5倍）、技の強化はランクLv制限と書1冊ごとのコイン（40〜1000）が必要に。",
@@ -4111,7 +4115,7 @@ function backToPlayerSelect(){
 const LS_SORT = 'battleArena_sort_v1';
 let rosterSort = (() => { try{ return localStorage.getItem(LS_SORT) || 'def'; }catch(e){ return 'def'; } })();
 function setRosterSort(v){ rosterSort = v; try{ localStorage.setItem(LS_SORT, v); }catch(e){} renderRoster(); }
-function lbStarsHTML(n, big){ n = n | 0; return `<span class="lbst${big ? ' big' : ''}">${[1,2,3,4,5].map(i => `<i class="${i <= n ? 'on' : ''}">★</i>`).join('')}</span>`; }
+function lbStarsHTML(n, big){ n = n | 0; return `<span class="lbst${big ? ' big' : ''}">${[1,2,3,4,5,6,7,8,9,10].map(i => `<i class="${i <= n ? 'on' : ''}">★</i>`).join('')}</span>`; }
 function sortedRosterIdx(){
   const RK = {SSR:4, SR:3, R:2, N:1}, ids = roster.map((c, i) => i), lb = c => (window.lbOf ? window.lbOf(c.name) : 0), rk = c => RK[window.rarOf ? window.rarOf(c.name) : 'N'] || 0;
   const key = { rar: c => rk(c) * 100 + lb(c) * 10 + evoLevelOf(c.name), lb: c => lb(c) * 100 + rk(c) * 10 + evoLevelOf(c.name), evo: c => evoLevelOf(c.name) * 100 + lb(c) * 10 + rk(c), hp: c => c.stats.hp, atk: c => c.stats.atk, spd: c => c.stats.spd }[rosterSort];
@@ -4161,7 +4165,7 @@ function openDetail(idx){
     <div class="quote" style="text-align:center;color:var(--sub);font-style:italic;margin:8px 0;">「${c.quote}」</div>
     ${statBarsHTML(c.stats)}
     <div class="lbcard"><div class="lbt">凸（とつ）　${lbStarsHTML(window.lbOf ? window.lbOf(c.name) : 0, true)}　<b>${window.lbOf ? window.lbOf(c.name) : 0}/5</b></div>
-      <div class="lbd">${(window.lbOf && window.lbOf(c.name)) ? `今の効果：HP・攻撃・防御が <b>+${window.lbOf(c.name) * 3}%</b>（CPU戦・クエスト）` : 'まだ凸していません'}<br>増やし方：<b>キャラガチャで同じキャラが出る</b>と＋1凸（最大5凸＝+15%）。1凸ごとに+3%。<br>※2人対戦には影響しません</div></div>
+      <div class="lbd">${(window.lbOf && window.lbOf(c.name)) ? `今の効果：HP・攻撃・防御が <b>+${window.lbPct(window.lbOf(c.name))}%</b>${window.lbOf(c.name) >= 3 ? '・会心率UP' : ''}（CPU戦・クエスト）` : 'まだ凸していません'}<br>増やし方：<b>キャラガチャで同じキャラが出る</b>と＋1凸（最大5凸＝+15%）。1凸ごとに+3%。<br>※2人対戦には影響しません</div></div>
     ${skillListHTML(c)}
     <div class="btnrow">
       <button onclick="selectFromDetail(${idx})">${selectMode==='player' ? 'このキャラで挑む' : 'この相手と戦う'}</button>
@@ -8440,6 +8444,14 @@ const RAR_NAME = {N:'ノーマル', R:'レア', SR:'スーパーレア', SSR:'�
       }
       localStorage.setItem('battleArena_reset424', '1');
     }
+    if(!localStorage.getItem('battleArena_reset425')){
+      const raw = localStorage.getItem('battleArena_v4_save');
+      if(raw){
+        try{ localStorage.setItem('battleArena_v4_save_backup425', raw); }catch(e){}
+        const d = JSON.parse(raw); d.enh = {}; d.books = {}; d.reset425 = 1; localStorage.setItem('battleArena_v4_save', JSON.stringify(d));
+      }
+      localStorage.setItem('battleArena_reset425', '1');
+    }
   }catch(e){}
 })();
 let S = null;
@@ -8457,8 +8469,10 @@ function load(){
   S = d;
 }
 function save(){ try{ lsSet(LS_V4, S); }catch(e){} }
-window.lbOf = n => Math.min(5, (S.lb && S.lb[n]) | 0);
-const LB_MAX = 5, lbOf = n => Math.min(LB_MAX, (S.lb && S.lb[n]) | 0), lbStars = n => '★'.repeat(lbOf(n)) + '☆'.repeat(LB_MAX - lbOf(n));
+window.lbOf = n => Math.min(LB_MAX, (S.lb && S.lb[n]) | 0);
+window.lbPct = n => lbPct(n);
+const lbCrt = n => (n >= 3 ? 3 : 0) + (n >= 6 ? 3 : 0) + (n >= 10 ? 4 : 0);
+const LB_MAX = 10, lbPct = n => 3 * Math.min(5, n) + 2 * Math.max(0, n - 5), lbOf = n => Math.min(LB_MAX, (S.lb && S.lb[n]) | 0), lbStars = n => '★'.repeat(lbOf(n)) + '☆'.repeat(LB_MAX - lbOf(n));
 load();
 
 /* ---------- アイテム定義 ---------- */
@@ -8670,8 +8684,8 @@ resolveActionCore = function(side, actor, target, action, idx){
 function applyToFighter(f){
   const name = f.data.name, b = eqBonus(name);
   f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + b.atk), def: (f.evo.def || 1) * (1 + b.def), crt: (f.evo.crt || 0) + b.crt });
-  const lb = lbOf(name), lm = 1 + 0.03 * lb;   // 凸：1凸ごとにHP・攻撃・防御+3%（最大+15%、CPU戦のみ）
-  if(lb){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * lm, def: f.evo.def * lm }); }
+  const lb = lbOf(name), lm = 1 + lbPct(lb) / 100;   // 凸：1〜5凸は+3%ずつ、6〜10凸は+2%ずつ（最大+25%、CPU戦のみ）。3凸以上で会心率もUP
+  if(lb){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * lm, def: f.evo.def * lm, crt: (f.evo.crt || 0) + lbCrt(lb) / 100 }); }
   const hpMax = Math.round(f.maxHp * (1 + b.hp) * lm); f.maxHp = hpMax; f.hp = hpMax;
   f.eqSpd = 1 + b.spd; f._bk = bookLevels(name); f._v4 = true;
   try{ const bl = bondLv(name); if(bl) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + 0.005 * bl) }); }catch(e){}
@@ -9469,14 +9483,14 @@ function gzStage(){
   const f = char ? 'V4.cpull' : 'V4.pull';
   if(char) return `<div class="gz-stage art"><div class="ga-img"><img src="${IMG49.home}" alt="ガチャ"><div class="gz-badge">最高レアリティ<br><b>★ SSR</b>出現率<span>4%</span></div></div>
     <div class="gz-btns"><button class="gz-b" onclick="${f}(1)"><em>1回引く</em><span>🪙${c1}</span></button><button class="gz-b b10" onclick="${f}(10)"><em>10回引く</em><span>🪙${c10}</span></button></div>
-    <div class="gz-foot"><span class="gz-own">🪙 ${S.coins}</span><button class="gz-rate" onclick="V4.rates()">≡ 提供割合</button></div></div>`;
+    <div class="gz-foot"><span class="gz-own">🪙 ${S.coins}</span><button class="gz-rate" onclick="V4.rates()">≡ 提供割合</button><button class="gz-5" onclick="V47.bulk('char')">50連 🪙${CHAR_COST * 45}</button></div></div>`;
   return `<div class="gz-stage ${char ? '' : 'gear'}"><div class="gz-sky"></div><div class="gz-castle"></div><i class="gz-cr c1"></i><i class="gz-cr c2"></i><i class="gz-cr c3"></i>
     <div class="gz-head"><div class="gz-logo">${COMPASS}<div class="gz-t">${char ? 'キャラ' : '装備'}ガチャ</div></div><div class="gz-line"></div><div class="gz-tag">運命の出会いが、<br>あなたを待っている——</div></div>
     <div class="gz-orbw"><div class="gz-halo"></div><i class="gz-gem"></i><div class="gz-orb">${orbs}</div><div class="gz-base"></div></div>
     ${cards}
     <div class="gz-badge">最高レアリティ<br><b>★ SSR</b>出現率<span>${char ? 4 : 3}%</span></div>
     <div class="gz-btns"><button class="gz-b" onclick="${f}(1)"><em>1回引く</em><span>🪙${c1}</span></button><button class="gz-b b10" onclick="${f}(10)"><em>10回引く</em><span>🪙${c10}</span></button></div>
-    <div class="gz-foot"><span class="gz-own">🪙 ${S.coins}</span><button class="gz-rate" onclick="V4.rates()">≡ 提供割合</button>${char ? '' : '<button class="gz-5" onclick="V4.pull(5)">5連 🪙450</button>'}</div></div>`;
+    <div class="gz-foot"><span class="gz-own">🪙 ${S.coins}</span><button class="gz-rate" onclick="V4.rates()">≡ 提供割合</button>${char ? '' : `<button class="gz-5" onclick="V4.pull(5)">5連 🪙450</button><button class="gz-5" style="margin-left:6px" onclick="V47.bulk('gear')">50連 🪙${PULL_COST * 45}</button>`}</div></div>`;
 }
 function rateList(k){
   const l = allChars().filter(c => !c.isCustom && charRarity(c.name) === k);
@@ -9549,7 +9563,7 @@ function dexDetail(name){
     <div class="v4card"><div class="v4small">技</div>${ce.skills.map(s => `<div style="margin:5px 0"><b>${esc(s.name)}</b> <span class="v4small">CT${s.cd}</span><div class="v4small">${esc(s.desc || '')}</div></div>`).join('')}
       <div style="margin:5px 0"><b style="color:#ffd24a">★ ${esc(ce.ultimate.name)}</b><div class="v4small">${esc(ce.ultimate.desc || '')}</div></div></div>
     <div class="v4card"><div class="v4small">進化で変わる技（勝利を重ねる／ダブりで進化）</div>${[1,2,3].map(lv => `<div style="margin:6px 0;${evo >= lv ? '' : 'opacity:.6'}"><b>${EVO[lv].name}</b> <span class="v4small">${evo >= lv ? '✔ 解放済み' : `あと${Math.max(0, EVO[lv].need - evoWins(name))}勝`}</span>${evoPreview(c, lv).map(x => `<div class="v4small" style="color:#fff">${esc(x.from)} ▶ <b style="color:#ffd24a">${esc(x.to)}</b></div>`).join('')}</div>`).join('')}</div>
-    <div class="v4card"><div class="v4small">凸（ガチャでダブるごとに強化・最大5凸）</div><div style="font-size:1.2rem;color:#ffd24a;letter-spacing:2px">${lbStars(name)}</div><div class="v4small">${lbOf(name) ? `CPU戦でHP・攻撃・防御 +${lbOf(name) * 3}%` : 'まだ凸していません。キャラガチャで同じキャラを引くと凸が進みます。'}（2人対戦には影響しません）</div></div>
+    <div class="v4card"><div class="v4small">凸（ガチャでダブるごとに強化・最大10凸）</div><div style="font-size:1.2rem;color:#ffd24a;letter-spacing:2px">${lbStars(name)}</div><div class="v4small">${lbOf(name) ? `CPU戦でHP・攻撃・防御 +${lbPct(lbOf(name))}%${lbOf(name) >= 3 ? '・会心率+' + lbCrt(lbOf(name)) + '%' : ''}` : 'まだ凸していません。キャラガチャで同じキャラを引くと凸が進みます。'}（2人対戦には影響しません）</div></div>
     <div class="v4card"><div class="v4small">記録</div><div class="v4small" style="color:#fff">対戦 ${ds.app}回 ／ 勝利 ${ds.wins}回 ／ 覚醒Lv ${evo}${q ? `<br>クエスト出現：${q}` : ''}</div></div>
     ${(() => { const L = CHAR_LINES[name] || {}, ev = [['start', '開始'], ['atk', '攻撃'], ['ult', '必殺'], ['lowhp', 'ピンチ'], ['win', '勝利'], ['ko', '敗北']].filter(([k]) => L[k] && L[k].length); return ev.length ? `<div class="v4card"><div class="v4small">🗨 ボイス（セリフ）</div>${ev.map(([k, l]) => `<div class="dx-vo"><span>${l}</span>「${esc(L[k][0])}」</div>`).join('')}</div>` : ''; })()}
     <div class="btnrow"><button class="secondary" onclick="V47.favToggle('${esc(name)}')">${(S.fav || {})[name] ? '★ お気に入り解除' : '☆ お気に入りに追加'}</button><button onclick="V47.dexGo('${esc(name)}')">このキャラで挑戦</button></div>`);
@@ -9973,8 +9987,8 @@ function pullChar(minR){
   if(!had){ unlockChar(c.name); const ri = charRevealItem(charData(c.name), true); if(hard) ri.sub = '🎯 天井で確定！'; return ri; }
   addEvoWin(c.name);
   const before = lbOf(c.name), it = charRevealItem(charData(c.name), false);
-  if(before < LB_MAX){ S.lb[c.name] = before + 1; S.coins += DUPE_RF; it.sub = `${hard ? '🎯 天井で確定！<br>' : ''}凸 +1！　${lbStars(c.name)}（HP・攻撃・防御 +${(before + 1) * 3}%）<br>進化ポイント +1 ／ 🪙 +${DUPE_RF}`; }
-  else { S.coins += DUPE_RFM; it.sub = `凸MAX！　★★★★★<br>進化ポイント +1 ／ 🪙 +${DUPE_RFM}`; }
+  if(before < LB_MAX){ S.lb[c.name] = before + 1; S.coins += DUPE_RF; it.sub = `${hard ? '🎯 天井で確定！<br>' : ''}凸 +1！　${lbStars(c.name)}（HP・攻撃・防御 +${lbPct(before + 1)}%）<br>進化ポイント +1 ／ 🪙 +${DUPE_RF}`; }
+  else { S.coins += DUPE_RFM; it.sub = `凸MAX！　★★★★★★★★★★<br>進化ポイント +1 ／ 🪙 +${DUPE_RFM}`; }
   return it;
 }
 function charGachaPull(n, free){
@@ -11023,11 +11037,11 @@ achClaim = function(id){ const b = S.coins; _achClaim13(id); try{ if(S.coins > b
 
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
@@ -11041,7 +11055,7 @@ function targetOpen(){
 function targetSet(n){ S.targetPick = n || ''; save(); if(curModal && curModal.remove) curModal.remove(); view('gacha'); toast(n ? `🎯 「${n}」を狙います` : '日替わりピックアップに戻しました'); }
 function qdaily(){ startDaily(); }
 function qauto(on){ S.qAuto = !!on; save(); view('quest'); }
-Object.assign(window.V47, { claimAll, rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
+Object.assign(window.V47, { bulk:bulkPull, profSw:id => profSwitch(id), profRn:profRename, profDl:profDel, profAdd, claimAll, rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
 
 
 /* ---------- Ver4.15 カットイン強化（バトル必殺技・ガチャ確定演出） ---------- */
@@ -11708,7 +11722,71 @@ startBattle = function(){
   try{ const q = state && state.quest; if(q && q.ex){ addLog('EX補正：最初の3ターン、相手は無敵！ 耐えて反撃の準備を！', 'result'); renderBattleUI(); } }catch(e){}
 };
 
-if(S.reset424 === 1){ S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書のレベル・絆）を最初の状態に戻しました。コイン・装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
+if(S.reset425 === 1){ S.reset425 = 2; if(S.reset424 === 1) S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書・絆）と、装備の強化レベルを最初の状態に戻しました。コイン・持っている装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
+else if(S.reset424 === 1){ S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書のレベル・絆）を最初の状態に戻しました。コイン・装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
+
+/* ---------- Ver4.23 50連ガチャ ---------- */
+function bulkPull(kind){
+  const char = kind === 'char', n = 50, cost = (char ? CHAR_COST : PULL_COST) * 45;
+  if(S.coins < cost){ toast(`コインが足りません（あと🪙${cost - S.coins}）`); return; }
+  if(char && !allChars().length) return;
+  if(!confirm(`${char ? 'キャラ' : '装備'}ガチャを50連します（🪙${cost}、通常より10%お得）。よろしいですか？`)) return;
+  const c0 = S.coins; S.coins -= cost; const list = [];
+  for(let i = 0; i < n; i++) list.push(char ? pullChar(null) : pullOne(null));
+  save();
+  const refund = S.coins - (c0 - cost);
+  const RO = { SSR:0, SR:1, R:2, N:3 }, cnt = { SSR:0, SR:0, R:0, N:0 };
+  list.forEach(x => { cnt[x.rarity]++; });
+  const grp = {}; list.forEach(x => { const k = x.name + '|' + x.rarity; (grp[k] = grp[k] || { it:x, n:0, isNew:false }).n++; if(x.isNew) grp[k].isNew = true; });
+  const rows = Object.values(grp).sort((a, b) => RO[a.it.rarity] - RO[b.it.rarity] || b.n - a.n);
+  const col = { SSR:'#ffc83a', SR:'#b36bff', R:'#3fb6ff', N:'#9aa7b4' };
+  const best = rows[0] && rows[0].it.rarity;
+  try{ sfx(best === 'SSR' ? 'win' : 'buff'); }catch(e){}
+  curModal = modal(`<div class="v4h" style="margin-top:0">${char ? 'キャラ' : '装備'}ガチャ 50連 結果</div>
+    <div class="v4row" style="gap:6px;margin-bottom:6px">${['SSR','SR','R','N'].map(k => `<span class="v4tag rar-${k}">${k} ×${cnt[k]}</span>`).join('')}</div>
+    <div class="v4small" style="color:#fff;margin-bottom:6px">🪙 -${cost}${refund ? `（ダブり返還 +${refund}）` : ''}　残り ${S.coins}</div>
+    <div class="rt-g" style="grid-template-columns:repeat(auto-fill,minmax(72px,1fr))">${rows.map(r => { const x = r.it; return `<div class="z" style="--oc:${col[x.rarity]}">${x.img ? `<img src="${x.img}" loading="lazy">` : `<div style="height:60px;display:flex;align-items:center;justify-content:center;font-size:1.6rem">${x.icon || ''}</div>`}${r.isNew ? '<span style="position:absolute;top:1px;right:2px;background:#ff4a6a;color:#fff;font-size:.5rem;padding:0 4px;border-radius:99px;font-weight:900">NEW</span>' : ''}<div class="n">${esc(x.name)}${r.n > 1 ? ' ×' + r.n : ''}</div></div>`; }).join('')}</div>
+    <button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">閉じる</button>`);
+  try{ updateSelectHeader(); renderRoster(); }catch(e){}
+  view('gacha');
+}
+
+/* ---------- Ver4.23 アカウント切り替え（この端末の中で複数のセーブを使い分け） ---------- */
+const PROF_LS = 'battleArena_profiles_v1', PROF_SKIP = ['battleArena_profiles_v1', 'battleArena_comm_v1', 'battleArena_reset424', 'battleArena_reset425', 'battleArena_v4_save_backup424', 'battleArena_v4_save_backup425', 'battleArena_statOverrides_v6', 'battleArena_autoPatch_v3', 'battleArena_sound_v1', 'battleArena_speed', 'battleArena_sort_v1', 'battleArena_power_v1'];
+const profKeys = () => { const a = []; for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(k && k.indexOf('battleArena_') === 0 && k.indexOf('battleArena_prof_') !== 0 && !PROF_SKIP.includes(k)) a.push(k); } return a; };
+function profLoad(){
+  let p = null; try{ p = JSON.parse(localStorage.getItem(PROF_LS)); }catch(e){}
+  if(!p || !Array.isArray(p.list) || !p.list.length){ p = { cur:'p1', list:[{ id:'p1', name:'アカウント1' }] }; try{ localStorage.setItem(PROF_LS, JSON.stringify(p)); }catch(e){} }
+  return p;
+}
+function profSnap(id){ const o = {}; profKeys().forEach(k => { o[k] = localStorage.getItem(k); }); try{ localStorage.setItem('battleArena_prof_' + id, JSON.stringify(o)); return true; }catch(e){ return false; } }
+function profSwitch(id, fresh){
+  const p = profLoad(); if(id === p.cur && !fresh) return;
+  if(!profSnap(p.cur)){ toast('保存できませんでした（容量不足）'); return; }
+  profKeys().forEach(k => localStorage.removeItem(k));
+  if(!fresh){ try{ const o = JSON.parse(localStorage.getItem('battleArena_prof_' + id) || '{}'); Object.keys(o).forEach(k => { if(o[k] != null) localStorage.setItem(k, o[k]); }); }catch(e){} }
+  p.cur = id; localStorage.setItem(PROF_LS, JSON.stringify(p)); location.reload();
+}
+function profAdd(){
+  const p = profLoad(); if(p.list.length >= 5){ toast('アカウントは5つまでです'); return; }
+  const nm = (prompt('新しいアカウントの名前', 'アカウント' + (p.list.length + 1)) || '').trim().slice(0, 12); if(!nm) return;
+  if(!confirm(`「${nm}」を新しく作って切り替えます（最初からのデータです）。今のデータは残ります。`)) return;
+  const id = 'p' + Date.now().toString(36); p.list.push({ id, name:nm }); localStorage.setItem(PROF_LS, JSON.stringify(p)); profSwitch(id, true);
+}
+function profRename(id){ const p = profLoad(), x = p.list.find(a => a.id === id); if(!x) return; const nm = (prompt('名前を変更', x.name) || '').trim().slice(0, 12); if(!nm) return; x.name = nm; localStorage.setItem(PROF_LS, JSON.stringify(p)); profOpen(); }
+function profDel(id){
+  const p = profLoad(); if(id === p.cur || p.list.length <= 1) return; const x = p.list.find(a => a.id === id);
+  if(!confirm(`「${x ? x.name : ''}」を削除しますか？（元に戻せません）`)) return;
+  p.list = p.list.filter(a => a.id !== id); localStorage.setItem(PROF_LS, JSON.stringify(p)); try{ localStorage.removeItem('battleArena_prof_' + id); }catch(e){} profOpen();
+}
+function profOpen(){
+  const p = profLoad(); try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
+  curModal = modal(`<div class="v4h" style="margin-top:0">アカウント切り替え</div><div class="v4small" style="margin-bottom:6px">この端末の中で、セーブデータを使い分けられます（最大5つ）。切り替えるとページが読み込み直されます。※別の端末とは共有されません。</div>
+    ${p.list.map(a => `<div class="v4slot"><div class="v4sp"><b>${esc(a.name)}</b> ${a.id === p.cur ? '<span class="v4tag rar-SSR">使用中</span>' : ''}</div>
+      ${a.id === p.cur ? '' : `<button onclick="V47.profSw('${a.id}')">切り替え</button>`}<button class="secondary" onclick="V47.profRn('${a.id}')">名前</button>${a.id === p.cur ? '' : `<button class="secondary" onclick="V47.profDl('${a.id}')">削除</button>`}</div>`).join('')}
+    <button class="secondary" style="width:100%;margin-top:8px" onclick="V47.profAdd()">＋ 新しいアカウントを作る</button>`);
+}
+
 /* 報酬まとめて受け取り */
 function bondReadyN(){ let n = 0; const cl = S.bondCl || {}; Object.keys(S.bond || {}).forEach(nm => { const lv = bondLv(nm); Object.keys(BOND_RW).forEach(k => { if(lv >= +k && !cl[nm + ':' + k]) n++; }); }); return n; }
 function dmReadyN(){ try{ dmEnsure(); let n = MISSIONS.filter(m => dmProg(m.id) >= m.need && !S.dm.cl[m.id]).length; if(!S.dm.cl.all && MISSIONS.every(m => dmProg(m.id) >= m.need)) n++; return n; }catch(e){ return 0; } }
