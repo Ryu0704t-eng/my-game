@@ -2454,6 +2454,11 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 .awk-ban small{display:block;margin-top:6px;font-size:.9rem;font-weight:800;color:#fff;text-shadow:0 1px 6px #000}
 @keyframes awkFlash{0%{opacity:0}12%{opacity:1}70%{opacity:1}100%{opacity:0}}
 @keyframes awkZoom{0%{transform:scale(.3)}25%{transform:scale(1.25)}40%{transform:scale(1)}100%{transform:scale(1.05)}}
+
+/* 軽量モード：飾りのアニメーションを止める */
+body.lite .v4hero::before,body.lite .v4hero::after,body.lite .v4hero .hr-p,body.lite .v4hero .hr-char img,body.lite .hr-ss,body.lite .hr-cloud,body.lite .v4hero .hr-logo svg,body.lite .v4tile::after,body.lite .v4tile .fr,body.lite .gh-sh,body.lite .gh-free,body.lite .hm-go::after,body.lite .hm-next,body.lite .gz-sky,body.lite .gz-cr,body.lite .gz-logo svg,body.lite .gz-halo,body.lite .gz-gem,body.lite .gz-sp,body.lite .gz-card,body.lite .gz-b.fr,body.lite .gz-tabs .dot,body.lite .it48 .sp,body.lite .it48.rar-SSR,body.lite .it48.rar-EX,body.lite .v4ico.rar-SR::after,body.lite .v4ico.rar-SSR::after,body.lite .awk-on .standee-img,body.lite .qz-n.next,body.lite .qz-claim,body.lite .lg.now,body.lite .hm-today .td.hot,body.lite .gc-ico svg{animation:none !important}
+body.lite:has(#screen-v4.active)::before,body.lite:has(#screen-select.active)::before{animation:none !important;display:none}
+body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
 </style>
 </head>
 <body>
@@ -2579,6 +2584,39 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 <div class="critflash" id="critFlash"></div>
 
 <script>
+/* ---------- 軽量化：長い画像データ(base64)を短い blob URL に置き換える ----------
+   画面を作り直すたびに数百KB〜1MBの文字列を解析していたのを避けるため。
+   blob URL が使えない環境では自動で元のデータに戻る。 */
+(function(){
+  try{
+    if(!window.URL || !URL.createObjectURL || !window.Blob) return;
+    const cache = new Map(), rev = new Map(); let off = false;
+    const RE = /(src=["'])(data:image\/[a-z+]+;base64,[A-Za-z0-9+\/=]{1500,})/g;
+    function toBlob(d){
+      if(off) return d;
+      let u = cache.get(d); if(u) return u;
+      try{
+        const mime = d.slice(5, d.indexOf(';')), bin = atob(d.slice(d.indexOf(',') + 1)), n = bin.length, a = new Uint8Array(n);
+        for(let i = 0; i < n; i++) a[i] = bin.charCodeAt(i);
+        u = URL.createObjectURL(new Blob([a], { type:mime }));
+      }catch(e){ return d; }
+      cache.set(d, u); rev.set(u, d); return u;
+    }
+    const fix = v => (!off && typeof v === 'string' && v.length > 1500 && v.indexOf('data:image') >= 0) ? v.replace(RE, (m, a, d) => a + toBlob(d)) : v;
+    const one = v => (!off && typeof v === 'string' && v.length > 1500 && v.startsWith('data:image') && /^data:image\/[a-z+]+;base64,/.test(v.slice(0, 40))) ? toBlob(v) : v;
+    const ih = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+    if(ih && ih.set) Object.defineProperty(Element.prototype, 'innerHTML', { get: ih.get, set(v){ ih.set.call(this, fix(v)); }, configurable:true });
+    const ia = Element.prototype.insertAdjacentHTML;
+    Element.prototype.insertAdjacentHTML = function(pos, html){ return ia.call(this, pos, fix(html)); };
+    const sd = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    if(sd && sd.set) Object.defineProperty(HTMLImageElement.prototype, 'src', { get: sd.get, set(v){ sd.set.call(this, one(v)); }, configurable:true });
+    // blob が読めなかったら元のデータに戻し、以後は使わない
+    document.addEventListener('error', e => {
+      const t = e.target; if(!t || t.tagName !== 'IMG' || t.__bfb) return;
+      const cur = sd.get.call(t); if(cur && cur.startsWith('blob:') && rev.has(cur)){ off = true; t.__bfb = 1; sd.set.call(t, rev.get(cur)); }
+    }, true);
+  }catch(e){}
+})();
 /* =====================================================================
    キャラクターバトルアリーナ — コード構成ガイド（機能を足すときはここから）
    ---------------------------------------------------------------------
@@ -3702,6 +3740,7 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
+    "【軽量化】画面を開くたびに大きな画像データを読み直していたのを改善（クエスト・装備・図鑑などの切り替えが軽くなります）。重い端末では飾りの動きを止める「軽量モード」に自動で切り替わり、「その他」からON/OFFもできます。",
     "【交換ボタン】画面下のバーに「交換」を追加。押すとすぐ合言葉でキャラを交換する画面が開きます。",
     "【新装備25種のうち24種を追加】EX 5種（黒滅の大剣・天使の羽翼・混沌の冠・運命の書・星詠のオーブ）、SSR 5種、SR 5種、R 4種、N 5種。「鉄の鎧」はイラストを新しいものに差し替え。EXはこれまで通りEXステージの報酬のみ（2回目以降のクリアでも約18%でドロップ）、それ以外はガチャ・クエストで出ます。",
     "【キャラ共有】自作キャラの共有が、2人対戦と同じ「合言葉」でできるようになりました。友達と同じ合言葉を入れて「つなぐ」を押すと、おたがいのキャラが届いて追加できます（コード共有も残してあります）。",
@@ -11300,7 +11339,10 @@ function resumeSave(force){
     if(!state || state.over || pvp.on || teamMode || !selected || !cpuFighterData || !state.p || !state.c) return;
     const sc = document.getElementById('screen-battle'); if(!sc || !sc.classList.contains('active')) return;
     if(state.turnLock && !force) return;
-    localStorage.setItem(LS_RESUME, JSON.stringify({ v:1, t:Date.now(), sel:rsStrip(selected), cpu:rsStrip(cpuFighterData), lv:cpuLevel, q:state.quest ? rsStrip(state.quest) : null, p:rsStrip(state.p), c:rsStrip(state.c), rc:state.roundCount, esc:state.escalation, field:state.field || null }));
+    const _js = JSON.stringify({ v:1, t:0, sel:rsStrip(selected), cpu:rsStrip(cpuFighterData), lv:cpuLevel, q:state.quest ? rsStrip(state.quest) : null, p:rsStrip(state.p), c:rsStrip(state.c), rc:state.roundCount, esc:state.escalation, field:state.field || null });
+    const now = Date.now(); if(_js === resumeSave._l && now - (resumeSave._t || 0) < 60000 && !force) return;
+    resumeSave._l = _js; resumeSave._t = now;
+    localStorage.setItem(LS_RESUME, _js.replace('"t":0', '"t":' + now));
   }catch(e){}
 }
 function resumeClear(){ try{ localStorage.removeItem(LS_RESUME); }catch(e){} }
@@ -11652,13 +11694,29 @@ achOpen = function(){
 const _achClaim13 = achClaim;
 achClaim = function(id){ const b = S.coins; _achClaim13(id); try{ if(S.coins > b) addExp(30); }catch(e){} };
 
+const liteOn = () => S.lite === 1;
+function liteApply(){ try{ document.body.classList.toggle('lite', liteOn()); }catch(e){} }
+liteApply();
+/* 自動判定：画面の更新が遅い端末なら、最初に一度だけ軽量モードにする */
+if(S.lite === undefined){
+  later(() => {
+    try{
+      const a = []; let l = performance.now(), n = 0;
+      const f = () => { const t = performance.now(); a.push(t - l); l = t; if(++n < 90) requestAnimationFrame(f); else {
+        const avg = a.slice(5).reduce((x, y) => x + y, 0) / (a.length - 5);
+        if(avg > 26){ S.lite = 1; save(); liteApply(); try{ toast('動作が重そうなので軽量モードにしました（その他で切り替えできます）'); }catch(e){} } else { S.lite = 0; save(); }
+      } };
+      requestAnimationFrame(f);
+    }catch(e){}
+  }, 7000);
+}
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}${b('lite', '⚡', '軽量モード', liteOn() ? 'ON（タップでOFF）　動きの飾りを減らします' : 'OFF（タップでON）　重いときにどうぞ')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); }, lite:() => { S.lite = liteOn() ? 0 : 1; save(); liteApply(); toast(liteOn() ? '軽量モードをONにしました' : '軽量モードをOFFにしました'); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
