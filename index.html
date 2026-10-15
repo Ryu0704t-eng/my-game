@@ -3693,6 +3693,8 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【ホーム整理】キャラ一覧・パッチノート・戦績・ランキング・今日のオススメ・チーム対抗・2人対戦のボタンを「⋯ その他」へ移動。ホームがスッキリ。",
+    "【バランス調整】コイン入手量を約半分に（クエスト・実績・ミッション・おみくじ・塔・ダブり返還など）。クエストの敵を少し強化し、ステージごとに必要ランクLvを設定。EXはさらに強化し、最初の3ターン敵が無敵に。",
+    "【受け取り】「報酬をまとめて受け取る」ボタンを追加（ホーム／その他）。実績・演出集・絆・ミッション・チャプター報酬を一度に回収。",
     "【ルール戦】クエスト画面に「今日のルール戦」を追加。毎日変わるルール（回復禁止・一撃勝負・ハーフHP・ガラスの大砲・長期戦）で戦い、初クリアで報酬。連続クリアでコイン増加。",
     "【絆レベル】同じキャラで戦うほど絆が上がり、攻撃力が最大+5%。Lv3/5/7/10でコイン報酬（その他→絆レベル）。",
     "【表示】ボタンや見出しの絵文字を少なめに。「その他→絵文字の表示」でふつうに戻せます。",
@@ -9142,7 +9144,7 @@ Hooks.on('battle:end', info => {
     const q = state.quest;
     if(q && (q.tower || q.daily || q.ex || q.isRule)) return;
     if(!q){ // 通常戦：少額コイン
-      const c = info.won ? 15 : 5; S.coins += c; save();
+      const c = info.won ? 8 : 3; S.coins += c; save();
       later(() => toast(`🪙 +${c} コイン`), 5200); return;
     }
     const rec = S.quest[q.id] || { stars: 0, clears: 0 };
@@ -9153,11 +9155,11 @@ Hooks.on('battle:end', info => {
       first = !rec.clears;
       gain = q.coins; drops = rollDrops(q);
       if(first){ const fi = pickItemOfRarity(q.hard ? (q.boss ? 'SSR' : 'SR') : q.boss ? (q.g >= 14 ? 'SSR' : 'SR') : (q.g >= 10 ? 'SR' : 'R'), q.boss ? .2 : .4); drops.unshift(fi); }
-      for(let s = rec.stars + 1; s <= stars; s++) starCoins += 20 * s;
+      for(let s = rec.stars + 1; s <= stars; s++) starCoins += 10 * s;
       rec.stars = Math.max(rec.stars, stars); rec.clears++;
       if(hpR >= .4) rec.hp = 1; if(info.rounds <= 12) rec.fast = 1;
       S.quest[q.id] = rec;
-    } else gain = 10;
+    } else gain = 5;
     gain += starCoins; S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
     const res = { q, won: info.won, stars, gain, drops, first, starCoins, hpOk: hpR >= .4, fastOk: info.rounds <= 12, hpPct: Math.round(hpR * 100), turns: info.rounds };
     waitIdle(() => questResult(res));
@@ -9287,7 +9289,7 @@ function questHTML(){
       h += `<div class="qz-n ${rec ? 'done' : ''} ${open ? '' : 'lock'} ${isNext ? 'next' : ''} ${q.boss ? 'boss' : ''}" data-n="${qi + 1}">${eim ? `<img src="${eim}">` : ''}
         <div class="v4sp"><div class="nm">${q.name}${q.boss ? ' <span class="v4tag rar-SSR">BOSS</span>' : ''}</div>
         <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div>
-        <div class="qz-chips"><span>Lv${q.lv}</span><span>攻×${q.mul}</span><span>HP×${q.hpMul}</span><span>🪙${q.coins}</span><span>${wtxt}${q.boss ? '×3' : ''}</span></div>
+        <div class="qz-chips"><span style="${rankNow() < (q.req | 0) ? 'color:#ff8a8a' : ''}">ランクLv${q.req | 0}〜</span><span>Lv${q.lv}</span><span>攻×${q.mul}</span><span>HP×${q.hpMul}</span><span>🪙${q.coins}</span><span>${wtxt}${q.boss ? '×3' : ''}</span></div>
         <div class="v4stars">${st}${rec ? `<span class="v4small"> ${rec.clears}回</span>` : ''}</div>${sbadge(rec)}${autoLine(q)}</div>
         <div class="qz-bt">${rec && rec.stars >= 3 ? `<button class="secondary sw" onclick="V47.sweep('${q.id}')">⏩掃討</button>` : ''}<button ${open ? '' : 'disabled'} onclick="V4.startQuest('${q.id}')">${open ? '挑戦' : '🔒'}</button></div></div>`;
     });
@@ -9540,7 +9542,7 @@ maybeTriggerGachaUnlock = function(){
   _mtg();
   try{ const st = lsGet(LS_WINSTREAK, 0); if(st >= 2 && !(state && state.quest)) later(() => waitIdle(() => streakAsk(st)), 300); }catch(e){}
 };
-const streakPot = n => Math.round(40 * n * (1 + 0.15 * (n - 1)));
+const streakPot = n => Math.round(20 * n * (1 + 0.15 * (n - 1)));
 function streakAsk(n){
   if(lsGet(LS_WINSTREAK, 0) !== n || document.getElementById('stkAsk')) return;
   const ov = document.createElement('div'); ov.className = 'v4modal'; ov.id = 'stkAsk'; ov.style.alignItems = 'center';
@@ -9577,7 +9579,7 @@ function renderHero(){
       <div class="v4tile" style="--a:#b23ad0;--b:#4a1a7a;--d:.6s" onclick="V4.open('gacha')"><span class="ic">🎰</span>ガチャ${(S.free.c !== todayKey() || S.free.g !== todayKey()) ? '<i class="fr">FREE</i>' : ''}</div>
       <div class="v4tile" style="--a:#2a7ad0;--b:#14306a;--d:1.2s" onclick="V4.open('dex')"><span class="ic">📖</span>図鑑</div>
       <div class="v4tile" style="--a:#c0603a;--b:#5a2a1a;--d:1.8s" onclick="V4.open('gear')"><span class="ic">🎒</span>装備・強化</div></div>
-    <div class="hm-sub" id="v4sub"><button onclick="V47.achOpen()">🏅 実績${(() => { try{ const n = achReady(); return n ? '<i class="fr">' + n + '</i>' : ''; }catch(e){ return ''; } })()}</button><button onclick="V47.quick()">🎲 おまかせ</button></div>
+    <div class="hm-sub" id="v4sub"><button onclick="V47.achOpen()">🏅 実績${(() => { try{ const n = achReady(); return n ? '<i class="fr">' + n + '</i>' : ''; }catch(e){ return ''; } })()}</button><button onclick="V47.quick()">🎲 おまかせ</button>${(() => { try{ const n = claimAllN(); return n ? `<button class="hot" onclick="V47.claimAll()">報酬を受け取る<i class="fr">${n}</i></button>` : ''; }catch(e){ return ''; } })()}</div>
     ${todayStripHTML()}${funHTML()}${rankCardHTML()}${nextGoalHTML()}${dailyHTML()}${banner}`;
   const old = $('v4hero'), oldT = $('v4tiles'), oldB = $('v4sec'); if(old) old.remove(); if(oldT) oldT.remove(); document.querySelectorAll('.hm-ban,.hm-next,.hm-tick,.hm-dm,.rk-card,.hm-today,.hm-fun,#v4sec,#v4sub,#v4go').forEach(e => e.remove()); void oldB;
   scr.insertAdjacentHTML('afterbegin', html);
@@ -9916,7 +9918,7 @@ showEvolution = function(c, lv, done){
 
 /* ---------- Ver4.2 キャラガチャ ---------- */
 const CHAR_COST = 250;
-const DUPE_RF = 50, DUPE_RFM = 120;   // ダブり返還（1回のコスト250より小さくして、回すほどコインが減るように）
+const DUPE_RF = 30, DUPE_RFM = 70;   // ダブり返還（1回のコスト250より小さくして、回すほどコインが減るように）
 function unlockChar(name){
   const idx = lockedCharacters.findIndex(c => c.name === name); if(idx < 0) return null;
   const [u] = lockedCharacters.splice(idx, 1);
@@ -10309,14 +10311,14 @@ function dailyHTML(){
 }
 function dmClaim(id){
   dmEnsure();
-  if(id === 'all'){ if(S.dm.cl.all || MISSIONS.some(m => dmProg(m.id) < m.need)) return; S.dm.cl.all = 1; addItem('bk2', 1); S.seen.bk2 = 1; S.coins += 100; toast('🌟 全部クリア！ 🪙+100 と技の書をゲット'); }
+  if(id === 'all'){ if(S.dm.cl.all || MISSIONS.some(m => dmProg(m.id) < m.need)) return; S.dm.cl.all = 1; addItem('bk2', 1); S.seen.bk2 = 1; S.coins += 50; toast('🌟 全部クリア！ 🪙+50 と技の書をゲット'); }
   else { const m = MISSIONS.find(x => x.id === id); if(!m || S.dm.cl[id] || dmProg(id) < m.need) return; S.dm.cl[id] = 1; S.coins += m.rw; toast(`✅ ミッション達成！ 🪙+${m.rw}`); }
   save(); try{ updateSelectHeader(); }catch(e){}
 }
 function chClaim(ci){
   const hd = qMode === 'h', key = hd ? 'chh' : 'chc'; S[key] = S[key] || {}; const qs = (hd ? QUESTS_H : QUESTS).filter(q => q.ch === ci);
   if(S[key][ci] || !qs.every(q => questDone(q))) return;
-  S[key][ci] = 1; const c = (300 + ci * 100) * (hd ? 2 : 1); S.coins += c; const it = pickItemOfRarity(hd || ci >= 3 ? 'SSR' : 'SR', .3); addItem(it, 1); S.seen[it] = 1; save();
+  S[key][ci] = 1; const c = Math.round((300 + ci * 100) * (hd ? 2 : 1) * .5); S.coins += c; const it = pickItemOfRarity(hd || ci >= 3 ? 'SSR' : 'SR', .3); addItem(it, 1); S.seen[it] = 1; save();
   toast(`🏆 CHAPTER ${ci + 1} 制覇！ 🪙+${c} と ${esc(ITEMS[it].n)}`); view('quest');
 }
 Object.assign(window.V47, { claim: dmClaim, chClaim, qmode(m){ qMode = m; view('quest'); } });
@@ -10815,7 +10817,7 @@ const expNeed = l => 60 + l * 30;
 function rankOf(exp){ let l = 1, e = exp | 0; while(e >= expNeed(l) && l < 99){ e -= expNeed(l); l++; } return { lv:l, cur:e, need:expNeed(l), title:RANK_TITLES[Math.min(RANK_TITLES.length - 1, Math.floor((l - 1) / 5))] }; }
 function addExp(n){
   S.exp = (S.exp | 0) + n; const r = rankOf(S.exp), before = S.rankLv || 1;
-  if(r.lv > before){ let c = 0; for(let l = before + 1; l <= r.lv; l++) c += 50 + l * 10; S.coins += c; S.rankLv = r.lv; save(); later(() => toast(`🎖 ランクアップ！ Lv.${r.lv}「${r.title}」 🪙+${c}`), 1500); } else save();
+  if(r.lv > before){ let c = 0; for(let l = before + 1; l <= r.lv; l++) c += Math.round((50 + l * 10) * .5); S.coins += c; S.rankLv = r.lv; save(); later(() => toast(`🎖 ランクアップ！ Lv.${r.lv}「${r.title}」 🪙+${c}`), 1500); } else save();
 }
 function rankCardHTML(){
   const r = rankOf(S.exp), tb = (S.tower && S.tower.best) | 0;
@@ -10827,7 +10829,7 @@ function rankOpen(){
     <div class="rk-big"><div class="rk-lv"><small>Lv</small>${r.lv}</div><div class="v4sp"><b style="font-size:1.1rem">${r.title}</b><div class="v4bar" style="margin-top:5px"><i style="width:${Math.round(r.cur / r.need * 100)}%"></i></div><div class="v4small">次のレベルまで ${r.need - r.cur} EXP</div></div></div>
     <div class="v4h">EXPの入手方法</div><div class="v4small" style="color:#fff">バトル勝利 +20 ／ 敗北 +8 ／ クエストクリア +20 ／ 塔の勝利 +階数 ／ ガチャ 1回ごと +3 ／ 掃討 +8 ／ 実績の受け取り +30</div>
     <div class="v4h">称号</div>${RANK_TITLES.map((t, i) => `<div class="v4row" style="margin:3px 0;${r.lv >= i * 5 + 1 ? '' : 'opacity:.5'}"><div class="v4sp">${r.lv >= i * 5 + 1 ? '✔' : '🔒'} ${t}</div><span class="v4small">Lv${i * 5 + 1}〜</span></div>`).join('')}
-    <div class="v4small" style="margin-top:6px">レベルアップごとに🪙コインがもらえます（Lv×10+50）。</div>`);
+    <div class="v4small" style="margin-top:6px">レベルアップごとに🪙コインがもらえます（Lv×5+25）。</div>`);
 }
 Hooks.on('battle:end', info => {
   try{
@@ -10877,7 +10879,7 @@ function towerQuest(f){
   const names = allChars().filter(c => !c.isCustom).map(c => c.name).sort((a, b) => nameHash(a) - nameHash(b));
   const boss = f % 5 === 0;
   return { id:'tw' + f, tower:f, name:`塔 第${f}階${boss ? ' ボス' : ''}`, ch:0, idx:0, g:f, boss, enemy:names[(f * 11 + 5) % names.length], lv:Math.min(5, 2 + Math.floor(f / 6)),
-    mul:+(0.9 + f * 0.04 + (boss ? .1 : 0)).toFixed(2), hpMul:+(1 + f * 0.035 + (boss ? .3 : 0)).toFixed(2), coins:60 + f * 14 + (boss ? 100 : 0),
+    mul:+(0.9 + f * 0.04 + (boss ? .1 : 0)).toFixed(2), hpMul:+(1 + f * 0.035 + (boss ? .3 : 0)).toFixed(2), coins:Math.round((60 + f * 14 + (boss ? 100 : 0)) * .5),
     w:{ N:0, R:Math.max(0, 60 - f * 3), SR:Math.min(70, 25 + f * 2), SSR:Math.min(30, f) }, drops:boss ? 2 : 0 };
 }
 function towerHTML(){
@@ -10993,11 +10995,11 @@ achClaim = function(id){ const b = S.coins; _achClaim13(id); try{ if(S.coins > b
 
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
@@ -11011,7 +11013,7 @@ function targetOpen(){
 function targetSet(n){ S.targetPick = n || ''; save(); if(curModal && curModal.remove) curModal.remove(); view('gacha'); toast(n ? `🎯 「${n}」を狙います` : '日替わりピックアップに戻しました'); }
 function qdaily(){ startDaily(); }
 function qauto(on){ S.qAuto = !!on; save(); view('quest'); }
-Object.assign(window.V47, { rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
+Object.assign(window.V47, { claimAll, rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
 
 
 /* ---------- Ver4.15 カットイン強化（バトル必殺技・ガチャ確定演出） ---------- */
@@ -11134,7 +11136,7 @@ function exHTML(){
   EX_STAGES.forEach((d, k) => {
     const i = k + 1, q = exQuest(i), en = charData(q.enemy), eim = en && portraitOf(en), cl = !!S.ex.cl[i], open = exOpenStage(i);
     h += `<div class="v4row ex-row" style="margin-top:8px;opacity:${open ? 1 : .5}">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>EX-${i} ${esc(d.n)}</b> ${cl ? '<span class="v4tag rar-SSR">CLEAR</span>' : ''}
-      <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div><div class="qz-chips"><span>Lv5</span><span>攻×${d.mul}</span><span>HP×${d.hp}</span></div>
+      <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div><div class="qz-chips"><span style="${rankNow() < 7 + i * 2 ? 'color:#ff8a8a' : ''}">ランクLv${7 + i * 2}〜</span><span>Lv5</span><span>最初の3T無敵</span><span>攻×${d.mul}</span><span>HP×${d.hp}</span></div>
       <div class="v4small">🎁 ${cl ? '<s>' : ''}🪙${d.coins}・${esc(exDropText(i))}${cl ? '</s>（受取済）' : ''}</div></div>
       <button ${open ? '' : 'disabled'} onclick="V47.ex(${i})">${open ? '挑戦' : '🔒'}</button></div>`;
   });
@@ -11176,7 +11178,7 @@ function exResult(r){
 function dailyQuest(){
   const names = allChars().filter(c => !c.isCustom).map(c => c.name).sort();
   const en = names[nameHash(todayKey() + 'boss') % names.length];
-  return { id:'daily', daily:true, name:'今日の討伐', ch:0, idx:0, g:15, boss:true, enemy:en, lv:4, mul:1.15, hpMul:1.8, coins:600, w:{ N:0, R:0, SR:60, SSR:40 }, drops:2 };
+  return { id:'daily', daily:true, name:'今日の討伐', ch:0, idx:0, g:15, boss:true, enemy:en, lv:4, mul:1.15, hpMul:1.8, coins:300, w:{ N:0, R:0, SR:60, SSR:40 }, drops:2 };
 }
 function dailyHTML2(){
   const q = dailyQuest(), en = charData(q.enemy), eim = en && portraitOf(en), d = S.dboss && S.dboss.d === todayKey() ? S.dboss : null, done = d && d.done;
@@ -11196,7 +11198,7 @@ Hooks.on('battle:end', info => {
     let gain = 10, drops = [], first = false;
     if(info.won){
       first = !d.done; d.done = 1; d.n++;
-      gain = first ? q.coins : 80;
+      gain = first ? q.coins : 40;
       if(first){ drops = [pickItemOfRarity(rollRarity(q.w), .3), pickItemOfRarity(rollRarity(q.w), .3), 'bk2']; addExp(40); } else addExp(10);
     }
     S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
@@ -11454,7 +11456,7 @@ function commView(){
 }
 
 /* ---------- Ver4.23 ホームの「今日のおまけ」（おみくじ・最近使ったキャラ・みんなのキャラ） ---------- */
-const OM = [['大吉', 300, 8, '✨'], ['吉', 160, 4, '🌟'], ['中吉', 110, 0, '⭐'], ['小吉', 70, 0, '🍀'], ['末吉', 40, 0, '🌱'], ['凶', 30, 0, '☁️']];
+const OM = [['大吉', 150, 8, '✨'], ['吉', 80, 4, '🌟'], ['中吉', 55, 0, '⭐'], ['小吉', 35, 0, '🍀'], ['末吉', 20, 0, '🌱'], ['凶', 15, 0, '☁️']];
 const OM_W = [8, 22, 25, 22, 15, 8];
 const OM_ITEM = ['赤いリボン', '三日月のペンダント', '猫のキーホルダー', 'いちごミルク', '銀の指輪', 'お気に入りの曲', '青い傘', 'ミントガム', 'ふわふわのマフラー', '古い懐中時計'];
 const OM_COL = [['赤', '#ff5a6a'], ['青', '#4aa8ff'], ['緑', '#4ad07a'], ['紫', '#b36bff'], ['金', '#ffd24a'], ['桃', '#ff8ac8']];
@@ -11527,12 +11529,12 @@ function ruleToday(){
 function dayKeyAgo(n){ const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
 function ruleQuest(){
   const r = ruleToday();
-  return { id:'rule', isRule:true, ruleId:r.id, name:'ルール戦「' + r.n + '」', ch:0, idx:0, g:10, boss:false, enemy:r.enemy, lv:3, mul:r.mul, hpMul:r.hpMul, coins:350, w:{ N:0, R:20, SR:55, SSR:25 } };
+  return { id:'rule', isRule:true, ruleId:r.id, name:'ルール戦「' + r.n + '」', ch:0, idx:0, g:10, boss:false, enemy:r.enemy, lv:3, mul:r.mul * 1.1, hpMul:r.hpMul * 1.1, coins:200, w:{ N:0, R:20, SR:55, SSR:25 } };
 }
 function ruleHTML(){
   try{
     const r = ruleToday(), st = S.rl || {}, done = st.d === todayKey() && st.done, en = charData(r.enemy), eim = en && portraitOf(en);
-    return `<div class="tw-card dq-card"><div class="tw-h">今日のルール戦「${r.n}」</div><div class="v4small" style="color:#fff">${r.d}<br>初クリアで 🪙350・装備1個・技の書。連続クリアでボーナス増加（いま${st.streak | 0}日連続）</div>
+    return `<div class="tw-card dq-card"><div class="tw-h">今日のルール戦「${r.n}」</div><div class="v4small" style="color:#fff">${r.d}<br>初クリアで 🪙200・装備1個・技の書。連続クリアでボーナス増加（いま${st.streak | 0}日連続）</div>
       <div class="v4row" style="margin-top:8px">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>${esc(r.enemy)}</b> ${en ? elemBadge(en, 10) : ''}<div class="v4small">${done ? '今日の初回報酬は受け取り済み' : '初回報酬あり'}</div></div><button onclick="V47.rule()">挑戦</button></div></div>`;
   }catch(e){ return ''; }
 }
@@ -11576,9 +11578,9 @@ Hooks.on('battle:end', info => {
       first = !(st.d === todayKey() && st.done);
       if(first){
         st.streak = st.last === dayKeyAgo(1) ? (st.streak | 0) + 1 : 1; st.last = todayKey(); st.d = todayKey(); st.done = 1;
-        sb = Math.min(7, st.streak) * 40; gain = q.coins + sb;
+        sb = Math.min(7, st.streak) * 20; gain = q.coins + sb;
         drops = [pickItemOfRarity(rollRarity(q.w), .3), 'bk2']; addExp(40);
-      } else { gain = 80; addExp(10); }
+      } else { gain = 40; addExp(10); }
     }
     S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
     waitIdle(() => {
@@ -11597,7 +11599,7 @@ Hooks.on('battle:end', info => {
 
 /* 絆レベル */
 const BOND_T = [4, 12, 25, 45, 70, 100, 140, 190, 250, 320];   // Lv1〜10 に必要な絆ポイント
-const BOND_RW = { 3:['🪙150', 150], 5:['🪙300', 300], 7:['🪙500', 500], 10:['🪙1000', 1000] };
+const BOND_RW = { 3:['🪙80', 80], 5:['🪙150', 150], 7:['🪙250', 250], 10:['🪙500', 500] };
 function bondPt(n){ return ((S.bond || {})[n]) | 0; }
 function bondLv(n){ const p = bondPt(n); return BOND_T.filter(t => p >= t).length; }
 Hooks.on('battle:end', info => {
@@ -11623,6 +11625,99 @@ function bondClaim(n){
   const cl = S.bondCl = S.bondCl || {}; let g = 0, lv = bondLv(n);
   Object.keys(BOND_RW).map(Number).forEach(k => { if(lv >= k && !cl[n + ':' + k]){ cl[n + ':' + k] = 1; g += BOND_RW[k][1]; } });
   if(g){ S.coins += g; save(); toast(`絆報酬 🪙${g}`); if(curModal && curModal.remove) curModal.remove(); bondOpen(); }
+}
+
+
+/* ---------- Ver4.23 バランス調整（コイン減・敵強化・ランク制限・EX強化）と報酬まとめて受け取り ---------- */
+(function(){
+  const K = .5, half = x => Math.max(1, Math.round(x * K));
+  try{ LOGIN_RW.forEach((v, i) => { LOGIN_RW[i] = half(v); }); }catch(e){}
+  try{ MISSIONS.forEach(m => { m.rw = half(m.rw); }); }catch(e){}
+  try{ ACH.forEach(a => { a.rw = a.rw.map(half); }); }catch(e){}
+  try{ CS_RW.forEach(r => { r[1] = half(r[1]); }); }catch(e){}
+  try{ EX_STAGES.forEach(d => { d.coins = half(d.coins); d.mul = +(d.mul * 1.15).toFixed(2); d.hp = +(d.hp * 1.3).toFixed(2); }); }catch(e){}
+})();
+const rankNow = () => rankOf(S.exp).lv;
+const qReq = q => q.ex ? 7 + q.ex * 2 : (q.req | 0);
+const _bq = buildQuests;
+buildQuests = function(){
+  _bq.apply(this, arguments);
+  [QUESTS, QUESTS_H].forEach((L, hi) => (L || []).forEach(q => {
+    if(q._k) return; q._k = 1;
+    q.mul = +(q.mul * 1.12).toFixed(2); q.hpMul = +(q.hpMul * 1.15).toFixed(2); q.coins = Math.max(1, Math.round(q.coins * .5));
+    q.req = 1 + Math.floor(q.g / 4) + (hi ? 3 : 0);
+  }));
+};
+const _qo = questOpen;
+questOpen = function(q){ return _qo(q) && rankNow() >= (q.req | 0); };
+const _exo = exOpenStage;
+exOpenStage = function(i){ return _exo(i) && rankNow() >= 7 + i * 2; };
+const _sq = startQuest;
+startQuest = function(id){
+  try{ if(!QUESTS) buildQuests(); const q = QUESTS.find(x => x.id === id) || QUESTS_H.find(x => x.id === id); if(q && _qo(q) && rankNow() < q.req){ toast(`ランクLv${q.req} になると挑戦できます（いま Lv${rankNow()}）`); return; } }catch(e){}
+  return _sq.apply(this, arguments);
+};
+const _sx = startEx;
+startEx = function(i){
+  try{ if(_exo(i) && rankNow() < 7 + i * 2){ toast(`ランクLv${7 + i * 2} になると挑戦できます（いま Lv${rankNow()}）`); return; } }catch(e){}
+  return _sx.apply(this, arguments);
+};
+/* EX：最初の3ターンは敵が無敵 */
+const _cdEx = calcDamage;
+calcDamage = function(att, def){
+  try{
+    const q = state && state.quest;
+    if(q && q.ex && def === state.c && (state.roundCount | 0) < 3){
+      if(state._invT !== state.roundCount){ state._invT = state.roundCount; addLog(`${def.data.name} は無敵！（あと${3 - state.roundCount}ターン）`, 'result'); }
+      return { dmg: 0, isCrit: false, evaded: false };
+    }
+  }catch(e){}
+  return _cdEx.apply(this, arguments);
+};
+const _sbEx = startBattle;
+startBattle = function(){
+  _sbEx.apply(this, arguments);
+  try{ const q = state && state.quest; if(q && q.ex){ addLog('EX補正：最初の3ターン、相手は無敵！ 耐えて反撃の準備を！', 'result'); renderBattleUI(); } }catch(e){}
+};
+
+/* 報酬まとめて受け取り */
+function bondReadyN(){ let n = 0; const cl = S.bondCl || {}; Object.keys(S.bond || {}).forEach(nm => { const lv = bondLv(nm); Object.keys(BOND_RW).forEach(k => { if(lv >= +k && !cl[nm + ':' + k]) n++; }); }); return n; }
+function dmReadyN(){ try{ dmEnsure(); let n = MISSIONS.filter(m => dmProg(m.id) >= m.need && !S.dm.cl[m.id]).length; if(!S.dm.cl.all && MISSIONS.every(m => dmProg(m.id) >= m.need)) n++; return n; }catch(e){ return 0; } }
+function chReadyN(){ try{ if(!QUESTS) buildQuests(); let n = 0; [['chc', QUESTS], ['chh', QUESTS_H]].forEach(([key, L]) => { S[key] = S[key] || {}; for(let ci = 0; ci < CHAPTERS.length; ci++){ const qs = L.filter(q => q.ch === ci); if(!S[key][ci] && qs.length && qs.every(q => questDone(q))) n++; } }); return n; }catch(e){ return 0; } }
+function claimAllN(){ try{ return achReady() + csReady() + bondReadyN() + dmReadyN() + chReadyN(); }catch(e){ return 0; } }
+function claimAll(){
+  const b0 = S.coins, got = []; let items = 0;
+  try{
+    let n = 0; S.ach = S.ach || {};
+    ACH.forEach(a => { for(let g = 0; g < 4; g++){ const tr = achTier(a); if(tr >= 4 || a.p() < a.t[tr]) break; S.coins += a.rw[tr]; S.ach[a.id] = tr + 1; n++; } });
+    if(n){ got.push(`実績 ${n}件`); try{ addExp(30 * n); }catch(e){} }
+  }catch(e){}
+  try{
+    S.csr = S.csr || {}; let n = 0, seen = CS_KEYS.filter(k => (S.cs || {})[k]).length;
+    CS_RW.forEach(r => { if(!S.csr[r[0]] && seen >= r[0]){ S.csr[r[0]] = 1; S.coins += r[1]; n++; } });
+    if(n) got.push(`演出集 ${n}件`);
+  }catch(e){}
+  try{
+    const cl = S.bondCl = S.bondCl || {}; let n = 0;
+    Object.keys(S.bond || {}).forEach(nm => { const lv = bondLv(nm); Object.keys(BOND_RW).forEach(k => { if(lv >= +k && !cl[nm + ':' + k]){ cl[nm + ':' + k] = 1; S.coins += BOND_RW[k][1]; n++; } }); });
+    if(n) got.push(`絆 ${n}件`);
+  }catch(e){}
+  try{
+    dmEnsure(); let n = 0;
+    MISSIONS.forEach(m => { if(dmProg(m.id) >= m.need && !S.dm.cl[m.id]){ S.dm.cl[m.id] = 1; S.coins += m.rw; n++; } });
+    if(!S.dm.cl.all && MISSIONS.every(m => dmProg(m.id) >= m.need)){ S.dm.cl.all = 1; addItem('bk2', 1); S.seen.bk2 = 1; S.coins += 50; n++; items++; }
+    if(n) got.push(`ミッション ${n}件`);
+  }catch(e){}
+  try{
+    if(!QUESTS) buildQuests(); let n = 0;
+    [['chc', QUESTS, false], ['chh', QUESTS_H, true]].forEach(([key, L, hd]) => { S[key] = S[key] || {}; for(let ci = 0; ci < CHAPTERS.length; ci++){ const qs = L.filter(q => q.ch === ci); if(S[key][ci] || !qs.length || !qs.every(q => questDone(q))) continue; S[key][ci] = 1; S.coins += Math.round((300 + ci * 100) * (hd ? 2 : 1) * .5); const it = pickItemOfRarity(hd || ci >= 3 ? 'SSR' : 'SR', .3); addItem(it, 1); S.seen[it] = 1; n++; items++; } });
+    if(n) got.push(`チャプター制覇 ${n}件`);
+  }catch(e){}
+  save(); try{ updateSelectHeader(); }catch(e){}
+  const d = S.coins - b0;
+  if(!got.length){ toast('いま受け取れる報酬はありません'); return; }
+  try{ sfx('win'); }catch(e){}
+  modal(`<div class="v4h" style="margin-top:0">まとめて受け取りました</div><div class="v4card"><div>コイン <b style="color:#ffd24a">+${d}</b></div>${items ? `<div class="v4small" style="color:#fff">装備・技の書 ${items}個もバッグに入りました</div>` : ''}</div><div class="v4small" style="color:#fff">${got.join('<br>')}</div>`);
 }
 
 /* ---------- Ver4.23 キャラのリンク共有 ---------- */
