@@ -3693,6 +3693,10 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【ホーム整理】キャラ一覧・パッチノート・戦績・ランキング・今日のオススメ・チーム対抗・2人対戦のボタンを「⋯ その他」へ移動。ホームがスッキリ。",
+    "【技タイプ追加】キャラ作成で選べる技を大幅に追加（通常技20種・必殺技10種：二連斬・吸血・凍結・毒・火傷・気絶・反撃・封印・時間操作・不死鳥・超新星など）。",
+    "【覚醒技】HPが20%以下になると、一度だけ全回復して技がすべて覚醒技に変わる（CPU戦・クエスト。相手も覚醒します）。",
+    "【初期配布】全員にキャラガチャ50連分のコインをプレゼント（アカウントごとに1回）。",
+    "【新ステージ】経験値用の「修行の間」とコイン用の「黄金の間」を追加（クエスト画面。各1日5回、初級・中級・上級）。",
     "【アカウント】「その他→アカウント切り替え」を追加。この端末の中で最大5つのセーブを使い分けられます。",
     "【50連】キャラ・装備ガチャに50連ボタンを追加（通常より10%お得、結果は一覧で表示）。",
     "【凸強化】最大5凸→10凸に。6凸以降も+2%ずつ強化（最大+25%）。3凸・6凸・10凸で会心率もアップ。",
@@ -9183,7 +9187,7 @@ Hooks.on('battle:end', info => {
   try{
     if(info.pvp || !state) return;
     const q = state.quest;
-    if(q && (q.tower || q.daily || q.ex || q.isRule)) return;
+    if(q && (q.tower || q.daily || q.ex || q.isRule || q.isTrain)) return;
     if(!q){ // 通常戦：少額コイン
       const c = info.won ? 8 : 3; S.coins += c; save();
       later(() => toast(`🪙 +${c} コイン`), 5200); return;
@@ -9316,7 +9320,7 @@ function questHTML(){
     (qMode === 'h' ? '<div class="v4small" style="color:#ff9a7a">HARDモード：敵がさらに強く（攻×1.35・HP×1.4・Lv5）。報酬は🪙2倍・ドロップ+1・高レア寄り。NORMALで同じステージをクリアすると挑戦できます。</div>' : '') +
     `<div class="v4small">敵は章が進むほど強くなります。装備・技の書は戦闘に反映されます（PvPには反映されません）。</div>
     <div class="v4card" style="margin-top:6px"><div class="v4small"><b style="color:#ffe27a">★の集め方</b>（1ステージ最大★3）<br>🏁 クリア＝★1　／　❤ 残りHP40%以上でクリア＝★2　／　⚡ 12ターン以内でクリア＝★3<br>黄色く光っているのが達成済み。★を増やすと🪙ボーナス、★3で「⏩掃討」が使えます。</div></div>`;
-  h += questQuickHTML() + dailyHTML2() + ruleHTML() + towerHTML() + exHTML();
+  h += questQuickHTML() + dailyHTML2() + ruleHTML() + trainHTML() + towerHTML() + exHTML();
   let nextShown = false;
   CHAPTERS.forEach((ch, ci) => {
     const th = CH_THEME[ci % CH_THEME.length], qs = LQ.filter(q => q.ch === ci);
@@ -10845,6 +10849,255 @@ CC_UL_L.push('背水の一撃', '防御を無視する大ダメージ', '大ダ�
 })();
 
 
+
+/* ---------- Ver4.23 技タイプ大幅追加（作成画面）と覚醒技 ---------- */
+const NEWT2 = {
+  /* 通常技 */
+  twin:    { n:'二連斬', m:[1.05, 1.2], hits:2, cd:2 },
+  flurry:  { n:'乱れ撃ち', m:[1.1, 1.25], hits:4, cd:3 },
+  vamp:    { n:'吸血の牙', m:[.85, .95], drain:.5, cd:3 },
+  frost:   { n:'凍てつく鎖', m:[.8, .9], foeSpd:.25, dur:3, cd:3 },
+  toxic:   { n:'毒刃', m:[.8, .9], poison:[.05, 3], cd:3 },
+  flame:   { n:'火炎斬', m:[.85, .95], burn:[.06, 3], cd:3 },
+  shock:   { n:'雷撃', m:[.75, .85], stun:1, cd:5 },
+  ironwall:{ n:'鉄壁の構え', selfDef:.3, counter:2, dur:3, cd:4 },
+  rally:   { n:'鼓舞', selfAtk:.2, selfDef:.2, dur:3, cd:4 },
+  meditate:{ n:'瞑想', heal:.18, cleanse:1, cd:4 },
+  sacrifice:{ n:'捨て身の刃', m:[1.5, 1.65], recoil:.12, cd:3 },
+  finisher:{ n:'追撃の刃', m:[.9, 1.0], exec:1.7, cd:3 },
+  timewarp:{ n:'時間操作', cdCut:1, selfSpd:.2, dur:3, cd:5 },
+  weaken:  { n:'衰弱の呪い', foeAtk:.15, foeDef:.15, foeSpd:.15, dur:3, cd:5 },
+  mirror:  { n:'反射の盾', shield:.18, counter:2, selfDef:.15, dur:3, cd:4 },
+  adren:   { n:'アドレナリン', heal:.1, selfAtk:.18, selfSpd:.15, dur:3, cd:4 },
+  seal:    { n:'封印の印', m:[.5, .6], cdAdd:1, cd:5 },
+  bloom:   { n:'癒しの花', regen:.05, shield:.12, dur:3, cd:4 },
+  crush:   { n:'破砕の一撃', m:[.85, .95], foeDef:.25, dur:3, cd:3 },
+  pburn:   { n:'炎貫', m:[.8, .9], pierce:.5, burn:[.05, 3], cd:4 },
+  /* 必殺技 */
+  uTwin:   { ult:1, n:'乱舞奥義', m:[1.6, 1.75], hits:6, cd:4 },
+  uVamp:   { ult:1, n:'血の宴', m:[1.3, 1.4], drain:.7, cd:4 },
+  uFreeze: { ult:1, n:'絶対零度', m:[1.3, 1.4], foeSpd:.3, foeAtk:.2, dur:3, cd:4 },
+  uJudge:  { ult:1, n:'審判の雷', m:[1.2, 1.3], stun:1, exec:1.4, cd:4 },
+  uPhoenix:{ ult:1, n:'不死鳥の祈り', heal:.4, selfAtk:.2, selfDef:.2, regen:.04, dur:3, cd:4 },
+  uTime:   { ult:1, n:'時空崩壊', m:[1.2, 1.3], cdReset:1, cdAdd:2, cd:5 },
+  uSac:    { ult:1, n:'命を燃やす一撃', m:[2.0, 2.2], recoil:.2, cd:4 },
+  uApoc:   { ult:1, n:'終末の業火', m:[1.25, 1.35], burn:[.06, 3], poison:[.04, 3], cd:4 },
+  uFort:   { ult:1, n:'不動明王', shield:.3, counter:3, heal:.15, selfDef:.3, dur:3, cd:4 },
+  uNova:   { ult:1, n:'超新星', m:[1.4, 1.5], dispel:1, selfAtk:.2, dur:3, cd:4 },
+  /* 覚醒技（作成画面には出ない） */
+  awDmg:   { aw:1, n:'覚醒の一閃', m:[1.55, 1.55], pierce:.3, cd:2 },
+  awHeal:  { aw:1, n:'覚醒の癒し', heal:.22, shield:.15, dur:2, cd:3 },
+  awRally: { aw:1, n:'覚醒の闘気', selfAtk:.3, selfDef:.2, dur:3, cd:3 },
+  awMulti: { aw:1, n:'覚醒の乱舞', m:[1.7, 1.7], hits:3, cd:3 },
+  awUlt:   { aw:1, ult:1, n:'覚醒奥義', m:[2.2, 2.2], drain:.4, cd:4 }
+};
+const pcT = v => Math.round(v * 100) + '%';
+function comboText(sp, a){
+  const p = [], m = a && a.mult;
+  if(m) p.push(sp.hits > 1 ? `威力×${m.toFixed(2)}（${sp.hits}連続）` : `威力×${m.toFixed(2)}`);
+  if(sp.exec) p.push(`敵HP40%未満で×${sp.exec}`);
+  if(sp.pierce) p.push(`防御${pcT(sp.pierce)}無視`);
+  if(sp.drain) p.push(`与ダメの${pcT(sp.drain)}回復`);
+  if(sp.recoil) p.push(`反動：自分のHP-${pcT(sp.recoil)}`);
+  if(sp.heal) p.push(`HP${pcT(sp.heal)}回復`);
+  if(sp.shield) p.push(`バリア${pcT(sp.shield)}`);
+  if(sp.regen) p.push(`リジェネ${pcT(sp.regen)}`);
+  if(sp.counter) p.push('反撃の構え');
+  if(sp.cleanse) p.push('状態異常解除');
+  if(sp.selfAtk) p.push(`攻撃+${pcT(sp.selfAtk)}`);
+  if(sp.selfDef) p.push(`防御+${pcT(sp.selfDef)}`);
+  if(sp.selfSpd) p.push(`素早さ+${pcT(sp.selfSpd)}`);
+  if(sp.foeAtk) p.push(`敵の攻撃-${pcT(sp.foeAtk)}`);
+  if(sp.foeDef) p.push(`敵の防御-${pcT(sp.foeDef)}`);
+  if(sp.foeSpd) p.push(`敵の素早さ-${pcT(sp.foeSpd)}`);
+  if(sp.burn) p.push(`火傷（毎ターン${pcT(sp.burn[0])}）`);
+  if(sp.poison) p.push(`毒（毎ターン${pcT(sp.poison[0])}）`);
+  if(sp.stun) p.push('気絶');
+  if(sp.dispel) p.push('敵の強化・バリア解除');
+  if(sp.cdCut) p.push('他の技のCT-1');
+  if(sp.cdReset) p.push('他の技のCTを全リセット');
+  if(sp.cdAdd) p.push(`敵のCT+${sp.cdAdd}`);
+  return p.join(' / ');
+}
+(function(){
+  const ids = Object.keys(NEWT2), mk = (id, sp) => () => ({ type:id, mult: sp.m ? +(R_(sp.m[0], sp.m[1])).toFixed(2) : undefined, cd:sp.cd, desc:sp.n });
+  ids.forEach(id => { const sp = NEWT2[id]; CC_TYPES[id] = sp.n + '：' + comboText(sp, sp.m ? { mult:(sp.m[0] + sp.m[1]) / 2 } : null); });
+  ids.filter(id => !NEWT2[id].aw && !NEWT2[id].ult).forEach(id => { CC_SK.push(mk(id, NEWT2[id])); CC_SK_L.push(NEWT2[id].n); });
+  ids.filter(id => !NEWT2[id].aw && NEWT2[id].ult).forEach(id => { CC_UL.push(mk(id, NEWT2[id])); CC_UL_L.push(NEWT2[id].n); });
+  const IC = sp => sp.stun ? ['stun'] : sp.burn ? ['burn'] : sp.poison ? ['poison'] : sp.shield || sp.counter ? ['barrier'] : sp.heal || sp.regen ? ['heal'] : sp.selfAtk ? ['atk', 'up'] : sp.selfSpd ? ['spd', 'up'] : sp.foeAtk || sp.foeDef || sp.foeSpd ? ['atk', 'down'] : sp.exec || sp.pierce ? ['execute'] : sp.hits > 1 ? ['multi'] : ['execute'];
+  const _el2 = effectLabel; effectLabel = function(a){ return (a && NEWT2[a.type]) ? comboText(NEWT2[a.type], a) : _el2(a); };
+  const _ti2 = typeIcon; typeIcon = function(a, isAtk){ if(!isAtk && a && NEWT2[a.type]){ const k = IC(NEWT2[a.type]); return ic(k[0], k[1] || null, 15); } return _ti2(a, isAtk); };
+  const _ac2 = actionChips; actionChips = function(f, foe, a, kind){
+    if(kind === 'attack' || !a || !NEWT2[a.type]) return _ac2(f, foe, a, kind);
+    const sp = NEWT2[a.type];
+    let h = _ac2(f, foe, Object.assign({}, a, { type:'_n' }), kind);
+    const txt = comboText(Object.assign({}, sp, { m:null }), null);
+    const extra = txt ? `<span class="chip">${txt.split(' / ').map(x => `<span>${x}</span>`).join(' ')}</span>` : '';
+    return h.replace(/<span class="chip ct">/, extra + '<span class="chip ct">');
+  };
+  const _av2 = aiValue; aiValue = function(a, kind, c, p){
+    if(kind === 'attack' || !a || !NEWT2[a.type]) return _av2(a, kind, c, p);
+    const sp = NEWT2[a.type], dmgOf = m => { const r = estDamage(c, p, m); return (r[0] + r[1]) / 2; };
+    const incR = estDamage(p, c, 1), inc = (incR[0] + incR[1]) / 2, base = dmgOf(1), miss = c.maxHp - c.hp;
+    let tot = a.mult ? dmgOf(a.mult * (sp.exec && p.hp / p.maxHp < .4 ? sp.exec : 1)) : 0, v = tot, def = !a.mult;
+    if(sp.drain) v += Math.min(miss, tot * sp.drain);
+    if(sp.recoil) v -= c.maxHp * sp.recoil * (c.hp / c.maxHp < .4 ? 3 : 1);
+    if(sp.heal) v += Math.min(miss, c.maxHp * sp.heal) * 1.1;
+    if(sp.shield) v += c.shield > 0 ? 0 : Math.min(c.maxHp * sp.shield, inc * 1.5);
+    if(sp.counter) v += inc * .3;
+    if(sp.regen) v += c.maxHp * sp.regen * 2;
+    if(sp.selfAtk) v += (c.modTurns.atk > 0 && c.mods.atk >= 1) ? -30 : sp.selfAtk * effAtk(c) * 1.4;
+    if(sp.selfDef) v += (c.modTurns.def > 0 && c.mods.def >= 1) ? -20 : inc * sp.selfDef;
+    if(sp.selfSpd) v += sp.selfSpd * base * .3;
+    if(sp.foeAtk) v += sp.foeAtk * effAtk(p) * 1.4;
+    if(sp.foeDef) v += sp.foeDef * base * .5;
+    if(sp.foeSpd) v += sp.foeSpd * base * .3;
+    if(sp.burn) v += base * sp.burn[0] * 10;
+    if(sp.poison) v += p.maxHp * sp.poison[0] * 2;
+    if(sp.stun) v += inc * .9;
+    if(sp.dispel) v += (['atk', 'def', 'spd'].some(k => p.mods[k] > 1) || p.shield > 0) ? base * .6 : 0;
+    if(sp.cdAdd) v += base * .3;
+    return { v, tot, def, inc };
+  };
+  const _rac4 = resolveActionCore;
+  resolveActionCore = function(side, actor, target, action, idx){
+    const sk = action === 'skill' ? actor.data.skills[idx] : action === 'ult' ? actor.data.ultimate : null;
+    if(!sk || !NEWT2[sk.type]) return _rac4.apply(this, arguments);
+    const sp = NEWT2[sk.type], ts = side === 'player' ? 'cpu' : 'player', ult = action === 'ult', bk = actor._bk || {};
+    const lv = ult ? (bk.u || 0) : (bk[idx] || 0); actor._bm = lv ? 1 + .08 * lv : 1;
+    if(ult) actor.ultCd = sk.cd; else actor.skillCd[idx] = sk.cd;
+    playCutIn(side, actor.data, sk.name, ult ? 'ult' : 'skill');
+    let msg = ult ? `${actor.data.name} の必殺技「${sk.name}」！` : `${actor.data.name} の「${sk.name}」！`, popV = null, popHeal = false, popCrit = false;
+    const imm = pv(target, 'immune'), dur = sk.dur || sp.dur || 3;
+    try{
+      let dealt = 0, hitAny = false;
+      if(sk.mult){
+        const hits = sp.hits || 1; let m = sk.mult / hits * (hits > 1 ? 1.15 : 1);
+        if(sp.exec && target.hp / target.maxHp < .4){ m *= sp.exec; msg += '（トドメ特効！）'; }
+        const od = target.mods.def; if(sp.pierce) target.mods.def = od * (1 - sp.pierce);
+        let crit = false, ev = 0;
+        for(let i = 0; i < hits; i++){
+          const r = calcDamage(actor, target, m);
+          if(r.evaded){ ev++; continue; }
+          hitAny = true; dealt += r.dmg; target.hp -= r.dmg; if(r.isCrit) crit = true;
+          if(target.hp <= 0) break;
+        }
+        target.mods.def = od;
+        if(hitAny){
+          popV = dealt; popCrit = crit; msg += ` ${target.data.name} に ${dealt} ダメージ${hits > 1 ? `（${hits - ev}ヒット）` : ''}${crit ? '（会心！）' : ''}`;
+          playHitAnim(side, ts, crit, null);
+          if(ult) playUltimateFX(ts, actor.data.c1, actor.data.element); else playImpactBurst(ts, actor.data.c1);
+        } else { playDodgeAnim(ts, target.data); msg += ` ${target.data.name} にかわされた！`; }
+      }
+      const foeOk = !sk.mult || hitAny;
+      if(sp.drain && dealt > 0){ const g = Math.round(dealt * sp.drain); actor.hp = Math.min(actor.maxHp, actor.hp + g); msg += ` HPを${g}吸収！`; }
+      if(sp.recoil){ const r = Math.round(actor.maxHp * sp.recoil); actor.hp = Math.max(1, actor.hp - r); msg += ` 反動で${r}ダメージ…`; }
+      if(sp.heal){ const h = Math.round(actor.maxHp * sp.heal); actor.hp = Math.min(actor.maxHp, actor.hp + h); msg += ` HPを${h}回復！`; if(popV === null){ popV = h; popHeal = true; } playStatusAnim(side, 'heal'); }
+      if(sp.shield){ actor.shield = Math.max(actor.shield || 0, Math.round(actor.maxHp * sp.shield)); actor.shieldTurns = sp.dur || 2; msg += ` ${actor.shield}のバリア！`; playStatusAnim(side, 'shield'); }
+      if(sp.counter){ actor.counterTurns = sp.counter; actor.counterVal = .5; msg += ' 反撃の構え！'; }
+      if(sp.regen){ actor.regenTurns = Math.max(actor.regenTurns || 0, 3); actor.regenVal = sp.regen; msg += ' リジェネ状態に！'; playStatusAnim(side, 'regen'); }
+      if(sp.cleanse){ actor.burnTurns = 0; actor.poisonTurns = 0; actor.stunned = false; ['atk', 'def', 'spd'].forEach(k => { if(actor.mods[k] < 1){ actor.mods[k] = 1; actor.modTurns[k] = 0; } }); msg += ' 状態異常を解除！'; playStatusAnim(side, 'cleanse'); }
+      if(sp.selfAtk){ applyBuff(actor, 'buffAtk', sp.selfAtk, dur); msg += ' 攻撃力UP！'; playStatusAnim(side, 'buffAtk'); }
+      if(sp.selfDef){ applyBuff(actor, 'buffDef', sp.selfDef, dur); msg += ' 防御力UP！'; }
+      if(sp.selfSpd){ applyBuff(actor, 'buffSpd', sp.selfSpd, dur); msg += ' 素早さUP！'; }
+      if(foeOk){
+        if(sp.foeAtk || sp.foeDef || sp.foeSpd){
+          if(imm) msg += ` ${target.data.name} には弱体が効かなかった！`;
+          else {
+            if(sp.foeAtk) applyBuff(target, 'debuffAtk', sp.foeAtk, dur);
+            if(sp.foeDef) applyBuff(target, 'debuffDef', sp.foeDef, dur);
+            if(sp.foeSpd){ target.mods.spd = Math.min(target.mods.spd, 1 - sp.foeSpd); target.modTurns.spd = Math.max(target.modTurns.spd || 0, dur); }
+            msg += ' 能力を下げた！'; playStatusAnim(ts, 'debuffAtk');
+          }
+        }
+        if(sp.burn){ target.burnTurns = Math.max(target.burnTurns || 0, sp.burn[1]); target.burnVal = sp.burn[0]; msg += ' 火傷を負わせた！'; playStatusAnim(ts, 'burn'); }
+        if(sp.poison){ target.poisonTurns = Math.max(target.poisonTurns || 0, sp.poison[1]); target.poisonVal = sp.poison[0]; msg += ' 毒を与えた！'; playStatusAnim(ts, 'poison'); }
+        if(sp.stun){ target.stunned = true; msg += ' 気絶させた！'; playStatusAnim(ts, 'stun'); }
+        if(sp.dispel){ let n = 0; ['atk', 'def', 'spd'].forEach(k => { if(target.mods[k] > 1){ target.mods[k] = 1; target.modTurns[k] = 0; n++; } }); if(target.shield > 0){ target.shield = 0; target.shieldTurns = 0; n++; } if(n) msg += ' 敵の強化・バリアを打ち消した！'; }
+        if(sp.cdAdd){ target.skillCd = target.skillCd.map(c => c + sp.cdAdd); target.ultCd = (target.ultCd || 0) + sp.cdAdd; msg += ` 敵の技のCTが伸びた！`; }
+      }
+      if(sp.cdCut){ actor.skillCd = actor.skillCd.map((c, i) => (ult || i !== idx) ? Math.max(0, c - sp.cdCut) : c); if(!ult) actor.ultCd = Math.max(0, (actor.ultCd || 0) - sp.cdCut); msg += ' 他の技のCTが縮んだ！'; }
+      if(sp.cdReset){ actor.skillCd = actor.skillCd.map((c, i) => (ult || i !== idx) ? 0 : c); msg += ' 全ての技が使える！'; }
+    } finally { actor._bm = 1; }
+    if(popV !== null) showDmgPop(popHeal ? side : ts, popV, popCrit, popHeal);
+    logDelay = (motionDelay || 0) + (extraHit || 0) + 40;
+    addLog(msg, popHeal ? 'heal' : 'skill');
+  };
+})();
+
+/* 覚醒：HPが20%以下になると一度だけ全回復し、技がすべて覚醒技に変わる（CPU戦・クエスト） */
+const AW_SET = ['awDmg', 'awHeal', 'awRally', 'awMulti'];
+function awakenCheck(){
+  try{
+    if(!state || state.over || pvp.on) return;
+    [['player', state.p], ['cpu', state.c]].forEach(([side, f]) => {
+      if(!f || f._awk || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
+      f._awk = 1;
+      const mkA = (id, orig, ult) => { const sp = NEWT2[id]; return { name:'覚醒・' + orig.name, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'覚醒技：' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) }; };
+      f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => mkA(AW_SET[i % AW_SET.length], s)), ultimate: mkA('awUlt', f.data.ultimate, true) });
+      f.hp = f.maxHp; f.burnTurns = 0; f.poisonTurns = 0; f.stunned = false;
+      f.skillCd = f.skillCd.map(() => 0); f.ultCd = 0;
+      ['atk', 'def', 'spd'].forEach(k => { if(f.mods[k] < 1){ f.mods[k] = 1; f.modTurns[k] = 0; } });
+      try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); }catch(e){}
+      addLog(`🔥 ${f.data.name} が覚醒！HPが全回復し、技がすべて覚醒技に変わった！（一度だけ）`, 'result');
+      try{ renderBattleUI(); }catch(e){}
+    });
+  }catch(e){ console.warn('awaken', e); }
+}
+const _raAw = resolveAction;
+resolveAction = function(){ const r = _raAw.apply(this, arguments); awakenCheck(); return r; };
+const _frAw = finalizeRound;
+finalizeRound = function(){ const r = _frAw.apply(this, arguments); awakenCheck(); return r; };
+
+/* 経験値ステージ・コインステージ */
+const TRAIN = [
+  { id:'exp', n:'修行の間（経験値）', ic:'', lv:[
+    { n:'初級', req:1, lv:2, mul:.95, hp:1.1, r:60 }, { n:'中級', req:6, lv:3, mul:1.2, hp:1.4, r:120 }, { n:'上級', req:12, lv:4, mul:1.5, hp:1.9, r:200 } ] },
+  { id:'coin', n:'黄金の間（コイン）', ic:'', lv:[
+    { n:'初級', req:1, lv:2, mul:.95, hp:1.1, r:40 }, { n:'中級', req:6, lv:3, mul:1.2, hp:1.4, r:90 }, { n:'上級', req:12, lv:4, mul:1.5, hp:1.9, r:160 } ] }
+];
+const TR_DAILY = 5;
+function trState(){ const t = todayKey(); if(!S.tr || S.tr.d !== t) S.tr = { d:t, exp:0, coin:0 }; return S.tr; }
+function trQuest(kind, i){
+  const T = TRAIN.find(x => x.id === kind), L = T.lv[i];
+  const names = allChars().filter(c => !c.isCustom).map(c => c.name).sort();
+  const en = names[hashS(todayKey() + kind + i) % names.length];
+  return { id:'tr_' + kind + i, isTrain:true, trKind:kind, trI:i, name:`${T.n} ${L.n}`, ch:0, idx:0, g:5, boss:false, enemy:en, lv:L.lv, mul:L.mul, hpMul:L.hp, coins:0, w:{ N:100, R:0, SR:0, SSR:0 } };
+}
+function trainHTML(){
+  try{
+    const st = trState();
+    return TRAIN.map(T => `<div class="tw-card"><div class="tw-h">${T.n}</div><div class="v4small" style="color:#fff">${T.id === 'exp' ? '勝つとランクEXPがたくさんもらえる' : '勝つとコインがもらえる'}修行ステージ。1日${TR_DAILY}回まで（今日 ${st[T.id]}/${TR_DAILY}）</div>
+      ${T.lv.map((L, i) => { const q = trQuest(T.id, i), en = charData(q.enemy), ok = rankNow() >= L.req; return `<div class="v4row" style="margin-top:6px"><div class="v4sp"><b>${L.n}</b> <span class="v4small">敵：${esc(q.enemy)}　攻×${L.mul} HP×${L.hp}</span><div class="v4small">${T.id === 'exp' ? 'EXP +' + L.r : '🪙+' + L.r}　${ok ? '' : `<span style="color:#ff8a8a">ランクLv${L.req}〜</span>`}</div></div><button ${ok && st[T.id] < TR_DAILY ? '' : 'disabled'} onclick="V47.train('${T.id}',${i})">挑戦</button></div>`; }).join('')}</div>`).join('');
+  }catch(e){ return ''; }
+}
+function startTrain(kind, i){
+  const st = trState(); if(st[kind] >= TR_DAILY){ toast('今日はここまで。また明日！'); return; }
+  const L = TRAIN.find(x => x.id === kind).lv[i]; if(rankNow() < L.req){ toast(`ランクLv${L.req} になると挑戦できます`); return; }
+  const q = trQuest(kind, i);
+  if(pickGate(q.enemy, () => startTrain(kind, i))) return;
+  const me = meFor(q.enemy), en = enemyData(q.enemy); if(!en) return;
+  selected = me; cpuFighterData = en; teamMode = false; pendingQuest = q; startBattle();
+}
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state) return; const q = state.quest; if(!q || !q.isTrain) return;
+    const st = trState(), L = TRAIN.find(x => x.id === q.trKind).lv[q.trI]; let gain = 0, ex = 0;
+    if(info.won){ st[q.trKind]++; if(q.trKind === 'exp'){ ex = L.r; addExp(L.r); } else { gain = L.r; S.coins += gain; } } else { ex = 5; addExp(5); }
+    save();
+    waitIdle(() => {
+      const ov = document.createElement('div'); ov.className = 'v4modal'; ov.style.alignItems = 'center';
+      ov.innerHTML = `<div class="box" style="border-radius:18px;margin:14px;max-height:80vh"><div style="text-align:center;font-weight:900;font-size:1.2rem">${info.won ? '修行クリア！' : '修行失敗…'}</div><div class="v4small" style="text-align:center">${q.name}（今日 ${st[q.trKind]}/${TR_DAILY}）</div>
+        <div class="v4card">${gain ? `<div>コイン <b style="color:#ffd24a">+${gain}</b></div>` : ''}${ex ? `<div>ランクEXP <b style="color:#ffd24a">+${ex}</b></div>` : ''}</div>
+        <div class="btnrow"><button class="secondary" id="trB1">クエスト一覧へ</button><button id="trB2" ${st[q.trKind] >= TR_DAILY ? 'disabled' : ''}>もう一度</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.querySelector('#trB1').onclick = () => { ov.remove(); open('quest'); };
+      ov.querySelector('#trB2').onclick = () => { ov.remove(); startTrain(q.trKind, q.trI); };
+    });
+  }catch(e){ console.warn('train end', e); }
+});
+
+
 // ===== Ver4.11 全キャラの強さをそろえる自動調整（HP・攻撃の倍率） =====
 const STAT_TUNE = {'シオン':0.905,'ホムラ':0.975,'ベニコ':0.926,'カゲロウ':0.949,'リンドウ':0.967,'ルビー':0.94,'ガープ':1.002,'ナミ':1.085,'ドラマツルギー':1.005,'ヨルシカ':0.976,'ミカ':0.949,'ヤチヨ':1.026,'ラージャン':1.005,'BMW':1.017,'かぐや':0.941,'エリン':0.996,'シャルル':0.975,'Eve':0.97,'米津玄師':1.013,'青と夏':0.976,'セレナーデ':0.997,'アトラクトライト':0.982,'ボン':0.978,'タマ':0.992,'ロキ':0.995,'プロポーズ':0.991,'TKG':1.015,'ルキア':0.955,'セリナ':0.996,'アリス':0.969,'ハルナ':1.027,'ルル':0.976,'ユノ':0.99,'スイカ':0.976,'レモン':1.023,'コマ':0.951,'ラコ':1.007,'ルミナ':0.992,'キョウカ':0.946,'ラファエル':0.972,'ソロモン':0.978,'もみじ':1.051,'Sayaka':0.99,'Akari':0.978,'Kurumi':0.971,'シグレ':0.955,'クレナイ':1.028,'ミミ':0.992,'ソラ':0.999,'アカツキ':1.015,'ネム':1.004,'アキノ':0.981,'ミナト':1.001,'ヒイロ':0.99,'ステラ':1.011,'ロゼ':1.061,'ライカ':1.006,'ザクロ':1.032,'ユウゴ':0.994,'アカネ':0.959,'ノラ':1.02,'シオリ':1.027,'ミライ':1.023,'アヤメ':1.033,'クロエ':1.009,'ヨーコ':1.032,'ここあ':0.97,'ゆら':0.99,'ちなつ':0.964,'ユキネ':0.982,'ナギサ':0.997,'心予報':0.985,'リュウカ':1.006,'ジン':0.995,'イチゴ':0.987,'ミルク':1.017};
 (function(){
@@ -11055,7 +11308,7 @@ function targetOpen(){
 function targetSet(n){ S.targetPick = n || ''; save(); if(curModal && curModal.remove) curModal.remove(); view('gacha'); toast(n ? `🎯 「${n}」を狙います` : '日替わりピックアップに戻しました'); }
 function qdaily(){ startDaily(); }
 function qauto(on){ S.qAuto = !!on; save(); view('quest'); }
-Object.assign(window.V47, { bulk:bulkPull, profSw:id => profSwitch(id), profRn:profRename, profDl:profDel, profAdd, claimAll, rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
+Object.assign(window.V47, { train:startTrain, bulk:bulkPull, profSw:id => profSwitch(id), profRn:profRename, profDl:profDel, profAdd, claimAll, rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
 
 
 /* ---------- Ver4.15 カットイン強化（バトル必殺技・ガチャ確定演出） ---------- */
@@ -11722,6 +11975,7 @@ startBattle = function(){
   try{ const q = state && state.quest; if(q && q.ex){ addLog('EX補正：最初の3ターン、相手は無敵！ 耐えて反撃の準備を！', 'result'); renderBattleUI(); } }catch(e){}
 };
 
+if(!S.gift50){ S.gift50 = 1; S.coins += CHAR_COST * 50; save(); later(() => modal(`<div class="v4h" style="margin-top:0">初期配布プレゼント</div><div class="v4card"><div>キャラガチャ50連分 <b style="color:#ffd24a">🪙${CHAR_COST * 50}</b> をプレゼント！</div></div><div class="v4small" style="color:#fff">ガチャ画面の「50連」ですぐ引けます。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">ありがとう！</button>`), 2600); }
 if(S.reset425 === 1){ S.reset425 = 2; if(S.reset424 === 1) S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書・絆）と、装備の強化レベルを最初の状態に戻しました。コイン・持っている装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
 else if(S.reset424 === 1){ S.reset424 = 2; save(); later(() => modal(`<div class="v4h" style="margin-top:0">お知らせ</div><div class="v4small" style="color:#fff">アップデートにより、強化したキャラ（凸・進化・技の書のレベル・絆）を最初の状態に戻しました。コイン・装備・解放済みキャラはそのままです。<br>ライゴウは「ガープ」に名前が変わりました。</div><button style="width:100%;margin-top:8px" onclick="this.closest('.v4modal').remove()">わかった</button>`), 1800); }
 
