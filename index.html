@@ -2434,6 +2434,16 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 .fn-rc{display:flex;gap:6px;align-items:center;overflow-x:auto;margin-top:8px;scrollbar-width:none}.fn-rc::-webkit-scrollbar{display:none}
 .fn-c{flex:0 0 auto;display:flex;align-items:center;gap:5px;padding:3px 10px 3px 3px;border-radius:99px;border:1px solid rgba(255,255,255,.3);background:rgba(0,0,0,.35);color:#fff;font-size:.68rem;font-weight:800;width:auto}
 .fn-c img{width:28px;height:28px;border-radius:50%;object-fit:cover}.fn-c i{font-style:normal}
+#screen-select.v4cl .topbar,#screen-select.v4cl .sortbar,#screen-select.v4cl .roster{display:none}
+.rt-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:5px;margin:4px 0 10px}.rt-g .z{position:relative;border:2px solid var(--oc);border-radius:8px;overflow:hidden;background:rgba(0,0,0,.3);text-align:center;font-size:.55rem}.rt-g .z img{width:100%;height:60px;object-fit:cover;display:block}.rt-g .z.lk img{filter:grayscale(1) brightness(.75)}.rt-g .z.lk{border-color:#555}.rt-g .n{padding:2px 1px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v4tiles.v4main{display:none !important}
+#x22bar button{min-width:0;padding-left:2px;padding-right:2px}#x22bar .lb{font-size:.62rem}
+.om-stage{text-align:center;padding:26px 0}.om-box{width:70px;height:96px;margin:0 auto 12px;border-radius:10px;background:linear-gradient(160deg,#c0392b,#7a1a1a);border:2px solid #ffd24a;position:relative;animation:omShake .25s linear infinite}.om-box i{position:absolute;top:-30px;width:6px;height:44px;background:#f2d9a0;border-radius:3px;left:calc(18px * var(--n,1))}.om-box i:nth-child(1){left:14px;transform:rotate(-6deg)}.om-box i:nth-child(2){left:32px}.om-box i:nth-child(3){left:50px;transform:rotate(6deg)}.om-t{font-weight:900;color:#fff}@keyframes omShake{0%{transform:rotate(-9deg)}50%{transform:rotate(9deg)}100%{transform:rotate(-9deg)}}
+.om-res{text-align:center;animation:omPop .5s cubic-bezier(.2,1.6,.4,1)}.om-ic{font-size:3rem}.om-r{font-size:2.4rem;font-weight:900;color:#ffd24a;text-shadow:0 0 14px rgba(255,210,74,.6)}.om-res.k0 .om-r{font-size:3rem;text-shadow:0 0 22px #ff9a2a,0 0 6px #fff}.om-res.k5 .om-r{color:#9aa7c0}.om-st{margin:8px 0;display:grid;gap:3px;font-size:.8rem;color:#fff}.om-st b{color:#ffd24a;letter-spacing:1px}.om-lk{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px}.om-lk img{width:54px;height:54px;border-radius:10px;object-fit:cover;border:2px solid #ffd24a}@keyframes omPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}
+.x23-p{position:absolute;top:-10%;left:var(--x);font-size:var(--s);animation-duration:var(--t);animation-delay:var(--d);animation-timing-function:linear;animation-fill-mode:both;filter:drop-shadow(0 0 6px rgba(255,200,120,.8))}
+@keyframes x23Met{from{transform:translate(60px,-20px);opacity:1}to{transform:translate(-160px,520px);opacity:.2}}@keyframes x23Sak{from{transform:translate(0,0) rotate(0)}to{transform:translate(-40px,520px) rotate(360deg)}}@keyframes x23Fire{from{transform:translateY(560px) scale(.6);opacity:1}to{transform:translateY(40px) scale(1.4);opacity:0}}
+.x21-fs.fs-meteor{background:linear-gradient(180deg,rgba(10,10,50,.55),rgba(60,20,90,.25))}.x21-fs.fs-sakura{background:radial-gradient(circle,rgba(255,170,210,.3),transparent 70%)}.x21-fs.fs-fire{background:radial-gradient(circle at 50% 100%,rgba(255,110,20,.6),transparent 70%)}.x21-fs.fs-rainbow{background:linear-gradient(115deg,rgba(255,60,60,.35),rgba(255,220,60,.35),rgba(60,255,140,.35),rgba(60,160,255,.35),rgba(190,80,255,.35));animation-name:x21Fs,x21Fl}.x21-fs.fs-shadow{background:rgba(10,0,20,.65)}.x21-fs.fs-shadow::after{content:'🖐';position:absolute;bottom:-20%;font-size:9rem;filter:drop-shadow(0 0 20px #80f);animation:x23Hand 1.1s ease-out forwards}.x21-fs.fs-bell::after{content:'🔔';position:absolute;top:36%;font-size:5rem;animation:x23Ring .5s ease-in-out 2}
+@keyframes x23Hand{from{transform:translateY(60%)}to{transform:translateY(-70%) scale(1.2)}}@keyframes x23Ring{0%,100%{transform:rotate(-18deg)}50%{transform:rotate(18deg)}}
 </style>
 </head>
 <body>
@@ -3682,6 +3692,17 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
+    "【ホーム整理】キャラ一覧・パッチノート・戦績・ランキング・今日のオススメ・チーム対抗・2人対戦のボタンを「⋯ その他」へ移動。ホームがスッキリ。",
+    "【ルール戦】クエスト画面に「今日のルール戦」を追加。毎日変わるルール（回復禁止・一撃勝負・ハーフHP・ガラスの大砲・長期戦）で戦い、初クリアで報酬。連続クリアでコイン増加。",
+    "【絆レベル】同じキャラで戦うほど絆が上がり、攻撃力が最大+5%。Lv3/5/7/10でコイン報酬（その他→絆レベル）。",
+    "【表示】ボタンや見出しの絵文字を少なめに。「その他→絵文字の表示」でふつうに戻せます。",
+    "【キャラ共有】自分で作ったキャラの詳細に「リンクを共有」ボタンを追加。リンクを開いた友達の端末でキャラが追加されます。",
+    "【おみくじ】引く演出を追加。戦い・ガチャ・金運の星、ラッキーアイテム/カラー付き。大吉・吉はキャラガチャがもう1回無料、凶はラッキーキャラ勝利ボーナスが🪙100に。",
+    "【ガチャ演出】前兆演出に6種類を追加（流星・桜吹雪・炎・虹色・影の手・鐘）。",
+    "【実績】演出集の報酬が実績のバッジに数字として出てしまう問題を修正（演出集は「その他」に表示）。",
+    "【2人対戦】キャラ選び画面の上の余計な部分を非表示に。ホームの「キャラを選んで出撃！」も削除。",
+    "【ナビ】画面下のバーに「2人対戦」と「その他」を追加。ホームのクエスト/ガチャ/図鑑/装備タイルと「その他」ボタンは削除。",
+    "【ガチャ】提供割合の画面に、各レアリティのキャラ一覧（入手済み/未入手）を表示。",
     "👑 EX超高難度ステージ6つ（NORMAL全クリアで解放。敵は攻×1.7〜2.5・HP×2.0〜3.7）。初クリアでEX装備『神殺しの剣・終焉の鎧・覇王の紋章』と『神の書（技を一気にLv5）』が手に入る（ガチャには出ません）",
     "⚒ 装備の強化：コインで+1〜+5、1段階ごとに効果+12%（最大+60%）。装備画面から強化できます",
     "🎒 新しい装備を13個追加（N〜SSR。武器・防具・アクセ）＋EX装備3個＋神の書",
@@ -4140,6 +4161,7 @@ function openDetail(idx){
     <div class="btnrow">
       <button onclick="selectFromDetail(${idx})">${selectMode==='player' ? 'このキャラで挑む' : 'この相手と戦う'}</button>
     </div>
+    ${c.isCustom ? `<div class="btnrow"><button onclick="V47.linkShare(${idx})">🔗 このキャラのリンクを共有</button></div>` : ''}
     <div class="btnrow">
       <button class="secondary" style="color:var(--bad);border-color:rgba(255,107,122,.4);" onclick="deleteCharacter(${idx})">🗑️ このキャラを削除</button>
     </div>
@@ -8623,6 +8645,7 @@ function applyToFighter(f){
   if(lb){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * lm, def: f.evo.def * lm }); }
   const hpMax = Math.round(f.maxHp * (1 + b.hp) * lm); f.maxHp = hpMax; f.hp = hpMax;
   f.eqSpd = 1 + b.spd; f._bk = bookLevels(name); f._v4 = true;
+  try{ const bl = bondLv(name); if(bl) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + 0.005 * bl) }); }catch(e){}
   try{ const om = omToday(); if(om && om.buff > 0 && om.up) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + om.up) }); }catch(e){}
 }
 let pendingQuest = null;
@@ -9117,7 +9140,7 @@ Hooks.on('battle:end', info => {
   try{
     if(info.pvp || !state) return;
     const q = state.quest;
-    if(q && (q.tower || q.daily || q.ex)) return;
+    if(q && (q.tower || q.daily || q.ex || q.isRule)) return;
     if(!q){ // 通常戦：少額コイン
       const c = info.won ? 15 : 5; S.coins += c; save();
       later(() => toast(`🪙 +${c} コイン`), 5200); return;
@@ -9250,7 +9273,7 @@ function questHTML(){
     (qMode === 'h' ? '<div class="v4small" style="color:#ff9a7a">HARDモード：敵がさらに強く（攻×1.35・HP×1.4・Lv5）。報酬は🪙2倍・ドロップ+1・高レア寄り。NORMALで同じステージをクリアすると挑戦できます。</div>' : '') +
     `<div class="v4small">敵は章が進むほど強くなります。装備・技の書は戦闘に反映されます（PvPには反映されません）。</div>
     <div class="v4card" style="margin-top:6px"><div class="v4small"><b style="color:#ffe27a">★の集め方</b>（1ステージ最大★3）<br>🏁 クリア＝★1　／　❤ 残りHP40%以上でクリア＝★2　／　⚡ 12ターン以内でクリア＝★3<br>黄色く光っているのが達成済み。★を増やすと🪙ボーナス、★3で「⏩掃討」が使えます。</div></div>`;
-  h += questQuickHTML() + dailyHTML2() + towerHTML() + exHTML();
+  h += questQuickHTML() + dailyHTML2() + ruleHTML() + towerHTML() + exHTML();
   let nextShown = false;
   CHAPTERS.forEach((ch, ci) => {
     const th = CH_THEME[ci % CH_THEME.length], qs = LQ.filter(q => q.ch === ci);
@@ -9425,10 +9448,15 @@ function gzStage(){
     <div class="gz-btns"><button class="gz-b" onclick="${f}(1)"><em>1回引く</em><span>🪙${c1}</span></button><button class="gz-b b10" onclick="${f}(10)"><em>10回引く</em><span>🪙${c10}</span></button></div>
     <div class="gz-foot"><span class="gz-own">🪙 ${S.coins}</span><button class="gz-rate" onclick="V4.rates()">≡ 提供割合</button>${char ? '' : '<button class="gz-5" onclick="V4.pull(5)">5連 🪙450</button>'}</div></div>`;
 }
+function rateList(k){
+  const l = allChars().filter(c => !c.isCustom && charRarity(c.name) === k);
+  const own = l.filter(c => isOwned(c.name)).length;
+  return `<details style="margin:0 0 6px"><summary class="v4small" style="cursor:pointer">${k}キャラ一覧（${own}/${l.length}体 入手済み）</summary><div class="rt-g">${l.map(c => { const im = portraitOf(c) || fullOf(c); return `<div class="z rar-${k} ${isOwned(c.name) ? '' : 'lk'}" style="--oc:${({SSR:'#ffc83a',SR:'#b36bff',R:'#3fb6ff',N:'#9aa7b4'})[k]}">${im ? `<img src="${im}" loading="lazy">` : ''}<div class="n">${esc(c.name)}</div></div>`; }).join('')}</div></details>`;
+}
 function rates(){
   const char = gzTab === 'char', r = char ? {N:42, R:38, SR:16, SSR:4} : {N:48, R:36, SR:13, SSR:3};
   const pk = pickupChar();
-  curModal = modal(`<div class="v4h" style="margin-top:0">${char ? 'キャラ' : '装備'}ガチャ 提供割合</div>` + ['SSR','SR','R','N'].map(k => `<div class="v4row" style="margin:6px 0"><span class="v4tag rar-${k}" style="width:42px;text-align:center">${k}</span><div class="v4bar" style="flex:1"><i style="width:${r[k] * 2}%"></i></div><b style="width:42px;text-align:right">${r[k]}%</b></div>`).join('') +
+  curModal = modal(`<div class="v4h" style="margin-top:0">${char ? 'キャラ' : '装備'}ガチャ 提供割合</div>` + ['SSR','SR','R','N'].map(k => `<div class="v4row" style="margin:6px 0"><span class="v4tag rar-${k}" style="width:42px;text-align:center">${k}</span><div class="v4bar" style="flex:1"><i style="width:${r[k] * 2}%"></i></div><b style="width:42px;text-align:right">${r[k]}%</b></div>` + (char ? rateList(k) : '')).join('') +
     `<div class="v4small">・10連は最後の1個がSR以上確定。SR以上が出ないまま10回引くと次は必ずSR以上。<br>${char && pk ? `・ピックアップ：${esc(pk.name)}（SSRが出たとき30%）<br>` : ''}・カプセルの色や形は目安です（ガセあり）。確定演出と「昇格」だけは本物です。</div>`);
 }
 function gachaHTML(){
@@ -9549,8 +9577,8 @@ function renderHero(){
       <div class="v4tile" style="--a:#b23ad0;--b:#4a1a7a;--d:.6s" onclick="V4.open('gacha')"><span class="ic">🎰</span>ガチャ${(S.free.c !== todayKey() || S.free.g !== todayKey()) ? '<i class="fr">FREE</i>' : ''}</div>
       <div class="v4tile" style="--a:#2a7ad0;--b:#14306a;--d:1.2s" onclick="V4.open('dex')"><span class="ic">📖</span>図鑑</div>
       <div class="v4tile" style="--a:#c0603a;--b:#5a2a1a;--d:1.8s" onclick="V4.open('gear')"><span class="ic">🎒</span>装備・強化</div></div>
-    <div class="hm-sub" id="v4sub"><button onclick="V47.achOpen()">🏅 実績${(() => { try{ const n = achReady(); return n ? '<i class="fr">' + n + '</i>' : ''; }catch(e){ return ''; } })()}</button><button onclick="V47.quick()">🎲 おまかせ</button><button onclick="V47.more()">⋯ その他</button></div>
-    ${todayStripHTML()}${funHTML()}${rankCardHTML()}${nextGoalHTML()}${dailyHTML()}${banner}<div class="hm-sec" id="v4sec">キャラを選んで出撃！</div>`;
+    <div class="hm-sub" id="v4sub"><button onclick="V47.achOpen()">🏅 実績${(() => { try{ const n = achReady(); return n ? '<i class="fr">' + n + '</i>' : ''; }catch(e){ return ''; } })()}</button><button onclick="V47.quick()">🎲 おまかせ</button></div>
+    ${todayStripHTML()}${funHTML()}${rankCardHTML()}${nextGoalHTML()}${dailyHTML()}${banner}`;
   const old = $('v4hero'), oldT = $('v4tiles'), oldB = $('v4sec'); if(old) old.remove(); if(oldT) oldT.remove(); document.querySelectorAll('.hm-ban,.hm-next,.hm-tick,.hm-dm,.rk-card,.hm-today,.hm-fun,#v4sec,#v4sub,#v4go').forEach(e => e.remove()); void oldB;
   scr.insertAdjacentHTML('afterbegin', html);
 }
@@ -9575,7 +9603,7 @@ updateSelectHeader = function(){
   try{
     if(selectMode === 'player'){
       renderHero();
-    }else{ const h = $('v4hero'); if(h) h.remove(); const t = $('v4tiles'); if(t) t.remove(); const u = $('v4sub'); if(u) u.remove(); const g = $('v4go'); if(g) g.remove(); }
+    }else{ const h = $('v4hero'); if(h) h.remove(); const t = $('v4tiles'); if(t) t.remove(); const u = $('v4sub'); if(u) u.remove(); const g = $('v4go'); if(g) g.remove(); document.querySelectorAll('.hm-ban,.hm-next,.hm-tick,.hm-dm,.rk-card,.hm-today,.hm-fun,#v4sec').forEach(e => e.remove()); }
   }catch(e){}
 };
 
@@ -10223,7 +10251,7 @@ function guideOpen(){
 }
 function nextGoal(){
   const matches = lsGet(LS_MATCH, 0), tdy = todayKey();
-  if(!matches) return ['👆', 'まずは1戦やってみよう！', '下のキャラ一覧から好きなキャラをタップ → 相手を選ぶとバトル開始', null];
+  if(!matches) return ['👆', 'まずは1戦やってみよう！', '上の「バトルに出撃！」をタップすればすぐ始まります', null];
   if(S.free.c !== tdy || S.free.g !== tdy) return ['🎁', '今日の無料ガチャが引けます', '1日1回、キャラガチャと装備ガチャが無料！', "V4.open('gacha')"];
   if(S.coins >= CHAR_COST) return ['🪙', `コインが${S.coins}たまってます`, 'キャラガチャを回して新キャラ・凸を狙おう（1回250）', "V4.open('gacha')"];
   try{ if(!QUESTS) buildQuests(); }catch(e){}
@@ -10583,7 +10611,9 @@ function achClaim(id){
   if(tr >= 4 || a.p() < a.t[tr]) return; S.coins += a.rw[tr]; S.ach[id] = tr + 1; save(); toast(`🏅 実績「${a.n}」${TIER_N[tr]}達成！ 🪙+${a.rw[tr]}`);
   try{ updateSelectHeader(); }catch(e){} if(curModal && curModal.remove) curModal.remove(); achOpen();
 }
-function achReady(){ return ACH.filter(a => { const t = achTier(a); return t < 4 && a.p() >= a.t[t]; }).length + CS_RW.filter(([n]) => !((S.csr || {})[n]) && CS_KEYS.filter(k => (S.cs || {})[k]).length >= n).length; }
+function achReady(){ return ACH.filter(a => { const t = achTier(a); return t < 4 && a.p() >= a.t[t]; }).length; }
+function csReady(){ return CS_RW.filter(([n]) => !((S.csr || {})[n]) && CS_KEYS.filter(k => (S.cs || {})[k]).length >= n).length; }
+
 function recOpen(){
   const r = recOf(), m = r.totalMatches | 0, w = r.totalWins | 0, cs = r.charStats || {};
   const top = Object.keys(cs).map(k => [k, cs[k].wins | 0, cs[k].appearances | 0]).sort((a, b) => b[1] - a[1]).slice(0, 5);
@@ -10963,11 +10993,11 @@ achClaim = function(id){ const b = S.coins; _achClaim13(id); try{ if(S.coins > b
 
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', '見つけたガチャ演出')}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide() };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
@@ -10981,7 +11011,7 @@ function targetOpen(){
 function targetSet(n){ S.targetPick = n || ''; save(); if(curModal && curModal.remove) curModal.remove(); view('gacha'); toast(n ? `🎯 「${n}」を狙います` : '日替わりピックアップに戻しました'); }
 function qdaily(){ startDaily(); }
 function qauto(on){ S.qAuto = !!on; save(); view('quest'); }
-Object.assign(window.V47, { omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
+Object.assign(window.V47, { rule:startRule, bond:bondOpen, bondClaim, linkShare:ccLinkShare, rosterHide, omikuji:omDraw, commView, commPub:commPublishAll, qb:(n) => quickBattle(n), col:colClaim, qpick:(on) => { S.qPick = !!on; save(); }, enh:enhDo, ex:startEx, ccUrl, questNext, qchain, daily:startDaily, target:targetOpen, targetSet, qauto, again:againBattle, more:moreOpen, moreGo, dexGo, quick:quickBattle, auto:autoToggle, rankOpen, tower:startTower, sweep:sweepQuest, dexSet, dexReset, favToggle, achOpen, achClaim, achSet });
 
 
 /* ---------- Ver4.15 カットイン強化（バトル必殺技・ガチャ確定演出） ---------- */
@@ -11273,7 +11303,7 @@ function sumCounts(list){
   const c = {}; list.forEach(x => { c[x.rarity] = (c[x.rarity] || 0) + 1; });
   return ['SSR', 'SR', 'R', 'N'].filter(k => c[k]).map(k => `<span class="x21-cnt rar-${k}">${k}×${c[k]}</span>`).join(' ');
 }
-const FS_LAB = { cat:['🐈‍⬛ 黒猫が横切った…', 'cat'], crack:['⚡ 空間にヒビが…！', 'crack'], bolt:['🌩 稲妻が走る！', 'bolt'], rumble:['⚠ WARNING ⚠', 'rumble'], goldrain:['✨ 金の雨が降る！！', 'goldrain'], eye:['👁 …何かが目を覚ました', 'eye'] };
+const FS_LAB = { meteor:['☄ 流星が降り注ぐ！', 'meteor'], sakura:['🌸 桜が舞う…', 'sakura'], fire:['🔥 炎が燃え上がる！', 'fire'], rainbow:['🌈 虹色の光が…！？', 'rainbow'], shadow:['🖐 影が手を伸ばす…', 'shadow'], bell:['🔔 鐘が鳴り響く', 'bell'],  cat:['🐈‍⬛ 黒猫が横切った…', 'cat'], crack:['⚡ 空間にヒビが…！', 'crack'], bolt:['🌩 稲妻が走る！', 'bolt'], rumble:['⚠ WARNING ⚠', 'rumble'], goldrain:['✨ 金の雨が降る！！', 'goldrain'], eye:['👁 …何かが目を覚ました', 'eye'] };
 const _sp21 = spinScene;
 spinScene = function(ov, cb, dur){
   _sp21(ov, cb, dur);
@@ -11285,9 +11315,9 @@ spinScene = function(ov, cb, dur){
     let tp = ''; for(let i = 0; i < 22; i++) tp += `<i style="--x:${(Math.random() * 100).toFixed(0)}%;--s:${(8 + Math.random() * 16).toFixed(0)}px;--t:${(2 + Math.random() * 2.5).toFixed(2)}s;--d:${(Math.random() * 2).toFixed(2)}s"></i>`;
     T.innerHTML = tp; host.appendChild(T);
     // 前兆演出（レア度が高いほど出やすい・たまにガセ）
-    const P = [[.12, ['cat']], [.34, ['cat', 'crack']], [.62, ['crack', 'bolt', 'rumble']], [.88, ['bolt', 'rumble', 'goldrain', 'eye']]][rl];
+    const P = [[.14, ['cat', 'bell', 'sakura']], [.36, ['cat', 'crack', 'sakura', 'bell', 'shadow']], [.64, ['crack', 'bolt', 'rumble', 'fire', 'meteor', 'shadow']], [.9, ['bolt', 'rumble', 'goldrain', 'eye', 'meteor', 'rainbow', 'fire']]][rl];
     let kind = null; if(Math.random() < P[0]) kind = P[1][Math.floor(Math.random() * P[1].length)];
-    else if(Math.random() < .08) kind = ['crack', 'bolt', 'rumble'][Math.floor(Math.random() * 3)];
+    else if(Math.random() < .08) kind = ['crack', 'bolt', 'rumble', 'meteor', 'fire', 'shadow'][Math.floor(Math.random() * 6)];
     if(kind){
       setTimeout(() => {
         if(!host.isConnected) return;
@@ -11296,6 +11326,8 @@ spinScene = function(ov, cb, dur){
         if(kind === 'bolt') ex = '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="62,0 48,28 60,30 38,64 50,66 30,100"/></svg>';
         if(kind === 'crack') ex = '<svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="50,50 38,30 44,12 30,0"/><polyline points="50,50 66,36 78,40 100,22"/><polyline points="50,50 58,72 46,88 52,100"/><polyline points="50,50 30,62 12,58 0,70"/></svg>';
         if(kind === 'eye') ex = '<div class="eye">👁</div>';
+        const PT = { meteor:['☄', 14, 'x23Met'], sakura:['🌸', 26, 'x23Sak'], fire:['🔥', 18, 'x23Fire'], bell:['🔔', 1, 'x23Bell'], shadow:['🖐', 1, 'x23Shd'], rainbow:['', 0, ''] };
+        if(PT[kind] && PT[kind][1]) for(let i = 0; i < PT[kind][1]; i++) ex += `<i class="x23-p" style="--x:${(Math.random() * 100).toFixed(0)}%;--s:${(16 + Math.random() * 22).toFixed(0)}px;--t:${(.7 + Math.random() * .7).toFixed(2)}s;--d:${(Math.random() * .5).toFixed(2)}s;animation-name:${PT[kind][2]}">${PT[kind][0]}</i>`;
         F.innerHTML = ex + `<div class="fs-t">${lab[0]}</div>`; host.appendChild(F);
         try{ sfx(rl >= 2 ? 'ult' : 'hit'); navigator.vibrate && navigator.vibrate(rl >= 2 ? [50, 30, 90] : 30); }catch(e){}
         setTimeout(() => F.remove(), 1100);
@@ -11307,7 +11339,7 @@ spinScene = function(ov, cb, dur){
 /* ---------- Ver4.22 画面下のナビゲーションバー ---------- */
 (function(){
   const bar = document.createElement('nav'); bar.id = 'x22bar'; bar.style.display = 'none';
-  const T = [['home', '🏠', 'ホーム'], ['quest', '🗺', 'クエスト'], ['gacha', '🎰', 'ガチャ'], ['dex', '📖', '図鑑'], ['gear', '🎒', '装備']];
+  const T = [['home', '🏠', 'ホーム'], ['quest', '🗺', 'クエスト'], ['gacha', '🎰', 'ガチャ'], ['dex', '📖', '図鑑'], ['gear', '🎒', '装備'], ['pvp', '🌐', '2人対戦'], ['more', '⋯', 'その他']];
   bar.innerHTML = T.map(([k, ic, l]) => `<button data-k="${k}" onclick="V47.nav('${k}')"><span class="ic">${ic}</span><span class="lb">${l}</span><i class="dot"></i></button>`).join('');
   document.body.appendChild(bar);
   function sync(){
@@ -11320,6 +11352,7 @@ spinScene = function(ov, cb, dur){
       const t = todayKey(), g = bar.querySelector('[data-k="gacha"] .dot'), q = bar.querySelector('[data-k="quest"] .dot');
       if(g) g.style.display = (S.free.c !== t || S.free.g !== t) ? 'block' : 'none';
       if(q) q.style.display = !(S.dboss && S.dboss.d === t && S.dboss.done) ? 'block' : 'none';
+      const mo = bar.querySelector('[data-k="more"] .dot'); if(mo) mo.style.display = (S.om && S.om.d === t ? 0 : 1) || csReady() ? 'block' : 'none';
     }catch(e){}
   }
   const _ss22 = showScreen; showScreen = function(id){ _ss22.apply(this, arguments); sync(); };
@@ -11327,6 +11360,8 @@ spinScene = function(ov, cb, dur){
   setInterval(sync, 1500);
   function nav(k){
     if(document.querySelector('.v4modal')) document.querySelectorAll('.v4modal').forEach(e => e.remove());
+    if(k === 'more'){ V47.more(); return; }
+    if(k === 'pvp'){ try{ if(!$('screen-select').classList.contains('active')) goToSelect(); }catch(e){} startPvpPick(); sync(); return; }
     if(k === 'home'){ try{ goToSelect(); }catch(e){ showScreen('screen-select'); } sync(); try{ window.scrollTo(0, 0); }catch(e){} return; }
     open(k); sync();
   }
@@ -11421,23 +11456,42 @@ function commView(){
 /* ---------- Ver4.23 ホームの「今日のおまけ」（おみくじ・最近使ったキャラ・みんなのキャラ） ---------- */
 const OM = [['大吉', 300, 8, '✨'], ['吉', 160, 4, '🌟'], ['中吉', 110, 0, '⭐'], ['小吉', 70, 0, '🍀'], ['末吉', 40, 0, '🌱'], ['凶', 30, 0, '☁️']];
 const OM_W = [8, 22, 25, 22, 15, 8];
+const OM_ITEM = ['赤いリボン', '三日月のペンダント', '猫のキーホルダー', 'いちごミルク', '銀の指輪', 'お気に入りの曲', '青い傘', 'ミントガム', 'ふわふわのマフラー', '古い懐中時計'];
+const OM_COL = [['赤', '#ff5a6a'], ['青', '#4aa8ff'], ['緑', '#4ad07a'], ['紫', '#b36bff'], ['金', '#ffd24a'], ['桃', '#ff8ac8']];
 const omToday = () => (S.om && S.om.d === todayKey()) ? S.om : null;
+function omStars(n){ return '★'.repeat(n) + '☆'.repeat(5 - n); }
 function omDraw(){
   if(omToday()){ toast('おみくじは1日1回です。また明日！'); return; }
-  let x = Math.random() * 100, k = 0; for(; k < OM.length - 1; k++){ x -= OM_W[k]; if(x < 0) break; }
-  const o = OM[k], lucky = roster.length ? roster[Math.floor(Math.random() * roster.length)].name : '';
-  S.om = { d: todayKey(), r: o[0], lucky, n: 0, buff: o[2] ? 3 : 0, up: o[2] / 100 }; S.coins += o[1]; save(); sfx(k <= 1 ? 'win' : 'buff');
-  const m = modal(`<div style="text-align:center"><div style="font-size:3rem">${o[3]}</div><div style="font-size:2rem;font-weight:900;color:#ffd24a">${o[0]}</div>
-    <div class="v4card"><div>🪙 コイン <b style="color:#ffd24a">+${o[1]}</b></div>${o[2] ? `<div class="v4small" style="color:#fff">🔮 次の3戦：攻撃力 +${o[2]}%</div>` : ''}
-    <div class="v4small" style="color:#fff">🍀 ラッキーキャラ：<b>${esc(lucky)}</b>（今日このキャラで勝つと🪙+40。1日5回まで）</div></div></div>`);
-  try{ updateSelectHeader(); }catch(e){}
+  const m0 = modal(`<div class="om-stage"><div class="om-box"><i></i><i></i><i></i></div><div class="om-t">おみくじを引いています…</div></div>`);
+  try{ sfx('buff'); navigator.vibrate && navigator.vibrate([30, 40, 30, 40, 30]); }catch(e){}
+  later(() => {
+    try{ if(m0 && m0.remove) m0.remove(); }catch(e){}
+    let x = Math.random() * 100, k = 0; for(; k < OM.length - 1; k++){ x -= OM_W[k]; if(x < 0) break; }
+    const o = OM[k], lucky = roster.length ? roster[Math.floor(Math.random() * roster.length)].name : '';
+    const base = 5 - k, st = [0, 1, 2].map(() => Math.max(1, Math.min(5, base + Math.floor(Math.random() * 3) - 1)));
+    const item = OM_ITEM[Math.floor(Math.random() * OM_ITEM.length)], col = OM_COL[Math.floor(Math.random() * OM_COL.length)];
+    const free = k <= 1, kyo = k === 5, lb = kyo ? 100 : 40;
+    S.om = { d: todayKey(), r: o[0], lucky, n: 0, buff: o[2] ? 3 : 0, up: o[2] / 100, lb };
+    S.coins += o[1]; if(free){ S.free = S.free || {}; S.free.c = ''; }
+    save(); sfx(k <= 1 ? 'win' : 'buff');
+    const lk = roster.find(c => c.name === lucky), im = lk && (portraitOf(lk) || fullOf(lk));
+    modal(`<div class="om-res k${k}"><div class="om-ic">${o[3]}</div><div class="om-r">${o[0]}</div>
+      <div class="om-st"><div>⚔ 戦い運 <b>${omStars(st[0])}</b></div><div>🎰 ガチャ運 <b>${omStars(st[1])}</b></div><div>💰 金運 <b>${omStars(st[2])}</b></div></div>
+      <div class="v4card"><div>🪙 コイン <b style="color:#ffd24a">+${o[1]}</b></div>
+      ${o[2] ? `<div class="v4small" style="color:#fff">🔮 次の3戦：攻撃力 +${o[2]}%</div>` : ''}
+      ${free ? `<div class="v4small" style="color:#fff">🎰 キャラガチャが<b>もう1回無料</b>！（ガチャ画面へ）</div>` : ''}
+      ${kyo ? `<div class="v4small" style="color:#fff">☁️ 凶は逆転のチャンス！ラッキーキャラのボーナスが<b>🪙100</b>に</div>` : ''}</div>
+      <div class="om-lk">${im ? `<img src="${im}" alt="">` : ''}<div class="v4small" style="color:#fff">🍀 ラッキーキャラ <b style="font-size:1rem">${esc(lucky)}</b><br>今日このキャラで勝つと🪙+${lb}（1日5回まで）</div></div>
+      <div class="v4small" style="color:#fff;margin-top:6px">ラッキーアイテム：<b>${item}</b>　ラッキーカラー：<b style="color:${col[1]}">${col[0]}</b></div></div>`);
+    try{ updateSelectHeader(); }catch(e){}
+  }, 1300);
 }
 function recentChars(){ return (S.recent || []).map(n => roster.find(c => c.name === n)).filter(Boolean).slice(0, 6); }
 function funHTML(){
   try{
     const om = omToday(), rc = recentChars(), cm = allChars().filter(c => c.community), lk = om && om.lucky;
     let h = `<div class="hm-fun"><div class="fn-row">
-      <button class="fn-om ${om ? 'done' : 'hot'}" onclick="V47.omikuji()"><span>🔮</span><div><b>${om ? '今日は「' + om.r + '」' : '今日のおみくじ'}</b><small>${om ? (lk ? '🍀 ' + esc(lk) + ' で勝つと🪙+40（' + (om.n | 0) + '/5）' + (om.buff > 0 ? `／攻撃+${Math.round(om.up * 100)}% あと${om.buff}戦` : '') : '') : '引くとコインがもらえる！'}</small></div></button>
+      <button class="fn-om ${om ? 'done' : 'hot'}" onclick="V47.omikuji()"><span>🔮</span><div><b>${om ? '今日は「' + om.r + '」' : '今日のおみくじ'}</b><small>${om ? (lk ? '🍀 ' + esc(lk) + ' で勝つと🪙+' + (om.lb || 40) + '（' + (om.n | 0) + '/5）' + (om.buff > 0 ? `／攻撃+${Math.round(om.up * 100)}% あと${om.buff}戦` : '') : '') : '引くとコインがもらえる！'}</small></div></button>
       <button class="fn-cm" onclick="V47.commView()"><span>🌐</span><div><b>みんなのキャラ</b><small>${commOK ? `公開中${commServerN}体` : cm.length ? cm.length + '体 参加中' : '作って公開しよう'}</small></div></button></div>`;
     if(rc.length) h += `<div class="fn-rc"><span class="v4small">最近使った</span>${rc.map(c => { const im = portraitOf(c) || fullOf(c); return `<button class="fn-c" data-n="${esc(c.name)}" onclick="V47.qb(this.dataset.n)">${im ? `<img src="${im}" alt="">` : ''}<i>${esc(c.name)}</i></button>`; }).join('')}</div>`;
     return h + '</div>';
@@ -11446,12 +11500,218 @@ function funHTML(){
 Hooks.on('battle:end', info => {
   try{
     if(info.pvp || !state) return; const om = omToday();
-    if(om && info.won && om.lucky && state.p && state.p.data.name === om.lucky && (om.n | 0) < 5){ om.n = (om.n | 0) + 1; S.coins += 40; save(); later(() => toast(`🍀 ラッキーキャラ勝利ボーナス 🪙+40（${om.n}/5）`), 2600); }
+    if(om && info.won && om.lucky && state.p && state.p.data.name === om.lucky && (om.n | 0) < 5){ om.n = (om.n | 0) + 1; S.coins += (om.lb || 40); save(); later(() => toast(`🍀 ラッキーキャラ勝利ボーナス 🪙+${om.lb || 40}（${om.n}/5）`), 2600); }
     if(om && om.buff > 0 && state.p){ om.buff--; save(); }
   }catch(e){}
 });
 
 try{ commStartup(); }catch(e){ console.warn('comm', e); }
+
+
+
+/* ---------- Ver4.23 日替わりルール戦・絆レベル ---------- */
+const RULES = [
+  { id:'noheal', n:'回復禁止', d:'技による回復がすべて無効。削り合いを制せ！', mul:1.05, hpMul:1.15 },
+  { id:'dmg2', n:'一撃勝負', d:'与えるダメージがお互いに2倍。先に当てた方が有利！', mul:1, hpMul:1 },
+  { id:'half', n:'ハーフHP', d:'お互いのHPが半分。1ターンの油断が命取り。', mul:1.1, hpMul:.5 },
+  { id:'glass', n:'ガラスの大砲', d:'相手はHP半分だが攻撃が1.5倍。守りきれるか？', mul:1.5, hpMul:.5 },
+  { id:'tank', n:'長期戦', d:'相手のHPがとても高いが攻撃は控えめ。粘り勝ち！', mul:.75, hpMul:1.7 }
+];
+const hashS = str => { let h = 0; for(const ch of String(str)) h = (h * 31 + ch.charCodeAt(0)) >>> 0; return h; };
+function ruleToday(){
+  const r = RULES[hashS(todayKey() + 'rule') % RULES.length];
+  const names = allChars().filter(c => !c.isCustom).map(c => c.name).sort();
+  const en = names[hashS(todayKey() + 'ruleEn') % names.length];
+  return Object.assign({}, r, { enemy: en });
+}
+function dayKeyAgo(n){ const d = new Date(); d.setDate(d.getDate() - n); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); }
+function ruleQuest(){
+  const r = ruleToday();
+  return { id:'rule', isRule:true, ruleId:r.id, name:'ルール戦「' + r.n + '」', ch:0, idx:0, g:10, boss:false, enemy:r.enemy, lv:3, mul:r.mul, hpMul:r.hpMul, coins:350, w:{ N:0, R:20, SR:55, SSR:25 } };
+}
+function ruleHTML(){
+  try{
+    const r = ruleToday(), st = S.rl || {}, done = st.d === todayKey() && st.done, en = charData(r.enemy), eim = en && portraitOf(en);
+    return `<div class="tw-card dq-card"><div class="tw-h">今日のルール戦「${r.n}」</div><div class="v4small" style="color:#fff">${r.d}<br>初クリアで 🪙350・装備1個・技の書。連続クリアでボーナス増加（いま${st.streak | 0}日連続）</div>
+      <div class="v4row" style="margin-top:8px">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>${esc(r.enemy)}</b> ${en ? elemBadge(en, 10) : ''}<div class="v4small">${done ? '今日の初回報酬は受け取り済み' : '初回報酬あり'}</div></div><button onclick="V47.rule()">挑戦</button></div></div>`;
+  }catch(e){ return ''; }
+}
+function startRule(){
+  const q = ruleQuest();
+  if(pickGate(q.enemy, () => startRule())) return;
+  const me = meFor(q.enemy), en = enemyData(q.enemy); if(!en) return;
+  selected = me; cpuFighterData = en; teamMode = false; pendingQuest = q; startBattle();
+}
+const _sbRule = startBattle;
+startBattle = function(){
+  _sbRule.apply(this, arguments);
+  try{
+    const q = state && state.quest;
+    if(q && q.isRule){
+      if(q.ruleId === 'half' && state.p){ state.p.maxHp = Math.round(state.p.maxHp / 2); state.p.hp = state.p.maxHp; }
+      const r = RULES.find(x => x.id === q.ruleId); addLog(`ルール：${r.n}　${r.d}`, 'result'); renderBattleUI();
+    }
+  }catch(e){}
+};
+const _cdRule = calcDamage;
+calcDamage = function(){
+  const r = _cdRule.apply(this, arguments);
+  try{ const q = state && state.quest; if(q && q.isRule && q.ruleId === 'dmg2' && r && r.dmg) r.dmg = Math.round(r.dmg * 2); }catch(e){}
+  return r;
+};
+const _raRule = resolveAction;
+resolveAction = function(){
+  const q = state && state.quest, nh = q && q.isRule && q.ruleId === 'noheal';
+  const fs = nh ? [state.p, state.c].filter(Boolean) : [], b = fs.map(f => f.hp);
+  const r = _raRule.apply(this, arguments);
+  if(nh) fs.forEach((f, i) => { if(f.hp > b[i]) f.hp = b[i]; });
+  return r;
+};
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state) return; const q = state.quest; if(!q || !q.isRule) return;
+    const st = S.rl = (S.rl && typeof S.rl === 'object') ? S.rl : { d:'', done:0, streak:0, last:'' };
+    let gain = 20, drops = [], first = false, sb = 0;
+    if(info.won){
+      first = !(st.d === todayKey() && st.done);
+      if(first){
+        st.streak = st.last === dayKeyAgo(1) ? (st.streak | 0) + 1 : 1; st.last = todayKey(); st.d = todayKey(); st.done = 1;
+        sb = Math.min(7, st.streak) * 40; gain = q.coins + sb;
+        drops = [pickItemOfRarity(rollRarity(q.w), .3), 'bk2']; addExp(40);
+      } else { gain = 80; addExp(10); }
+    }
+    S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
+    waitIdle(() => {
+      const ov = document.createElement('div'); ov.className = 'v4modal'; ov.style.alignItems = 'center';
+      ov.innerHTML = `<div class="box" style="border-radius:18px;margin:14px;max-height:80vh"><div style="text-align:center;font-weight:900;font-size:1.2rem">${info.won ? 'ルール戦クリア！' : 'ルール戦 失敗…'}</div>
+        <div class="v4small" style="text-align:center">${q.name}${first ? '（今日の初回報酬）' : ''}</div>
+        <div class="v4card"><div class="v4h" style="margin-top:0">獲得</div><div>🪙 コイン <b style="color:#ffd24a">+${gain}</b>${sb ? `（連続${st.streak}日ボーナス +${sb}）` : ''}</div>
+        ${drops.map(id => `<div class="v4row" style="margin-top:6px"><div class="v4ico rar-${ITEMS[id].r}">${itemIcon(id)}</div><div class="v4sp"><span class="v4tag rar-${ITEMS[id].r}">${ITEMS[id].r}</span>${ITEMS[id].n}</div></div>`).join('')}</div>
+        <div class="btnrow"><button class="secondary" id="ruB1">クエスト一覧へ</button><button id="ruB2">もう一度</button></div></div>`;
+      document.body.appendChild(ov);
+      ov.querySelector('#ruB1').onclick = () => { ov.remove(); open('quest'); };
+      ov.querySelector('#ruB2').onclick = () => { ov.remove(); startRule(); };
+    });
+  }catch(e){ console.warn('rule end', e); }
+});
+
+/* 絆レベル */
+const BOND_T = [4, 12, 25, 45, 70, 100, 140, 190, 250, 320];   // Lv1〜10 に必要な絆ポイント
+const BOND_RW = { 3:['🪙150', 150], 5:['🪙300', 300], 7:['🪙500', 500], 10:['🪙1000', 1000] };
+function bondPt(n){ return ((S.bond || {})[n]) | 0; }
+function bondLv(n){ const p = bondPt(n); return BOND_T.filter(t => p >= t).length; }
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state || !state.p || !state.p.data) return; const n = state.p.data.name; if(!n) return;
+    S.bond = S.bond || {}; const b0 = bondLv(n); S.bond[n] = bondPt(n) + (info.won ? 2 : 1); save();
+    const b1 = bondLv(n);
+    if(b1 > b0) later(() => toast(`${n} の絆がLv${b1}になりました（攻撃+${(b1 * .5).toFixed(1)}%）`), 2600);
+  }catch(e){}
+});
+function bondOpen(){
+  const l = allChars().filter(c => bondPt(c.name) > 0 || isOwned(c.name)).map(c => ({ c, p: bondPt(c.name), lv: bondLv(c.name) })).sort((a, b) => b.p - a.p);
+  const cl = S.bondCl = S.bondCl || {};
+  curModal = modal(`<div class="v4h" style="margin-top:0">絆レベル</div><div class="v4small" style="margin-bottom:6px">同じキャラで戦うほど絆が深まり、攻撃力が少し上がります（1Lvごとに+0.5%、最大+5%）。Lv3・5・7・10でコイン報酬。</div>`
+    + l.map(({ c, p, lv }) => {
+      const nx = lv >= 10 ? 0 : BOND_T[lv], pv = lv ? BOND_T[lv - 1] : 0, w = lv >= 10 ? 100 : Math.round((p - pv) / Math.max(1, nx - pv) * 100);
+      const rw = Object.keys(BOND_RW).map(Number).filter(k => lv >= k && !cl[c.name + ':' + k]);
+      const im = portraitOf(c) || fullOf(c);
+      return `<div class="v4slot">${im ? `<img class="pk-im" src="${im}">` : '<div class="pk-im"></div>'}<div class="v4sp"><b>${esc(c.name)}</b> <span class="v4tag rar-R">絆 Lv${lv}</span><div class="v4bar"><i style="width:${w}%"></i></div><div class="v4small">${lv >= 10 ? '最大' : p + ' / ' + nx}</div></div>${rw.length ? `<button onclick="V47.bondClaim('${esc(c.name)}')">受取</button>` : ''}</div>`; }).join('')
+    + (l.length ? '' : '<div class="v4small" style="text-align:center;padding:12px">まだ戦っていません</div>'));
+}
+function bondClaim(n){
+  const cl = S.bondCl = S.bondCl || {}; let g = 0, lv = bondLv(n);
+  Object.keys(BOND_RW).map(Number).forEach(k => { if(lv >= k && !cl[n + ':' + k]){ cl[n + ':' + k] = 1; g += BOND_RW[k][1]; } });
+  if(g){ S.coins += g; save(); toast(`絆報酬 🪙${g}`); if(curModal && curModal.remove) curModal.remove(); bondOpen(); }
+}
+
+/* ---------- Ver4.23 キャラのリンク共有 ---------- */
+function ccLinkOf(m){
+  const x = Object.assign({}, m); delete x.tok; delete x.pid;
+  return location.href.split('#')[0] + '#cba=' + encodeURIComponent('CBA1:' + b64e(JSON.stringify([x])));
+}
+function ccLinkShare(idx){
+  const c = roster[idx], m = c && mineLoad().find(x => x.name === c.name);
+  if(!m){ toast('共有できるデータが見つかりませんでした'); return; }
+  const url = ccLinkOf(m), long = url.length > 6000;
+  const copy = () => { try{ navigator.clipboard.writeText(url).then(() => toast('📋 リンクをコピーしました'), () => toast('下のリンクを長押ししてコピーしてください')); }catch(e){ toast('下のリンクを長押ししてコピーしてください'); } };
+  if(navigator.share && !long){ navigator.share({ title: `${m.name}（推しバト！）`, text: `「${m.name}」で遊ぼう！リンクを開くと追加されるよ`, url }).catch(() => {}); return; }
+  curModal = modal(`<div class="v4h" style="margin-top:0">🔗 「${esc(m.name)}」のリンク</div>
+    <div class="v4small">このリンクを友達に送ってください。開くと「${esc(m.name)}」が友達のガチャに追加されます（友達もこのゲームのURLを開ける必要があります）。</div>
+    ${long ? '<div class="v4small" style="color:#ffb84a">⚠ 画像が大きいためリンクが長めです。LINEなどで途切れる場合は「その他→キャラ作成→共有」の共有コードを使ってください。</div>' : ''}
+    <textarea id="ccLinkOut" class="cc-in" style="width:100%;height:90px;margin-top:6px" readonly>${esc(url)}</textarea>
+    <button style="width:100%;margin-top:6px" id="ccLinkCp">📋 リンクをコピー</button>`);
+  const b = document.getElementById('ccLinkCp'); if(b) b.onclick = () => { const t = document.getElementById('ccLinkOut'); t && t.select(); copy(); };
+}
+function ccLinkImport(){
+  try{
+    const h = location.hash || ''; if(!h.startsWith('#cba=')) return;
+    const raw = decodeURIComponent(h.slice(5)); try{ history.replaceState(null, '', location.href.split('#')[0]); }catch(e){}
+    if(!raw.startsWith('CBA1:')) return;
+    let arr = JSON.parse(b64d(raw.slice(5))); if(!Array.isArray(arr)) return;
+    const ms = arr.slice(0, 10).map(ccSanitize).filter(Boolean).filter(m => !charData(m.name));
+    if(!ms.length){ later(() => toast('このキャラはもう追加済みです（または読み取れません）'), 1200); return; }
+    later(() => {
+      curModal = modal(`<div class="v4h" style="margin-top:0">🎁 友達のキャラが届きました</div>
+        <div class="v4small" style="margin-bottom:6px">追加するとガチャで出るようになります。</div>
+        ${ms.map(m => `<div class="v4slot"><div class="v4sp"><b>${esc(m.name)}</b><div class="v4small">HP${m.stats.hp} 攻${m.stats.atk}　${esc(m.role || '')}</div></div></div>`).join('')}
+        <button style="width:100%;margin-top:8px" id="ccLinkYes">✅ 追加する</button><button class="secondary" style="width:100%;margin-top:6px" onclick="this.closest('.v4modal').remove()">やめる</button>`);
+      const y = document.getElementById('ccLinkYes');
+      if(y) y.onclick = () => {
+        const keep = commLocal(); let add = 0;
+        ms.forEach(m => { const c = commAdd(m, ''); if(c){ keep.push({ id: '', m }); add++; } });
+        try{ localStorage.setItem(LS_COMM, JSON.stringify(keep.slice(-COMM_MAX))); }catch(e){ toast('保存できませんでした'); return; }
+        try{ renderRoster(); updateSelectHeader(); }catch(e){}
+        if(curModal && curModal.remove) curModal.remove();
+        toast(`🎉 ${add}体を追加しました！ガチャで出ます`);
+      };
+    }, 900);
+  }catch(e){ console.warn('link', e); }
+}
+try{ ccLinkImport(); }catch(e){}
+
+
+/* ---------- Ver4.23 絵文字をへらす（その他で切り替え） ---------- */
+(function(){
+  if(S.emo) return;   // 「ふつう」を選んでいる人はそのまま
+  const RE = /[\p{Extended_Pictographic}‍️]+\s?/gu, HAS = /[\p{Extended_Pictographic}]/u;
+  const SEL = 'button,.v4h,.v4small,.toast,.td,.hm-next,.hm-ban,.fn-row,.hr-chip,.om-res,.om-t,.tw-card,.v4card,.v4row,h2,h3,summary,.topbar span,.mr-b span';
+  const SKIP = '#x22bar,#screen-battle,#stage,.v4chip,.z,.rt-g,.v4tag,.rar,select,option,textarea,input,[class*="gx-"],.hr-char,.fn-c,.dot,.fr';
+  function clean(root){
+    try{
+      if(!root) return;
+      const el = root.nodeType === 1 ? root : root.parentElement; if(!el) return;
+      const scan = n => {
+        const w = document.createTreeWalker(n, NodeFilter.SHOW_TEXT);
+        let t; const todo = [];
+        while((t = w.nextNode())){ if(HAS.test(t.nodeValue)){ const p = t.parentElement; if(p && p.closest(SEL) && !p.closest(SKIP) && !(p.closest('.hr-name'))) todo.push(t); } }
+        todo.forEach(t => { const v = t.nodeValue.replace(RE, ''); t.nodeValue = v.replace(/^\s+/, ''); });
+      };
+      scan(el);
+    }catch(e){}
+  }
+  let q = new Set(), sch = false;
+  const flush = () => { sch = false; const a = [...q]; q = new Set(); a.forEach(clean); };
+  new MutationObserver(ms => { ms.forEach(m => { if(m.type === 'characterData') q.add(m.target.parentElement); else m.addedNodes.forEach(n => q.add(n)); }); if(!sch){ sch = true; requestAnimationFrame(flush); } }).observe(document.body, { childList: true, subtree: true, characterData: true });
+  clean(document.body);
+})();
+
+/* ---------- ホーム整理：キャラ一覧とボタンは「その他」へ ---------- */
+let rosterOpen = false;
+function rosterApply(){
+  const sc = document.getElementById('screen-select'); if(!sc) return;
+  const col = (typeof selectMode !== 'undefined' && selectMode === 'player' && !rosterOpen);
+  sc.classList.toggle('v4cl', col);
+  const btns = document.getElementById('selectHeaderButtons');
+  if(btns && selectMode === 'player') btns.innerHTML = rosterOpen ? '<button class="secondary" onclick="V47.rosterHide()">✕ 閉じる</button>' : '';
+}
+function rosterShow(){ try{ showScreen('screen-select'); }catch(e){} rosterOpen = true; try{ updateSelectHeader(); }catch(e){} rosterApply(); later(() => { const r = document.getElementById('sortbar'); r && r.scrollIntoView({behavior:'smooth', block:'start'}); }, 80); }
+function rosterHide(){ rosterOpen = false; try{ updateSelectHeader(); }catch(e){} rosterApply(); window.scrollTo({top:0, behavior:'smooth'}); }
+const _ush2 = updateSelectHeader;
+updateSelectHeader = function(){ _ush2.apply(this, arguments); rosterApply(); };
+const _ss2 = showScreen;
+showScreen = function(id){ if(id === 'screen-select' && typeof selectMode !== 'undefined' && selectMode === 'player') rosterOpen = false; const r = _ss2.apply(this, arguments); rosterApply(); return r; };
+
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
