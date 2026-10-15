@@ -2459,6 +2459,21 @@ body.x22pad{padding-bottom:calc(66px + env(safe-area-inset-bottom)) !important}
 body.lite .v4hero::before,body.lite .v4hero::after,body.lite .v4hero .hr-p,body.lite .v4hero .hr-char img,body.lite .hr-ss,body.lite .hr-cloud,body.lite .v4hero .hr-logo svg,body.lite .v4tile::after,body.lite .v4tile .fr,body.lite .gh-sh,body.lite .gh-free,body.lite .hm-go::after,body.lite .hm-next,body.lite .gz-sky,body.lite .gz-cr,body.lite .gz-logo svg,body.lite .gz-halo,body.lite .gz-gem,body.lite .gz-sp,body.lite .gz-card,body.lite .gz-b.fr,body.lite .gz-tabs .dot,body.lite .it48 .sp,body.lite .it48.rar-SSR,body.lite .it48.rar-EX,body.lite .v4ico.rar-SR::after,body.lite .v4ico.rar-SSR::after,body.lite .awk-on .standee-img,body.lite .qz-n.next,body.lite .qz-claim,body.lite .lg.now,body.lite .hm-today .td.hot,body.lite .gc-ico svg{animation:none !important}
 body.lite:has(#screen-v4.active)::before,body.lite:has(#screen-select.active)::before{animation:none !important;display:none}
 body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !important}
+
+.gr-pick{display:flex;gap:6px;align-items:stretch;margin:0 0 10px;}
+.gr-pick>button.secondary{flex:none;width:44px;font-size:1.1rem;padding:0;}
+.gr-pb{flex:1;display:flex;align-items:center;gap:10px;text-align:left;padding:6px 10px;border-radius:14px;background:rgba(255,255,255,.08);border:1.5px solid var(--accent2,#ffd24a);color:#fff;}
+.gr-pb img{width:44px;height:44px;border-radius:10px;object-fit:cover;}
+.gr-pb b{display:block;font-size:1rem;}.gr-pb small{display:block;font-size:.62rem;opacity:.75;}
+.gp-q{width:100%;box-sizing:border-box;padding:9px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.3);background:#0f0c20;color:#fff;font-size:1rem;margin:4px 0;}
+.gp-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.gp-c{position:relative;text-align:center;padding:6px 4px;border-radius:12px;border:2px solid transparent;background:rgba(255,255,255,.05);cursor:pointer;}
+.gp-c.on{border-color:#ffd24a;background:rgba(255,210,74,.12);}
+.gp-c img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block;}
+.gp-n{font-size:.72rem;font-weight:800;margin:3px 0 1px;word-break:break-all;}
+.gp-g{position:absolute;top:4px;right:6px;font-style:normal;font-size:.9rem;}
+.gp-e{font-size:2.2rem;line-height:1.6;}
+.bk-btns{display:flex;gap:6px;margin-top:6px;}.bk-btns button{flex:1;padding:7px 4px;font-size:.78rem;}
 </style>
 </head>
 <body>
@@ -2658,11 +2673,12 @@ try{ gameSpeed = parseFloat(localStorage.getItem('battleArena_speed')) || 1; }ca
 const _origSetTimeout = window.setTimeout.bind(window);
 const _origSetInterval = window.setInterval.bind(window);
 let slowFactor = 1;
+const PACE = 0.8; /* バトル演出の基本テンポ（1より小さいほどゆっくり） */
 function speedNow(){
   const b = document.getElementById('screen-battle');
-  return (b && b.classList.contains('active')) ? gameSpeed * slowFactor : 1;
+  return (b && b.classList.contains('active')) ? gameSpeed * slowFactor * PACE : 1;
 }
-function timerSpeed(){ const b = document.getElementById('screen-battle'); return (b && b.classList.contains('active')) ? gameSpeed : 1; }
+function timerSpeed(){ const b = document.getElementById('screen-battle'); return (b && b.classList.contains('active')) ? gameSpeed * PACE : 1; }
 window.setTimeout = (fn, ms, ...a) => _origSetTimeout(fn, (ms || 0) / timerSpeed(), ...a);
 let _speedDirty = false;
 _origSetInterval(() => {
@@ -3741,6 +3757,12 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【軽量化】画面を開くたびに大きな画像データを読み直していたのを改善（クエスト・装備・図鑑などの切り替えが軽くなります）。重い端末では飾りの動きを止める「軽量モード」に自動で切り替わり、「その他」からON/OFFもできます。",
+    "【キャラのレベル（Lv1〜99）】キャラごとにレベルが付きました。バトルで経験値が入り（勝利+24／敗北+8／クエスト勝利+16／修行の間は勝利で3倍／ガチャのダブり+40）、1Lvごとに HP・攻撃・防御 +0.3%（Lv99で約+29%）、会心率も少しUP（CPU戦・クエストのみ。2人対戦は対象外）。相手もあなたのLvに合わせて少し強くなります（通常戦は自分の強化の約8割、クエストは約5割）。装備画面と図鑑でLvを確認できます。",
+    "【覚醒の条件がわかりやすく】図鑑のキャラ詳細に「覚醒の条件」を追加。①覚醒Lv＝そのキャラで勝つ／ガチャでダブると+1勝（3勝でLv1・8勝でLv2・15勝でLv3）、②ピンチ覚醒＝バトル中HPが20%以下で1回だけ発動、を進み具合つきで表示します。",
+    "【覚醒のタイミング】ピンチ覚醒はターンの終わりに発動するようにしました（敵の技の演出と重なりません）。覚醒したあと、技ボタンの名前と説明が覚醒後の技に切り替わらない問題も修正。",
+    "【バトル演出】全体のテンポを約2割ゆっくりに。カットインが消えてから攻撃が当たるようにしました（2人対戦も同じ）。",
+    "【装備・強化】キャラ選択を、◀▶ボタンと「全キャラ一覧＋名前検索」で選べるようにしました。技の書は「1個／5個／Lv5まで」でまとめて使えるほか、「全部の技をまとめて強化」ボタンで持っている書を自動で使えます。",
+    "【アスラ強化】技を3つ→4つ（＋全解放）に増やし、新技「修羅の闘気」を追加。必殺技を防御貫通つきに強化。専用の覚醒「修羅覚醒」（HP20%以下で1回だけ。HPが6割回復・全ての技が修羅の技に変化・攻撃+20%）を追加。強さの目安は約75%→約85%（覚醒と潜在能力全解放を除く）。",
     "【交換ボタン】画面下のバーに「交換」を追加。押すとすぐ合言葉でキャラを交換する画面が開きます。",
     "【新装備25種のうち24種を追加】EX 5種（黒滅の大剣・天使の羽翼・混沌の冠・運命の書・星詠のオーブ）、SSR 5種、SR 5種、R 4種、N 5種。「鉄の鎧」はイラストを新しいものに差し替え。EXはこれまで通りEXステージの報酬のみ（2回目以降のクリアでも約18%でドロップ）、それ以外はガチャ・クエストで出ます。",
     "【キャラ共有】自作キャラの共有が、2人対戦と同じ「合言葉」でできるようになりました。友達と同じ合言葉を入れて「つなぐ」を押すと、おたがいのキャラが届いて追加できます（コード共有も残してあります）。",
@@ -4085,6 +4107,7 @@ function bigCardHTML(c){
     <div class="role">${c.role}${elemBadge(c, 11)}</div>
     <div class="quote" style="${cf(c)}">「${c.quote}」</div>
     <div class="role" style="color:#ffd166;font-size:.68rem">${evoText(c)}</div>
+    <div class="role" style="color:#ff9f6b;font-size:.64rem">⚡ ピンチ覚醒：バトル中HPが20%以下で1回だけ発動</div>
     ${statBarsHTML(c.stats)}
     ${skillListHTML(c)}
   `;
@@ -6375,7 +6398,32 @@ function resolveActionCore(actorSide, actor, target, action, skillIdx){
   addLog(logMsg, logCls);
 }
 
-const ACTION_ANIM_MS = 950; // カットイン演出の長さと合わせる
+const ACTION_ANIM_MS = 950; // 攻撃モーションの長さ（カットインが消えたあとに攻撃する）
+/* カットインを先に出し、消えてから技を解決する */
+const _pciBase = playCutIn;
+playCutIn = function(side, d, name, kind){ if(window.__noCut && name !== '覚醒！') return; return _pciBase.apply(this, arguments); };
+function actD(side, actor, target, action, idx, then){
+  then = then || function(){};
+  if(!(action === 'attack' || action === 'skill' || action === 'ult') || state.headless){ resolveAction(side, actor, target, action, idx); then(); return; }
+  let nm = '通常攻撃', kind = 'attack';
+  if(action === 'skill'){ const sk = actor.data.skills[idx]; nm = sk ? sk.name : 'スキル'; kind = 'skill'; }
+  else if(action === 'ult'){ nm = actor.data.ultimate.name; kind = 'ult'; }
+  const st = state;
+  try{ playCutIn(side, actor.data, nm, kind); }catch(e){}
+  setTimeout(() => {
+    if(state !== st || state.over) return;
+    window.__noCut = 1;
+    try{ resolveAction(side, actor, target, action, idx); } finally { window.__noCut = 0; }
+    then();
+  }, (kind === 'ult' ? 1150 : 900) + 80);
+}
+function cpuThenFinish(){
+  cpuDecideAndAct(() => {
+    renderBattleUI();
+    if(state.p.hp <= 0){ setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS); return; }
+    setTimeout(finalizeRound, ACTION_ANIM_MS);
+  });
+}
 
 function playerAction(action, skillIdx){
   if(state.over || state.turnLock) return;
@@ -6384,15 +6432,7 @@ function playerAction(action, skillIdx){
     state.turnLock = true;
     updateActionAvailability();
     tmActivate(skillIdx);
-    setTimeout(() => {
-      cpuDecideAndAct();
-      renderBattleUI();
-      if(state.p.hp <= 0){
-        setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS);
-        return;
-      }
-      setTimeout(finalizeRound, ACTION_ANIM_MS);
-    }, 700);
+    setTimeout(cpuThenFinish, 700);
     return;
   }
   if(action === 'guard'){
@@ -6400,53 +6440,25 @@ function playerAction(action, skillIdx){
     updateActionAvailability();
     resolveAction('player', state.p, state.c, 'guard', null);
     renderBattleUI();
-    setTimeout(() => {
-      cpuDecideAndAct();
-      renderBattleUI();
-      if(state.p.hp <= 0){
-        setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS);
-        return;
-      }
-      setTimeout(finalizeRound, ACTION_ANIM_MS);
-    }, ACTION_ANIM_MS);
+    setTimeout(cpuThenFinish, ACTION_ANIM_MS);
     return;
   }
   state.turnLock = true;
   updateActionAvailability();
-
+  const mine = next => actD('player', state.p, state.c, action, skillIdx, () => {
+    renderBattleUI();
+    if(state.c.hp <= 0){ setTimeout(() => { if(handleKO(false)) finalizeRound(); }, ACTION_ANIM_MS); return; }
+    setTimeout(next, ACTION_ANIM_MS);
+  });
   if(state.round.cpuFirst){
     // 相手の方が素早いので、先に相手の行動を解決してからプレイヤーの選んだ行動を反映する
-    cpuDecideAndAct();
-    renderBattleUI();
-    if(state.p.hp <= 0){
-      setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS);
-      return;
-    }
-    setTimeout(() => {
-      resolveAction('player', state.p, state.c, action, skillIdx);
+    cpuDecideAndAct(() => {
       renderBattleUI();
-      if(state.c.hp <= 0){
-        setTimeout(() => { if(handleKO(false)) finalizeRound(); }, ACTION_ANIM_MS);
-        return;
-      }
-      setTimeout(finalizeRound, ACTION_ANIM_MS);
-    }, ACTION_ANIM_MS);
+      if(state.p.hp <= 0){ setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS); return; }
+      setTimeout(() => mine(finalizeRound), ACTION_ANIM_MS);
+    });
   } else {
-    resolveAction('player', state.p, state.c, action, skillIdx);
-    renderBattleUI();
-    if(state.c.hp <= 0){
-      setTimeout(() => { if(handleKO(false)) finalizeRound(); }, ACTION_ANIM_MS);
-      return;
-    }
-    setTimeout(() => {
-      cpuDecideAndAct();
-      renderBattleUI();
-      if(state.p.hp <= 0){
-        setTimeout(() => { if(handleKO(true)) finalizeRound(); }, ACTION_ANIM_MS);
-        return;
-      }
-      setTimeout(finalizeRound, ACTION_ANIM_MS);
-    }, ACTION_ANIM_MS);
+    mine(cpuThenFinish);
   }
 }
 
@@ -6623,16 +6635,17 @@ function cpuPreRound(){
   state.cpuGuardUsed = true;
   resolveAction('cpu', c, p, 'guard', null);
 }
-function cpuDecideAndAct(){
+function cpuDecideAndAct(cb){
   const c = state.c, p = state.p;
+  cb = cb || function(){};
   if(c.stunned){
     c.stunned = false;
     addLog(`💫 ${c.data.name} は気絶していて動けない！`, 'skill');
-    return;
+    cb(); return;
   }
-  if(state.cpuGuardUsed){ state.cpuGuardUsed = false; return; }
+  if(state.cpuGuardUsed){ state.cpuGuardUsed = false; cb(); return; }
   const ch = aiChoose(c, p, cpuLevel);
-  resolveAction('cpu', c, p, ch.action, ch.idx);
+  actD('cpu', c, p, ch.action, ch.idx, cb);
 }
 
 function applyPoisonTick(f, side){
@@ -6722,12 +6735,13 @@ function beginRound(){
     updateActionAvailability();
     setTimeout(() => {
       if(state.over) return;
-      cpuDecideAndAct();
-      renderBattleUI();
-      if(state.p.hp <= 0){
-        if(!handleKO(true)) return;
-      }
-      setTimeout(finalizeRound, ACTION_ANIM_MS);
+      cpuDecideAndAct(() => {
+        renderBattleUI();
+        if(state.p.hp <= 0){
+          if(!handleKO(true)) return;
+        }
+        setTimeout(finalizeRound, ACTION_ANIM_MS);
+      });
     }, ACTION_ANIM_MS);
     return;
   }
@@ -7451,8 +7465,22 @@ function evoText(c){
   const w = evoWins(c.name), lv = evoLevelFromWins(w);
   const next = EVO[lv + 1];
   return lv > 0
-    ? `⭐進化Lv${lv}「${EVO[lv].name}」 HP/攻撃 +${Math.round((EVO[lv].hp-1)*100)}%` + (next ? `（次まであと${next.need - w}勝）` : '（最終形態）')
-    : `進化まであと${EVO[1].need - w}勝（勝利${w}）`;
+    ? `⭐覚醒Lv${lv}「${EVO[lv].name}」 HP/攻撃 +${Math.round((EVO[lv].hp-1)*100)}%` + (next ? `（次のLvまであと${next.need - w}勝）` : '（最終形態）')
+    : `覚醒Lv1まであと${EVO[1].need - w}勝（今 ${w}/${EVO[1].need}勝）`;
+}
+/* 覚醒の条件（図鑑・キャラ詳細用） */
+function evoCondHTML(c){
+  const w = evoWins(c.name), lv = evoLevelFromWins(w), next = EVO[lv + 1];
+  const pct = next ? Math.round((w - EVO[lv].need) / (next.need - EVO[lv].need) * 100) : 100;
+  const pinch = c.exChar || c.name === 'アスラ'
+    ? 'アスラは通常のピンチ覚醒ではなく、専用の覚醒「修羅覚醒」と「潜在能力全解放」を持っています（詳細は技の欄）。'
+    : 'バトル中にHPが20%以下になると、そのターンの終わりに1回だけ発動。HPが全回復し、技がすべて覚醒技に変わります（CPU戦・クエスト）。';
+  return `<div class="v4card"><div class="v4small">覚醒の条件</div>
+    <div style="margin:7px 0"><b>① 覚醒Lv（ずっと残る強化）</b>
+      <div class="v4small">このキャラで<b>バトルに勝つ</b>か、<b>ガチャでダブる</b>と +1勝。<b>3勝でLv1</b>・<b>8勝でLv2</b>・<b>15勝でLv3</b>（極限進化）。ステータスが上がり、技も強化されます。</div>
+      <div class="v4bar" style="margin:5px 0"><i style="width:${pct}%"></i></div>
+      <div class="v4small" style="color:#fff">${w}勝 ／ ${next ? `覚醒Lv${lv + 1}まで あと${next.need - w}勝` : '最終形態に到達！'}</div></div>
+    <div style="margin:7px 0"><b>② ピンチ覚醒（バトル中・1回だけ）</b><div class="v4small">${pinch}</div></div></div>`;
 }
 function evoBonusText(lv){
   const e = EVO[lv];
@@ -8127,16 +8155,17 @@ function pvpTryResolve(){
     }
     const actor = side === 'player' ? state.p : state.c;
     const target = side === 'player' ? state.c : state.p;
-    resolveAction(side, actor, target, ch.action, ch.idx);
-    renderBattleUI();
-    if(target.hp <= 0){
-      setTimeout(() => {
-        if(pvp.team) pvpAfterKO(() => finalizeRound());
-        else if(handleKO(target === state.p)) finalizeRound();
-      }, ACTION_ANIM_MS);
-      return;
-    }
-    setTimeout(() => run(i+1), ACTION_ANIM_MS);
+    actD(side, actor, target, ch.action, ch.idx, () => {
+      renderBattleUI();
+      if(target.hp <= 0){
+        setTimeout(() => {
+          if(pvp.team) pvpAfterKO(() => finalizeRound());
+          else if(handleKO(target === state.p)) finalizeRound();
+        }, ACTION_ANIM_MS);
+        return;
+      }
+      setTimeout(() => run(i+1), ACTION_ANIM_MS);
+    });
   };
   run(0);
 }
@@ -8717,17 +8746,87 @@ function equip(name, slot, id){
   save();
 }
 const BOOK_COIN = { bk1:40, bk2:100, bk3:250, bk4:500, bk5:1000 };
-function useBook(name, slot, id){
-  if(freeCount(id) <= 0 || !ITEMS[id] || ITEMS[id].slot !== 'book') return false;
-  if(bookLv(name, slot) >= 5) return false;
+function bookTry(name, slot, id){
+  if(freeCount(id) <= 0 || !ITEMS[id] || ITEMS[id].slot !== 'book') return '書がありません';
+  if(bookLv(name, slot) >= 5) return '最大レベルです';
   const bc = BOOK_COIN[id] || 0, cap = Math.min(5, 1 + Math.floor(rankOf(S.exp).lv / 2));
-  if(bookLv(name, slot) >= cap){ toast(`技のレベルを上げるにはランクLv${(bookLv(name, slot) * 2)} が必要です（いま Lv${rankOf(S.exp).lv}）`); return false; }
-  if(S.coins < bc){ toast(`コインが足りません（あと🪙${bc - S.coins}）`); return false; }
+  if(bookLv(name, slot) >= cap) return `技のレベルを上げるにはランクLv${(bookLv(name, slot) * 2)} が必要です（いま Lv${rankOf(S.exp).lv}）`;
+  if(S.coins < bc) return `コインが足りません（あと🪙${bc - S.coins}）`;
   S.coins -= bc;
   S.items[id] = have(id) - 1;
   S.books[name] = S.books[name] || {};
   S.books[name][slot] = Math.min(BOOK_TH[3], (S.books[name][slot] || 0) + ITEMS[id].exp);
+  return '';
+}
+function useBook(name, slot, id){
+  const r = bookTry(name, slot, id); if(r){ toast(r); return false; }
   save(); return true;
+}
+/* まとめて使う：n個（0=Lv5になるまで必要な分）*/
+function useBookMany(name, slot, id, n){
+  const ex0 = (S.books[name] && S.books[name][slot]) || 0, lv0 = bookLv(name, slot), per = (ITEMS[id] && ITEMS[id].exp) || 1;
+  if(!n) n = Math.max(1, Math.ceil((BOOK_TH[3] - ex0) / per));
+  let used = 0, why = '';
+  while(used < n){ const r = bookTry(name, slot, id); if(r){ why = r; break; } used++; }
+  if(used) save();
+  return { used, lv0, lv1: bookLv(name, slot), why };
+}
+function bookReport(r){
+  if(!r.used){ toast(r.why || '使えませんでした'); return; }
+  toast(`📘 ${r.used}個使用：Lv${r.lv0} → Lv${r.lv1}` + (r.why && r.lv1 < 5 ? `（${r.why}）` : ''));
+  sfx(r.lv1 > r.lv0 ? 'win' : 'buff');
+}
+/* 全部の技をまとめて自動強化（余らないよう、必要EXPに近い書から使う） */
+function autoBooks(){
+  const me = gearChar, d = evolveData(charData(me), evoLevelOf(me)), slots = d.skills.map((_, i) => i).concat(['u']);
+  const bk = Object.keys(ITEMS).filter(id => ITEMS[id].slot === 'book').sort((a, b) => ITEMS[a].exp - ITEMS[b].exp);
+  let used = 0, up = 0, why = '';
+  slots.forEach(sl => {
+    for(let g = 0; g < 40; g++){
+      const ex = (S.books[me] && S.books[me][sl]) || 0, left = BOOK_TH[3] - ex;
+      if(left <= 0 || bookLv(me, sl) >= 5) break;
+      const av = bk.filter(id => freeCount(id) > 0); if(!av.length){ why = why || '書が足りません'; break; }
+      const fit = av.filter(id => ITEMS[id].exp <= left);
+      const id = fit.length ? fit[fit.length - 1] : av[0];
+      const l0 = bookLv(me, sl), r = bookTry(me, sl, id);
+      if(r){ why = why || r; break; }
+      used++; if(bookLv(me, sl) > l0) up++;
+    }
+  });
+  if(used) save();
+  toast(used ? `📘 書を${used}個使用し、Lvが${up}回上がりました` + (why ? `（${why}）` : '') : (why || '強化できる技がありません'));
+  if(used) sfx('win');
+  view('gear');
+}
+function bookN(slot, id, n){
+  bookReport(useBookMany(gearChar, slot, id, n));
+  if(curModal) curModal.remove(); view('gear');
+}
+
+/* ---- 装備・強化のキャラ選択（大きなグリッド＋検索＋◀▶） ---- */
+function gearList(){
+  return roster.slice().sort((a, b) => ((S.fav || {})[b.name] ? 1 : 0) - ((S.fav || {})[a.name] ? 1 : 0));
+}
+function gearStep(d){
+  const l = gearList(); if(!l.length) return;
+  let i = l.findIndex(c => c.name === gearChar); i = (i + d + l.length) % l.length;
+  pickChar(l[i].name);
+}
+function gearGrid(q){
+  q = (q || '').trim();
+  const l = gearList().filter(c => !q || c.name.indexOf(q) >= 0);
+  return l.length ? l.map(c => { const im = portraitOf(c), r = charRarity(c.name);
+    return `<div class="gp-c ${c.name === gearChar ? 'on' : ''}" onclick="V4.gearGo('${esc(c.name)}')">${im ? `<img src="${im}">` : `<div class="gp-e">${c.emoji || ''}</div>`}<div class="gp-n">${(S.fav || {})[c.name] ? '★' : ''}${esc(c.name)}</div><span class="v4tag rar-${r}">${r}</span>${hasGear(c.name) ? '<i class="gp-g">🎒</i>' : ''}</div>`; }).join('')
+    : '<div class="v4small" style="grid-column:1/-1;text-align:center">見つかりません</div>';
+}
+function gearPick(){
+  curModal = modal(`<div class="v4h" style="margin-top:0">キャラを選ぶ</div><input id="gpq" class="gp-q" placeholder="名前で検索" oninput="V4.gearFilter(this.value)"><div class="v4small" style="margin:2px 0 6px">★お気に入りが先頭／🎒は装備中のキャラ</div><div class="gp-grid" id="gpg">${gearGrid('')}</div>`);
+}
+function gearFilter(v){ const g = document.getElementById('gpg'); if(g) g.innerHTML = gearGrid(v); }
+function gearGo(name){ if(curModal && curModal.remove) curModal.remove(); pickChar(name); }
+function gearPickerHTML(me){
+  const im = portraitOf(me);
+  return `<div class="gr-pick"><button class="secondary" onclick="V4.gearStep(-1)">◀</button><button class="gr-pb" onclick="V4.gearPick()">${im ? `<img src="${im}">` : ''}<span><b>${esc(me.name)}</b><small>タップでキャラを選ぶ（全${roster.length}体）</small></span></button><button class="secondary" onclick="V4.gearStep(1)">▶</button></div>`;
 }
 
 /* ---------- キャラのレア度（図鑑・演出用の表示ランク。強さには影響しない） ---------- */
@@ -8773,12 +8872,44 @@ resolveActionCore = function(side, actor, target, action, idx){
     }
   }
 };
+/* ---------- キャラごとのレベル（Lv1〜99）：バトルでEXPが入り、レベルが上がるほどHP・攻撃・防御UP（CPU戦・クエスト）---------- */
+const CLV_MAX = 99;
+const clNeed = l => 20 + 6 * l;                       // Lv l → l+1 に必要なEXP
+function clInfo(name){ let xp = ((S.clv || {})[name]) | 0, l = 1; while(l < CLV_MAX && xp >= clNeed(l)){ xp -= clNeed(l); l++; } return { lv:l, cur:l >= CLV_MAX ? 0 : xp, need:l >= CLV_MAX ? 0 : clNeed(l) }; }
+const clLv = name => clInfo(name).lv;
+const clPct = l => +((l - 1) * 0.3).toFixed(1);       // Lv99で +29.4%
+function clAdd(name, n){ S.clv = S.clv || {}; const b = clLv(name); S.clv[name] = (S.clv[name] | 0) + n; const a = clLv(name); return { up:a > b, before:b, after:a }; }
+window.clLv = clLv; window.clInfo = clInfo;
+function clText(name){ const c = clInfo(name); return `Lv ${c.lv}／${CLV_MAX}　HP・攻撃・防御 +${clPct(c.lv)}%`; }
+const _mcfCl = makeCpuFighter;
+makeCpuFighter = function(d, lv){
+  const f = _mcfCl.apply(this, arguments), k = window.__cpuBoost || 0;
+  if(k > 0 && !pvp.on){ f.statMul = (f.statMul || 1) * (1 + k); f.maxHp = Math.round(f.maxHp * (1 + k)); f.hp = f.maxHp; }
+  return f;
+};
+Hooks.on('battle:end', info => {
+  try{
+    window.__cpuBoost = 0;
+    if(info.pvp) return;
+    const q = state && state.quest;
+    let xp = info.won ? 24 : 8;
+    if(q && info.won) xp += q.tower ? Math.min(40, q.tower) : 16;
+    if(q && q.isTrain && q.trKind === 'exp' && info.won) xp *= 3;
+    const names = (teamMode && playerTeamData && playerTeamData.length) ? playerTeamData.map(c => c.name) : [info.player];
+    const ups = [];
+    names.forEach(n => { if(!n) return; const r = clAdd(n, xp); if(r.up) ups.push(`${n} ⬆ Lv${r.after}`); });
+    save();
+    later(() => toast(`📈 キャラEXP +${xp}` + (ups.length ? '　' + ups.join('／') : '')), 6800);
+  }catch(e){ console.warn('clv', e); }
+});
 function applyToFighter(f){
   const name = f.data.name, b = eqBonus(name);
   f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + b.atk), def: (f.evo.def || 1) * (1 + b.def), crt: (f.evo.crt || 0) + b.crt });
   const lb = lbOf(name), lm = 1 + lbPct(lb) / 100;   // 凸：1〜5凸は+3%ずつ、6〜10凸は+2%ずつ（最大+25%、CPU戦のみ）。3凸以上で会心率もUP
   if(lb){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * lm, def: f.evo.def * lm, crt: (f.evo.crt || 0) + lbCrt(lb) / 100 }); }
-  const hpMax = Math.round(f.maxHp * (1 + b.hp) * lm); f.maxHp = hpMax; f.hp = hpMax;
+  const cl = clLv(name), cm = 1 + clPct(cl) / 100;   // キャラLv：1Lvごとに+0.3%（Lv99で+29.4%）＋会心+0.05%
+  if(cl > 1){ f.evo = Object.assign({}, f.evo, { atk: f.evo.atk * cm, def: f.evo.def * cm, crt: (f.evo.crt || 0) + (cl - 1) * 0.0005 }); }
+  const hpMax = Math.round(f.maxHp * (1 + b.hp) * lm * cm); f.maxHp = hpMax; f.hp = hpMax;
   f.eqSpd = 1 + b.spd; f._bk = bookLevels(name); f._v4 = true;
   try{ const bl = bondLv(name); if(bl) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + 0.005 * bl) }); }catch(e){}
   try{ const om = omToday(); if(om && om.buff > 0 && om.up) f.evo = Object.assign({}, f.evo, { atk: (f.evo.atk || 1) * (1 + om.up) }); }catch(e){}
@@ -8789,6 +8920,7 @@ startBattle = function(){
   const q = pendingQuest; pendingQuest = null;
   const prevLv = cpuLevel;
   if(q && !pvp.on){ cpuLevel = q.lv; }
+  try{ window.__cpuBoost = pvp.on ? 0 : (q ? .5 : .85) * clPct(clLv(selected.name)) / 100; }catch(e){ window.__cpuBoost = 0; }   // 相手も自分のLvに合わせて少し強くなる
   _startBattle();
   if(q) cpuLevel = prevLv;
   if(pvp.on) return;
@@ -9443,9 +9575,9 @@ function gearHTML(){
   const me = curChar(); gearChar = me.name;
   const e = S.equip[me.name] || {}, b = eqBonus(me.name), im = portraitOf(me) || fullOf(me);
   const evo = evoLevelOf(me.name), r = charRarity(me.name);
-  let h = chipsHTML(me.name, 'V4.pickChar');
+  let h = gearPickerHTML(me);
   h += `<div class="gr-me" style="--hc:${me.c1 || '#4a3ad8'}">${im ? `<img src="${im}">` : ''}<div class="v4sp"><div class="nm">${esc(me.name)} <span class="v4tag rar-${r}">${r}</span></div>
-    <div class="v4small" style="color:#fff">${esc(me.role || '')} ${elemBadge(me, 12)}</div><div class="bn">合計ボーナス：${bonusText(b) || 'なし'}</div><div class="v4small">覚醒Lv ${evo}</div>${hasGear(me.name) ? '<div class="v4small" style="color:#7dff9a">🔒 装備中：自動バランス調整の対象外</div>' : ''}</div></div>`;
+    <div class="v4small" style="color:#fff">${esc(me.role || '')} ${elemBadge(me, 12)}</div><div class="bn">合計ボーナス：${bonusText(b) || 'なし'}</div><div class="v4small" style="color:#fff">Lv ${clInfo(me.name).lv} <span style="opacity:.7">/ ${CLV_MAX}</span>　覚醒Lv ${evo}</div><div class="v4bar" style="margin:3px 0"><i style="width:${clInfo(me.name).need ? Math.round(clInfo(me.name).cur / clInfo(me.name).need * 100) : 100}%"></i></div><div class="v4small">${clInfo(me.name).need ? `次のLvまで EXP ${clInfo(me.name).cur}/${clInfo(me.name).need}　` : '最大Lv　'}効果 +${clPct(clInfo(me.name).lv)}%</div>${hasGear(me.name) ? '<div class="v4small" style="color:#7dff9a">🔒 装備中：自動バランス調整の対象外</div>' : ''}</div></div>`;
   h += '<div class="hm-sec">装備</div><div class="gr-slots">';
   SLOTS.forEach(([sl, nm]) => {
     const id = e[sl], it = id && ITEMS[id];
@@ -9454,7 +9586,7 @@ function gearHTML(){
   });
   h += '</div>';
   const d = evolveData(me, evo); const rows = d.skills.map((sk, i) => [i, sk.name, sk.desc]).concat([['u', d.ultimate.name, d.ultimate.desc]]);
-  h += '<div class="hm-sec">技の強化（技の書）</div><div class="v4small" style="text-align:center">Lvが上がるごとに威力+8%（回復は回復量+8%）。非攻撃技はLv3でCT-1。最大Lv5。</div>';
+  h += '<div class="hm-sec">技の強化（技の書）</div><div class="v4small" style="text-align:center">Lvが上がるごとに威力+8%（回復は回復量+8%）。非攻撃技はLv3でCT-1。最大Lv5。</div><button style="width:100%;margin:6px 0" onclick="V4.autoBooks()">📘 全部の技をまとめて強化（持っている書を自動で使う）</button>';
   rows.forEach(([slot, name, desc]) => {
     const ex = (S.books[me.name] && S.books[me.name][slot]) || 0, lv = lvOfExp(ex), nxt = BOOK_TH[lv - 1];
     const prev = lv > 1 ? BOOK_TH[lv - 2] : 0;
@@ -9535,7 +9667,7 @@ function pickItem(sl){
 function doEquip(sl, id){ equip(gearChar, sl, id); if(curModal) curModal.remove(); view('gear'); }
 function pickBook(slot){
   const ids = Object.keys(ITEMS).filter(id => ITEMS[id].slot === 'book' && freeCount(id) > 0);
-  curModal = modal('<div class="v4h" style="margin-top:0">使う書を選ぶ</div>' + (ids.length ? ids.map(id => `<div class="v4slot" onclick="V4.doBook('${slot}','${id}')"><div class="v4ico rar-${ITEMS[id].r}">${itemIcon(id)}</div><div class="v4sp"><span class="v4tag rar-${ITEMS[id].r}">${ITEMS[id].r}</span>${ITEMS[id].n} ×${have(id)}<div class="v4small">EXP +${ITEMS[id].exp}　🪙${BOOK_COIN[id] || 0}</div></div></div>`).join('') : '<div class="v4small">書を持っていません。クエストやガチャで手に入ります。</div>'));
+  curModal = modal('<div class="v4h" style="margin-top:0">使う書を選ぶ</div><div class="v4small" style="margin-bottom:4px">「1個」「5個」「Lv5まで」でまとめて使えます（コインと、ランクによる上限の範囲内）</div>' + (ids.length ? ids.map(id => `<div class="v4slot" style="cursor:default"><div class="v4ico rar-${ITEMS[id].r}">${itemIcon(id)}</div><div class="v4sp"><span class="v4tag rar-${ITEMS[id].r}">${ITEMS[id].r}</span>${ITEMS[id].n} ×${freeCount(id)}<div class="v4small">EXP +${ITEMS[id].exp}　🪙${BOOK_COIN[id] || 0}／個</div><div class="bk-btns"><button class="secondary" onclick="V4.bookN('${slot}','${id}',1)">1個</button><button class="secondary" onclick="V4.bookN('${slot}','${id}',5)">5個</button><button onclick="V4.bookN('${slot}','${id}',0)">Lv5まで</button></div></div></div>`).join('') : '<div class="v4small">書を持っていません。クエストやガチャで手に入ります。</div>'));
 }
 function doBook(slot, id){
   const before = bookLv(gearChar, slot);
@@ -9661,9 +9793,10 @@ function dexDetail(name){
     <div class="v4card"><div class="v4small">パッシブ</div><b>${esc(c.passive.name)}</b> <span class="v4small">【${esc(c.passive.trait || '')}】</span><div class="v4small">${esc(c.passive.desc || '')}</div></div>
     <div class="v4card"><div class="v4small">技</div>${ce.skills.map(s => `<div style="margin:5px 0"><b>${esc(s.name)}</b> <span class="v4small">CT${s.cd}</span><div class="v4small">${esc(s.desc || '')}</div></div>`).join('')}
       <div style="margin:5px 0"><b style="color:#ffd24a">★ ${esc(ce.ultimate.name)}</b><div class="v4small">${esc(ce.ultimate.desc || '')}</div></div></div>
-    <div class="v4card"><div class="v4small">進化で変わる技（勝利を重ねる／ダブりで進化）</div>${[1,2,3].map(lv => `<div style="margin:6px 0;${evo >= lv ? '' : 'opacity:.6'}"><b>${EVO[lv].name}</b> <span class="v4small">${evo >= lv ? '✔ 解放済み' : `あと${Math.max(0, EVO[lv].need - evoWins(name))}勝`}</span>${evoPreview(c, lv).map(x => `<div class="v4small" style="color:#fff">${esc(x.from)} ▶ <b style="color:#ffd24a">${esc(x.to)}</b></div>`).join('')}</div>`).join('')}</div>
+    ${evoCondHTML(c)}
+    <div class="v4card"><div class="v4small">覚醒Lvアップで変わる技</div>${[1,2,3].map(lv => `<div style="margin:6px 0;${evo >= lv ? '' : 'opacity:.6'}"><b>${EVO[lv].name}</b> <span class="v4small">${evo >= lv ? '✔ 解放済み' : `あと${Math.max(0, EVO[lv].need - evoWins(name))}勝`}</span>${evoPreview(c, lv).map(x => `<div class="v4small" style="color:#fff">${esc(x.from)} ▶ <b style="color:#ffd24a">${esc(x.to)}</b></div>`).join('')}</div>`).join('')}</div>
     <div class="v4card"><div class="v4small">凸（ガチャでダブるごとに強化・最大10凸）</div><div style="font-size:1.2rem;color:#ffd24a;letter-spacing:2px">${lbStars(name)}</div><div class="v4small">${lbOf(name) ? `CPU戦でHP・攻撃・防御 +${lbPct(lbOf(name))}%${lbOf(name) >= 3 ? '・会心率+' + lbCrt(lbOf(name)) + '%' : ''}` : 'まだ凸していません。キャラガチャで同じキャラを引くと凸が進みます。'}（2人対戦には影響しません）</div></div>
-    <div class="v4card"><div class="v4small">記録</div><div class="v4small" style="color:#fff">対戦 ${ds.app}回 ／ 勝利 ${ds.wins}回 ／ 覚醒Lv ${evo}${q ? `<br>クエスト出現：${q}` : ''}</div></div>
+    <div class="v4card"><div class="v4small">記録</div><div class="v4small" style="color:#fff">対戦 ${ds.app}回 ／ 勝利 ${ds.wins}回 ／ Lv ${clLv(name)} ／ 覚醒Lv ${evo}${q ? `<br>クエスト出現：${q}` : ''}</div></div>
     ${(() => { const L = CHAR_LINES[name] || {}, ev = [['start', '開始'], ['atk', '攻撃'], ['ult', '必殺'], ['lowhp', 'ピンチ'], ['win', '勝利'], ['ko', '敗北']].filter(([k]) => L[k] && L[k].length); return ev.length ? `<div class="v4card"><div class="v4small">🗨 ボイス（セリフ）</div>${ev.map(([k, l]) => `<div class="dx-vo"><span>${l}</span>「${esc(L[k][0])}」</div>`).join('')}</div>` : ''; })()}
     <div class="btnrow"><button class="secondary" onclick="V47.favToggle('${esc(name)}')">${(S.fav || {})[name] ? '★ お気に入り解除' : '☆ お気に入りに追加'}</button><button onclick="V47.dexGo('${esc(name)}')">このキャラで挑戦</button></div>`);
 }
@@ -10084,7 +10217,7 @@ function pullChar(minR){
   const pk0 = pickupChar(); if(hard || (pk0 && c.name === pk0.name)) S.cpityHard = 0;
   const had = isOwned(c.name);
   if(!had){ unlockChar(c.name); const ri = charRevealItem(charData(c.name), true); if(hard) ri.sub = '🎯 天井で確定！'; return ri; }
-  addEvoWin(c.name);
+  addEvoWin(c.name); try{ clAdd(c.name, 40); }catch(e){}
   const before = lbOf(c.name), it = charRevealItem(charData(c.name), false);
   if(before < LB_MAX){ S.lb[c.name] = before + 1; S.coins += DUPE_RF; it.sub = `${hard ? '🎯 天井で確定！<br>' : ''}凸 +1！　${lbStars(c.name)}（HP・攻撃・防御 +${lbPct(before + 1)}%）<br>進化ポイント +1 ／ 🪙 +${DUPE_RF}`; }
   else { S.coins += DUPE_RFM; it.sub = `凸MAX！　★★★★★★★★★★<br>進化ポイント +1 ／ 🪙 +${DUPE_RFM}`; }
@@ -11084,6 +11217,15 @@ const NEWT2 = {
   awUlt3:  { aw:1, ult:1, n:'覚醒奥義・氷', m:[2.0, 2.0], foeSpd:.3, foeAtk:.2, dur:3, cd:4 },
   unleash: { aw:1, n:'潜在能力全解放', unl:1, heal:1, cd:99 }
 };
+Object.assign(NEWT2, {
+  asRage:  { aw:1, n:'修羅の闘気', selfAtk:.3, selfDef:.2, heal:.12, dur:3, cd:4 },
+  asUlt:   { aw:1, ult:1, n:'紅蓮・紫焔天昇', m:[1.9, 1.9], burn:[.08, 3], pierce:.25, cd:4 },
+  asAw1:   { aw:1, n:'修羅・紅蓮拳', m:[1.75, 1.75], pierce:.3, cd:2 },
+  asAw2:   { aw:1, n:'修羅・業火乱舞', m:[1.35, 1.35], hits:5, cd:3 },
+  asAw3:   { aw:1, n:'修羅・紫焔貫', m:[1.25, 1.25], pierce:.6, burn:[.08, 3], cd:3 },
+  asAw4:   { aw:1, n:'修羅・闘神降臨', selfAtk:.4, selfDef:.3, selfSpd:.2, heal:.2, dur:3, cd:4 },
+  asAwUlt: { aw:1, ult:1, n:'修羅・天昇滅却', m:[2.6, 2.6], burn:[.1, 3], pierce:.4, cd:4 }
+});
 const NEWT2D = {
   twin:'2回連続で斬りつける', flurry:'4回連続で撃ち込む', vamp:'与えたダメージの半分ぶん、HPを吸い取る', frost:'攻撃しつつ、敵の素早さを下げる', toxic:'攻撃して毒を与える。毎ターンじわじわ削る', flame:'攻撃して火傷を与える。毎ターン削る', shock:'攻撃して敵を1ターン気絶させる（CT長め）',
   ironwall:'防御を上げて、反撃の構えを取る', rally:'攻撃と防御を同時に上げる', meditate:'HPを回復し、状態異常も治す', sacrifice:'自分のHPを削って大ダメージを与える', finisher:'敵のHPが少ないほど大ダメージ', timewarp:'他の技のCTを縮め、素早さを上げる', weaken:'敵の攻撃・防御・素早さをまとめて下げる',
@@ -11093,6 +11235,11 @@ const NEWT2D = {
   uBarrage:'8連続の雷撃', uSnipe:'防御をほぼ無視する超大ダメージ', uSanct:'HP回復・バリア・状態異常解除', uCurse:'攻撃・防御を下げ、毒も与える呪い', uInferno:'防御を貫く攻撃＋強い火傷', uCommand:'攻防速アップ＋回復で一気に立て直す', uPlunder:'大ダメージ＋HP吸収＋敵のCT延長',
   awDmg:'防御を一部無視する強力な一撃', awHeal:'HPを回復してバリアを張る', awRally:'攻撃と防御を大きく上げる', awMulti:'3回連続の乱舞', awUlt:'大ダメージ＋HP吸収', awBurn:'強力な攻撃＋火傷', awFrost:'攻撃して敵の素早さ・防御を下げる', awVamp:'攻撃してHPを大きく吸収', awGuard:'バリア・反撃・防御アップで固める', awStun:'攻撃して敵を気絶させる', awUlt2:'超大ダメージ＋火傷', awUlt3:'超大ダメージ＋敵の素早さ・攻撃を下げる'
 };
+Object.assign(NEWT2D, {
+  asRage:'攻撃と防御を大きく上げ、HPも少し回復する', asUlt:'防御を貫く大ダメージ＋火傷',
+  asAw1:'防御を一部無視する炎の拳', asAw2:'5連続で炎の拳を叩き込む', asAw3:'防御を大きく貫き、火傷を与える',
+  asAw4:'攻撃・防御・素早さを大きく上げ、HPを回復する', asAwUlt:'防御を貫く超大ダメージ＋強力な火傷'
+});
 Object.keys(NEWT2D).forEach(k => { if(NEWT2[k]) NEWT2[k].d = NEWT2D[k]; });
 const pcT = v => Math.round(v * 100) + '%';
 function comboText(sp, a){
@@ -11240,12 +11387,29 @@ function awBanner(label, sub){
     document.body.appendChild(w); later(() => w.remove(), 2000);
   }catch(e){}
 }
+/* アスラ専用の覚醒「修羅覚醒」：HP20%以下で1回だけ。HPが6割回復し、全ての技が修羅の技に・攻撃+20%・会心+5% */
+function asuraAwaken(side, f){
+  const AA = ['asAw1', 'asAw2', 'asAw3', 'asAw4'];
+  const mk = id => { const sp = NEWT2[id]; return { name:sp.n, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'修羅覚醒：' + (sp.d || '') + '（' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) + '）' }; };
+  f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => (s.type === 'unleash' || /使用済み/.test(s.name || '')) ? s : mk(AA[i] || 'asAw1')), ultimate: mk('asAwUlt') });
+  f.hp = Math.min(f.maxHp, f.hp + Math.round(f.maxHp * .6)); f.burnTurns = 0; f.poisonTurns = 0; f.stunned = false;
+  f.skillCd = f.skillCd.map((c, i) => f.data.skills[i].type === 'unleash' ? c : 0); f.ultCd = 0;
+  ['atk', 'def', 'spd'].forEach(k => { if(f.mods[k] < 1){ f.mods[k] = 1; f.modTurns[k] = 0; } });
+  f.evo = Object.assign({}, f.evo, { atk:(f.evo.atk || 1) * 1.2, crt:(f.evo.crt || 0) + .05 });
+  try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(e){}
+  awBanner('修羅覚醒！', 'アスラ ― HPが大きく回復・全ての技が修羅の技に変化');
+  addLog('🔥 アスラが修羅覚醒！HPが大きく回復し、技がすべて修羅の技に変わった！攻撃力も上昇（一度だけ）', 'result');
+  try{ renderBattleUI(); if(side === 'player'){ renderActionRow(); updateActionAvailability(); refreshActionChips(); } }catch(e){}
+  try{ localStorage.setItem('battleArena_bc', ''); }catch(e){}
+}
 function awakenCheck(){
+  let any = false;
   try{
-    if(!state || state.over || pvp.on) return;
+    if(!state || state.over || pvp.on) return false;
     [['player', state.p], ['cpu', state.c]].forEach(([side, f]) => {
-      if(!f || f._awk || (f.data && f.data.exChar) || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
-      f._awk = 1; try{ localStorage.setItem('battleArena_bc', '覚醒の処理中:' + Date.now()); }catch(e){}
+      if(!f || f._awk || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
+      f._awk = 1; any = true; try{ localStorage.setItem('battleArena_bc', '覚醒の処理中:' + Date.now()); }catch(e){}
+      if(f.data.exChar){ asuraAwaken(side, f); return; }
       const mkA = id => { const sp = NEWT2[id]; return { name:sp.n, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'覚醒技：' + (sp.d || '') + '（' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) + '）' }; };
       const h = hashS(String(f.data.name)), pk = i => { const P = AW_POOL[Math.min(i, 3)]; return P[(h >>> (i * 2)) % P.length]; };
       f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => mkA(pk(i))), ultimate: mkA(AW_ULT[h % AW_ULT.length]) });
@@ -11255,19 +11419,30 @@ function awakenCheck(){
       try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(e){}
       awBanner('覚醒！', f.data.name + ' ― HP全回復・技が覚醒技に変化');
       addLog(`🔥 ${f.data.name} が覚醒！HPが全回復し、技がすべて覚醒技に変わった！（一度だけ）`, 'result');
-      try{ renderBattleUI(); }catch(e){}
+      try{ renderBattleUI(); if(side === 'player'){ renderActionRow(); updateActionAvailability(); refreshActionChips(); } }catch(e){}
       try{ localStorage.setItem('battleArena_bc', ''); }catch(e){}
     });
   }catch(e){ console.warn('awaken', e); }
+  return any;
 }
 const _fhAw = fighterHTML;
 fighterHTML = function(f, isP){ let h = _fhAw.apply(this, arguments); if(f && (f._awk || f._unl)) h = h.replace(/(<span class="name"[^>]*>)/, '$1<span class="awk-badge">' + (f._unl ? '解放中' : '覚醒中') + '</span>'); return h; };
 const _rbAw = renderBattleUI;
 renderBattleUI = function(){ const r = _rbAw.apply(this, arguments); try{ const fg = document.getElementById('stageFigures').children; [[fg[0], state.p], [fg[1], state.c]].forEach(([el, f]) => { if(el && f) el.classList.toggle('awk-on', !!(f._awk || f._unl)); }); }catch(e){} return r; };
-const _raAw = resolveAction;
-resolveAction = function(){ const r = _raAw.apply(this, arguments); awakenCheck(); return r; };
-const _frAw = finalizeRound;
-finalizeRound = function(){ const r = _frAw.apply(this, arguments); awakenCheck(); return r; };
+/* 覚醒はターンの終わり（両者の行動が終わったあと）に行う。敵の技の演出と重ならない */
+const _frrAw = finalizeRoundRest;
+finalizeRoundRest = function(){
+  const self = this, args = arguments;
+  try{
+    if(state && !state.over && !pvp.on && awakenCheck()){
+      state.turnLock = true;
+      try{ updateActionAvailability(); }catch(e){}
+      setTimeout(() => { if(state && !state.over) _frrAw.apply(self, args); }, 2500);
+      return;
+    }
+  }catch(e){ console.warn('awaken2', e); }
+  return _frrAw.apply(this, arguments);
+};
 
 
 /* ---------- Ver4.23 唯一のEXキャラ「アスラ」（EXステージのクリアで稀にドロップ） ---------- */
@@ -11277,11 +11452,12 @@ const EXCHAR = { name:'アスラ', role:'ファイター／ブレイカー', emo
   quote:'……全部、燃やし尽くす。',
   stats:{ hp:680, atk:166, def:146, spd:868, crt:808 },
   skills:[
-    { name:'紅蓮の拳', type:'dmg', mult:1.06, cd:2, desc:'炎を纏った拳で殴りつける' },
-    { name:'業火の連打', type:'flurry', mult:1.01, cd:3, desc:'炎の拳を連続で叩き込む' },
-    { name:'紫焔の炎貫', type:'pburn', mult:0.79, cd:4, desc:'防御を貫き、火傷を負わせる' },
+    { name:'紅蓮の拳', type:'dmg', mult:1.15, cd:2, desc:'炎を纏った拳で殴りつける' },
+    { name:'業火の連打', type:'flurry', mult:1.1, cd:3, desc:'炎の拳を連続で叩き込む' },
+    { name:'紫焔の炎貫', type:'pburn', mult:0.9, cd:3, desc:'防御を貫き、火傷を負わせる' },
+    { name:'修羅の闘気', type:'asRage', cd:4, desc:'攻撃と防御を大きく上げ、HPも少し回復する' },
     { name:'潜在能力全解放', type:'unleash', cd:99, desc:'一度きり！HP全回復・全ステータス上昇・全ての技が強化・イラストが覚醒' }],
-  ultimate:{ name:'紅蓮・紫焔天昇', type:'dmgBurn', mult:1.5, val:0.08, turns:3, cd:4, desc:'大ダメージ＋火傷' } };
+  ultimate:{ name:'紅蓮・紫焔天昇', type:'asUlt', mult:1.9, cd:4, desc:'防御を貫く大ダメージ＋火傷' } };
 RAR_OVR['アスラ'] = 'EX'; RAR_STAR.EX = 5;
 Object.assign(FONT_MAP, { 'アスラ':'dark' });
 try{ Object.assign(PASSIVE_TABLE, { 'アスラ':['紫焔を宿す孤高の少年', '潜在能力', 'pierce', .2] }); }catch(e){}
@@ -11314,6 +11490,7 @@ function unleashApply(side, f){
     if(side === 'player') selected = Object.assign({}, selected, { img:nd.img, cardImg:nd.cardImg, fullImg:nd.fullImg });
     addLog('🔥 アスラの潜在能力が全解放！姿が変わり、HPが全回復。全ステータスと全ての技が強化された！', 'result');
     renderBattleUI();
+    if(side === 'player'){ try{ renderActionRow(); updateActionAvailability(); refreshActionChips(); }catch(e){} }
   }catch(e){}
 }
 const EX_DROP = [.02, .03, .04, .05, .07, .10];
@@ -12600,7 +12777,7 @@ showScreen = function(id){ if(id === 'screen-select' && typeof selectMode !== 'u
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
 Hooks.on('battle:start', () => {});
-return { gzSet, rates, heroNext, setBoss, bossIntro, cpull: charGachaPull, capsuleStage, cutscene, evolveData, evoPreview, charGachaPull, unlockChar, open, view, pickChar, startQuest, pickItem, doEquip, pickBook, doBook, pull: gachaPull,  dex: dexOpenFn, closeGacha, reveal, get S(){ return S; }, ITEMS, charRarity, eqBonus, bookLevels, equip, useBook, addItem, buildQuests, get QUESTS(){ if(!QUESTS) buildQuests(); return QUESTS; }, statusExtra, charRevealItem, itemRevealItem, save };
+return { gzSet, rates, heroNext, setBoss, bossIntro, cpull: charGachaPull, capsuleStage, cutscene, evolveData, evoPreview, charGachaPull, unlockChar, open, view, pickChar, startQuest, pickItem, doEquip, pickBook, doBook, bookN, autoBooks, gearPick, gearStep, gearFilter, gearGo, pull: gachaPull,  dex: dexOpenFn, closeGacha, reveal, get S(){ return S; }, ITEMS, charRarity, eqBonus, bookLevels, equip, useBook, addItem, buildQuests, get QUESTS(){ if(!QUESTS) buildQuests(); return QUESTS; }, statusExtra, charRevealItem, itemRevealItem, save };
 })();
 
 </script><!-- V4-END -->
