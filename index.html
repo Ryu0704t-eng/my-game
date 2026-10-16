@@ -3776,6 +3776,7 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【軽量化】画面を開くたびに大きな画像データを読み直していたのを改善（クエスト・装備・図鑑などの切り替えが軽くなります）。重い端末では飾りの動きを止める「軽量モード」に自動で切り替わり、「その他」からON/OFFもできます。",
+    "【2人対戦でもピンチ覚醒】2人対戦（1vs1・3vs3）でも、HPが20%以下になるとターン終了時に覚醒するようになりました（双方の画面で同じ結果になります）。",
     "【バトル画面にポーズ／ホームに戻るボタン】画面上部の ⏸ でバトルを一時停止（演出もタイマーも止まります）、🏠 でバトルを中断してホームに戻れます（中断した対戦は記録・報酬なし。2人対戦ではポーズなし）。",
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
     "【キャラのレベル（Lv1〜99）】キャラごとにレベルが付きました。バトルで経験値が入り（勝利+24／敗北+8／クエスト勝利+16／修行の間は勝利で3倍／ガチャのダブり+40）、1Lvごとに HP・攻撃・防御 +0.3%（Lv99で約+29%）、会心率も少しUP（CPU戦・クエストのみ。2人対戦は対象外）。相手もあなたのLvに合わせて少し強くなります（通常戦は自分の強化の約8割、クエストは約5割）。装備画面と図鑑でLvを確認できます。",
@@ -11485,7 +11486,7 @@ function customAwaken(side, f){
 function awakenCheck(){
   let any = false;
   try{
-    if(!state || state.over || pvp.on) return false;
+    if(!state || state.over) return false;
     [['player', state.p], ['cpu', state.c]].forEach(([side, f]) => {
       if(!f || f._awk || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
       f._awk = 1; any = true; try{ localStorage.setItem('battleArena_bc', '覚醒の処理中:' + Date.now()); }catch(e){}
@@ -11515,7 +11516,7 @@ const _frrAw = finalizeRoundRest;
 finalizeRoundRest = function(){
   const self = this, args = arguments;
   try{
-    if(state && !state.over && !pvp.on && awakenCheck()){
+    if(state && !state.over && awakenCheck()){
       state.turnLock = true;
       try{ updateActionAvailability(); }catch(e){}
       setTimeout(() => { if(state && !state.over) _frrAw.apply(self, args); }, 2500);
