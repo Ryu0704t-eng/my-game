@@ -2474,6 +2474,12 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 .gp-g{position:absolute;top:4px;right:6px;font-style:normal;font-size:.9rem;}
 .gp-e{font-size:2.2rem;line-height:1.6;}
 .bk-btns{display:flex;gap:6px;margin-top:6px;}.bk-btns button{flex:1;padding:7px 4px;font-size:.78rem;}
+
+.psov{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.72);display:flex;align-items:center;justify-content:center;}
+.psov .box{background:#171428;border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:18px 16px;width:min(86%,380px);text-align:center;}
+.psov .btnrow{display:flex;gap:8px;margin-top:14px;}.psov .btnrow button{flex:1;}
+.speedbar #btnPause,.speedbar #btnHome{padding-left:9px;padding-right:9px;font-size:.85rem;}
+@media (max-width:420px){.speedbar{gap:3px;}.speedbar button{padding:5px 4px;font-size:.62rem;}.speedbar #btnPause,.speedbar #btnHome{padding:5px 3px;min-width:30px;font-size:.8rem;}}
 </style>
 </head>
 <body>
@@ -2513,7 +2519,7 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 <!-- BATTLE SCREEN -->
 <div class="screen" id="screen-battle">
  <div class="bcol-l">
-  <div class="speedbar"><button class="secondary" onclick="openEffects()">効果一覧</button><button class="secondary" onclick="openSkillInfo()">技詳細</button><button class="secondary" id="btnPvpRc" style="display:none" onclick="pvpManualReconnect()">🔌 再接続</button><button class="secondary sndbtn" id="sndBtn" onclick="cycleSnd()">🔊 効果音</button><button class="secondary" id="autoBtn" onclick="V47.auto()">🤖 オート</button><button class="secondary" id="speedBtn" onclick="cycleSpeed()">⏩ ×1</button></div>
+  <div class="speedbar"><button class="secondary" id="btnPause" title="ポーズ" aria-label="ポーズ" onclick="btPause()">⏸️</button><button class="secondary" id="btnHome" title="ホームに戻る" aria-label="ホームに戻る" onclick="btHomeAsk()">🏠</button><button class="secondary" onclick="openEffects()">効果一覧</button><button class="secondary" onclick="openSkillInfo()">技詳細</button><button class="secondary" id="btnPvpRc" style="display:none" onclick="pvpManualReconnect()">🔌 再接続</button><button class="secondary sndbtn" id="sndBtn" onclick="cycleSnd()">🔊 効果音</button><button class="secondary" id="autoBtn" onclick="V47.auto()">🤖 オート</button><button class="secondary" id="speedBtn" onclick="cycleSpeed()">⏩ ×1</button></div>
   <div class="teamstrip" id="teamStripRow" style="display:none;">
     <div class="teamstrip-side" id="teamStripPlayer"></div>
     <div class="teamstrip-side right" id="teamStripCpu"></div>
@@ -2679,7 +2685,20 @@ function speedNow(){
   return (b && b.classList.contains('active')) ? gameSpeed * slowFactor * PACE : 1;
 }
 function timerSpeed(){ const b = document.getElementById('screen-battle'); return (b && b.classList.contains('active')) ? gameSpeed * PACE : 1; }
-window.setTimeout = (fn, ms, ...a) => _origSetTimeout(fn, (ms || 0) / timerSpeed(), ...a);
+/* ポーズできるタイマー（setTimeoutを仮想IDで管理）。倍速・ペースは予約時の速度で計算 */
+let timersPaused = false; const _vt = new Map(); let _vn = 1e6;
+const _origClear = window.clearTimeout.bind(window);
+window.setTimeout = (fn, ms, ...a) => {
+  if(typeof fn !== 'function') return _origSetTimeout(fn, (ms || 0) / timerSpeed(), ...a);
+  const id = ++_vn, bs = document.getElementById('screen-battle'), rec = { rem:(ms || 0) / timerSpeed(), b:!!(bs && bs.classList.contains('active')), t0:0, real:0 };
+  rec.go = () => { rec.t0 = performance.now(); rec.real = _origSetTimeout(() => { _vt.delete(id); fn(...a); }, rec.rem); };
+  _vt.set(id, rec); if(!timersPaused) rec.go();
+  return id;
+};
+window.clearTimeout = id => { const r = _vt.get(id); if(r){ _origClear(r.real); _vt.delete(id); } else _origClear(id); };
+function pauseTimers(){ if(timersPaused) return; timersPaused = true; _vt.forEach(r => { _origClear(r.real); r.rem = Math.max(0, r.rem - (performance.now() - r.t0)); }); }
+function resumeTimers(){ timersPaused = false; _vt.forEach(r => r.go()); }
+function dropBattleTimers(){ _vt.forEach((r, id) => { if(r.b){ _origClear(r.real); _vt.delete(id); } }); }
 let _speedDirty = false;
 _origSetInterval(() => {
   const sp = speedNow();
@@ -3757,6 +3776,8 @@ window.BA = { Hooks, Store, get roster(){ return roster; }, get lockedCharacters
 const patchNotes = [
   {tag:"new", title:"みんなのキャラ・おみくじ・新キャラ2体・EXステージ・装備強化・新技・ガチャ1タップ・閉じるボタン（Ver4.23）", body:[
     "【軽量化】画面を開くたびに大きな画像データを読み直していたのを改善（クエスト・装備・図鑑などの切り替えが軽くなります）。重い端末では飾りの動きを止める「軽量モード」に自動で切り替わり、「その他」からON/OFFもできます。",
+    "【バトル画面にポーズ／ホームに戻るボタン】画面上部の ⏸ でバトルを一時停止（演出もタイマーも止まります）、🏠 でバトルを中断してホームに戻れます（中断した対戦は記録・報酬なし。2人対戦ではポーズなし）。",
+    "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
     "【キャラのレベル（Lv1〜99）】キャラごとにレベルが付きました。バトルで経験値が入り（勝利+24／敗北+8／クエスト勝利+16／修行の間は勝利で3倍／ガチャのダブり+40）、1Lvごとに HP・攻撃・防御 +0.3%（Lv99で約+29%）、会心率も少しUP（CPU戦・クエストのみ。2人対戦は対象外）。相手もあなたのLvに合わせて少し強くなります（通常戦は自分の強化の約8割、クエストは約5割）。装備画面と図鑑でLvを確認できます。",
     "【覚醒の条件がわかりやすく】図鑑のキャラ詳細に「覚醒の条件」を追加。①覚醒Lv＝そのキャラで勝つ／ガチャでダブると+1勝（3勝でLv1・8勝でLv2・15勝でLv3）、②ピンチ覚醒＝バトル中HPが20%以下で1回だけ発動、を進み具合つきで表示します。",
     "【覚醒のタイミング】ピンチ覚醒はターンの終わりに発動するようにしました（敵の技の演出と重なりません）。覚醒したあと、技ボタンの名前と説明が覚醒後の技に切り替わらない問題も修正。",
@@ -10360,13 +10381,16 @@ function ccNew(){
   cc = { photo: null, name: '', names: ['', '', '', '', ''], ef: [-1, -1, -1, -1, -1], stats: ccStats(), sk, ul: pick(CC_UL)(), hue: rnd(0, 359), emoji: pick(["🗡️","🛡️","🔥","❄️","⚡","🌙","🌸","🎸","🐉","👑","🎭","🌊","🦋","💫","🎯"]), role: pick(CC_ROLE), element: pick(Object.keys(ELEMS)), quote: pick(CC_QUOTE) };
 }
 function mineLoad(){ try{ const a = lsGet(LS_MINE, []); return Array.isArray(a) ? a : []; }catch(e){ return []; } }
+function randRarFor(name){
+  try{ const m = lsGet('battleArena_cRar_v1', {}); if(!m[name]){ const r = Math.random() * 100; m[name] = r < 10 ? 'SSR' : r < 38 ? 'SR' : r < 72 ? 'R' : 'N'; lsSet('battleArena_cRar_v1', m); } return m[name]; }catch(e){ return 'R'; }
+}
 function mineBuild(m){
   return { name: m.name, role: m.role, emoji: m.emoji, c1: m.c1, c2: m.c2, quote: m.quote, element: m.element, isCustom: true,
     stats: Object.assign({}, m.stats), skills: m.skills, ultimate: m.ultimate, passive: m.passive ? ccPasObj(m.passive.type, m.passive.val) : undefined, cardImg: m.photo || null, img: m.photo || null, fullImg: m.photo || null };
 }
 function mineApply(){
   const have = new Set(allChars().map(c => c.name));
-  mineLoad().forEach(m => { if(m && m.name && !have.has(m.name)){ const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = 'R'; } });
+  mineLoad().forEach(m => { if(m && m.name && !have.has(m.name)){ const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = randRarFor(c.name); } });
 }
 function ccRenderStats(){
   const st = cc.stats, el = $('ccStats'); if(!el) return;
@@ -10449,7 +10473,7 @@ function ccSave(){
   const m = { name, role: cc.role, emoji: cc.emoji, c1: hsl2hex(cc.hue, .7, .55), c2: hsl2hex((cc.hue + 30) % 360, .55, .18), quote: cc.quote, element: cc.element, stats: cc.stats, skills, ultimate: ult, photo: cc.photo, passive: (() => { const x = (cc.pas != null && cc.pas >= 0) ? CC_PAS[cc.pas] : pick(CC_PAS); return { type:x[0], val:x[1] }; })() };
   const all = mineLoad(); all.push(m);
   try{ localStorage.setItem(LS_MINE, JSON.stringify(all)); }catch(e){ toast('保存できませんでした（容量不足の可能性。画像を小さくするか、不要なキャラを削除してください）'); return; }
-  const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = 'R';
+  const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = randRarFor(c.name);
   if(curModal){ curModal.remove(); curModal = null; }
   cc = null; try{ renderRoster(); updateSelectHeader(); }catch(e){}
   toast(`🎉 「${esc(name)}」を作成して保存しました！（HP${m.stats.hp} 攻${m.stats.atk}）`);
@@ -11218,6 +11242,36 @@ const NEWT2 = {
   unleash: { aw:1, n:'潜在能力全解放', unl:1, heal:1, cd:99 }
 };
 Object.assign(NEWT2, {
+  bash:    { n:'強打', m:[1.35, 1.5], cd:4 },
+  duel:    { n:'一騎討ち', m:[1.0, 1.1], exec:1.4, selfAtk:.1, dur:2, cd:3 },
+  siphon:  { n:'吸収の刃', m:[.7, .8], drain:.35, selfDef:.1, dur:2, cd:3 },
+  ember:   { n:'熾火', m:[.6, .7], burn:[.05, 4], cd:3 },
+  plague:  { n:'疫病', poison:[.06, 3], foeAtk:.1, dur:3, cd:5 },
+  daze:    { n:'眩暈', m:[.7, .8], foeAtk:.2, foeSpd:.1, dur:2, cd:3 },
+  aegis:   { n:'守護の祈り', shield:.3, cleanse:1, cd:4 },
+  focus:   { n:'集中', selfAtk:.25, selfSpd:.1, cdCut:1, dur:3, cd:4 },
+  pulse:   { n:'生命の脈動', regen:.06, heal:.08, dur:3, cd:4 },
+  riposte: { n:'返し刃', m:[.8, .9], counter:2, cd:4 },
+  armbreak:{ n:'武装破壊', m:[.8, .9], dispel:1, foeDef:.15, dur:3, cd:4 },
+  gale:    { n:'烈風', m:[.55, .6], hits:3, foeSpd:.15, dur:2, cd:3 },
+  starfall:{ n:'流星', m:[1.4, 1.55], recoil:.08, cd:4 },
+  reap:    { n:'刈り取り', m:[.8, .9], exec:2.0, cd:4 },
+  anchor:  { n:'足止め', foeSpd:.4, foeAtk:.1, dur:3, cd:4 },
+  bless:   { n:'加護', selfAtk:.15, selfDef:.15, selfSpd:.15, dur:3, cd:5 },
+  barbs:   { n:'棘の鎧', shield:.12, counter:3, selfDef:.1, dur:3, cd:4 },
+  hex:     { n:'二重の呪い', poison:[.04, 3], burn:[.04, 3], cd:5 },
+  dashup:  { n:'突進', m:[1.1, 1.2], selfSpd:.15, dur:2, cd:3 },
+  vigor:   { n:'活力', heal:.2, shield:.1, cd:5 },
+  uMeteor: { ult:1, n:'流星群', m:[1.2, 1.3], hits:5, pierce:.2, cd:5 },
+  uAbyss:  { ult:1, n:'深淵の咆哮', m:[1.3, 1.4], foeAtk:.3, foeDef:.2, dur:3, cd:4 },
+  uBloom:  { ult:1, n:'満開の祈り', heal:.15, regen:.03, shield:.08, cleanse:1, dur:3, cd:5 },
+  uExec:   { ult:1, n:'断罪の刃', m:[1.1, 1.2], exec:1.8, pierce:.3, cd:4 },
+  uStorm:  { ult:1, n:'嵐の王', m:[1.1, 1.2], hits:4, stun:1, cd:5 },
+  uVenom:  { ult:1, n:'毒蛇の抱擁', m:[1.0, 1.1], poison:[.08, 4], drain:.5, cd:4 },
+  uBerserk:{ ult:1, n:'狂戦士の咆哮', m:[1.6, 1.7], selfAtk:.3, recoil:.12, dur:3, cd:4 },
+  uDivine: { ult:1, n:'神罰', m:[1.5, 1.6], burn:[.06, 3], dispel:1, cd:4 }
+});
+Object.assign(NEWT2, {
   asRage:  { aw:1, n:'修羅の闘気', selfAtk:.3, selfDef:.2, heal:.12, dur:3, cd:4 },
   asUlt:   { aw:1, ult:1, n:'紅蓮・紫焔天昇', m:[1.9, 1.9], burn:[.08, 3], pierce:.25, cd:4 },
   asAw1:   { aw:1, n:'修羅・紅蓮拳', m:[1.75, 1.75], pierce:.3, cd:2 },
@@ -11236,6 +11290,16 @@ const NEWT2D = {
   awDmg:'防御を一部無視する強力な一撃', awHeal:'HPを回復してバリアを張る', awRally:'攻撃と防御を大きく上げる', awMulti:'3回連続の乱舞', awUlt:'大ダメージ＋HP吸収', awBurn:'強力な攻撃＋火傷', awFrost:'攻撃して敵の素早さ・防御を下げる', awVamp:'攻撃してHPを大きく吸収', awGuard:'バリア・反撃・防御アップで固める', awStun:'攻撃して敵を気絶させる', awUlt2:'超大ダメージ＋火傷', awUlt3:'超大ダメージ＋敵の素早さ・攻撃を下げる'
 };
 Object.assign(NEWT2D, {
+  bash:'防御を気にせず、強烈な一撃を叩き込む', duel:'攻撃し、弱った敵にはトドメ特効。自分の攻撃も少し上がる', siphon:'攻撃しつつ、ダメージの一部でHPを回復。防御も少し上がる',
+  ember:'攻撃して、長く続く火傷を与える', plague:'毒を与え、敵の攻撃力も少し下げる', daze:'攻撃しつつ、敵の攻撃力と素早さを下げる',
+  aegis:'厚いバリアを張り、状態異常も治す', focus:'攻撃と素早さを上げ、技のCTも縮める', pulse:'HPを少し回復し、リジェネも付ける',
+  riposte:'攻撃しつつ、反撃の構えを取る', armbreak:'攻撃し、敵の強化とバリアを消して防御を下げる', gale:'3回連続の風の刃。敵の素早さも下げる',
+  starfall:'大ダメージを与えるが、自分も少し反動を受ける', reap:'弱った敵を確実に仕留める（HP40%未満で大幅に威力UP）', anchor:'敵の素早さを大きく、攻撃も少し下げる',
+  bless:'攻撃・防御・素早さをまとめて上げる', barbs:'バリアを張り、反撃の構えも取る', hex:'毒と火傷を同時に与える',
+  dashup:'攻撃しつつ、自分の素早さを上げる', vigor:'HPを回復し、バリアも張る',
+  uMeteor:'5連続の流星で貫く大技（防御も一部無視）', uAbyss:'大ダメージ＋敵の攻撃・防御を大きく下げる', uBloom:'大回復＋リジェネ＋バリア＋状態異常解除',
+  uExec:'防御を貫き、弱った敵には特効の大ダメージ', uStorm:'4連続の雷撃で、敵を気絶させる', uVenom:'ダメージ＋強力な毒、与えたダメージの半分を吸収',
+  uBerserk:'超大ダメージ＋攻撃UP。自分も反動を受ける', uDivine:'大ダメージ＋火傷＋敵の強化・バリアを打ち消す',
   asRage:'攻撃と防御を大きく上げ、HPも少し回復する', asUlt:'防御を貫く大ダメージ＋火傷',
   asAw1:'防御を一部無視する炎の拳', asAw2:'5連続で炎の拳を叩き込む', asAw3:'防御を大きく貫き、火傷を与える',
   asAw4:'攻撃・防御・素早さを大きく上げ、HPを回復する', asAwUlt:'防御を貫く超大ダメージ＋強力な火傷'
@@ -11402,6 +11466,22 @@ function asuraAwaken(side, f){
   try{ renderBattleUI(); if(side === 'player'){ renderActionRow(); updateActionAvailability(); refreshActionChips(); } }catch(e){}
   try{ localStorage.setItem('battleArena_bc', ''); }catch(e){}
 }
+/* 自作キャラの覚醒：技の名前・種類はそのまま。威力が大きく上がる（技の書Lv+5相当＝威力+40%・回復+40%） */
+function customAwaken(side, f){
+  const bk = Object.assign({}, f._bk || {}), tag = '【覚醒：威力+40%】';
+  f.data.skills.forEach((_, i) => { bk[i] = Math.min(8, (bk[i] || 0) + 5); }); bk.u = Math.min(8, (bk.u || 0) + 5);
+  f._bk = bk;
+  const up = x => (x && !x.__awb) ? Object.assign({}, x, { __awb:1, desc:(x.desc || '') + tag }) : x;
+  f.data = Object.assign({}, f.data, { skills: f.data.skills.map(up), ultimate: up(f.data.ultimate) });
+  f.hp = f.maxHp; f.burnTurns = 0; f.poisonTurns = 0; f.stunned = false;
+  f.skillCd = f.skillCd.map(() => 0); f.ultCd = 0;
+  ['atk', 'def', 'spd'].forEach(k => { if(f.mods[k] < 1){ f.mods[k] = 1; f.modTurns[k] = 0; } });
+  try{ playCutIn(side, f.data, '覚醒！', 'ult'); sfx('ult'); navigator.vibrate && navigator.vibrate([60, 40, 120]); }catch(e){}
+  awBanner('覚醒！', f.data.name + ' ― HP全回復・技の威力が大幅UP');
+  addLog(`🔥 ${f.data.name} が覚醒！HPが全回復し、すべての技の威力が大きく上がった！（一度だけ）`, 'result');
+  try{ renderBattleUI(); if(side === 'player'){ renderActionRow(); updateActionAvailability(); refreshActionChips(); } }catch(e){}
+  try{ localStorage.setItem('battleArena_bc', ''); }catch(e){}
+}
 function awakenCheck(){
   let any = false;
   try{
@@ -11410,6 +11490,7 @@ function awakenCheck(){
       if(!f || f._awk || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
       f._awk = 1; any = true; try{ localStorage.setItem('battleArena_bc', '覚醒の処理中:' + Date.now()); }catch(e){}
       if(f.data.exChar){ asuraAwaken(side, f); return; }
+      if(f.data.isCustom){ customAwaken(side, f); return; }
       const mkA = id => { const sp = NEWT2[id]; return { name:sp.n, type:id, mult: sp.m ? sp.m[0] : undefined, cd:sp.cd, desc:'覚醒技：' + (sp.d || '') + '（' + comboText(sp, sp.m ? { mult:sp.m[0] } : null) + '）' }; };
       const h = hashS(String(f.data.name)), pk = i => { const P = AW_POOL[Math.min(i, 3)]; return P[(h >>> (i * 2)) % P.length]; };
       f.data = Object.assign({}, f.data, { skills: f.data.skills.map((s, i) => mkA(pk(i))), ultimate: mkA(AW_ULT[h % AW_ULT.length]) });
@@ -11561,6 +11642,53 @@ later(() => {
   }catch(e){}
 }, 900);
 Object.assign(window.V47, { resumeGo, resumeDrop(){ resumeClear(); document.querySelectorAll('.v4modal').forEach(e => e.remove()); } });
+
+/* ---------- バトル中のポーズ／ホームに戻る ---------- */
+function psClose(){ const o = document.getElementById('psov'); if(o) o.remove(); }
+function psOpen(pause, ask){
+  psClose();
+  const o = document.createElement('div'); o.className = 'psov'; o.id = 'psov';
+  o.innerHTML = `<div class="box"><div class="v4h" style="margin-top:0">${pause ? '⏸ ポーズ中' : '🏠 ホームに戻る'}</div><div class="v4small" id="psmsg" style="color:#fff"></div><div class="btnrow" id="psbtn"></div></div>`;
+  document.body.appendChild(o);
+  const msg = o.querySelector('#psmsg'), bt = o.querySelector('#psbtn');
+  const base = () => { msg.textContent = 'バトルを一時停止しています'; bt.innerHTML = '<button id="psR">▶ 再開</button><button class="secondary" id="psH">🏠 ホームに戻る</button>'; o.querySelector('#psR').onclick = btResume; o.querySelector('#psH').onclick = conf; };
+  const conf = () => { msg.textContent = pvp.on ? '対戦を中断してホームに戻ります（相手には切断として伝わります）。' : 'バトルを中断してホームに戻ります。この対戦の結果や報酬は記録されません。'; bt.innerHTML = `<button class="secondary" id="psC">${pause ? '← 続ける' : 'やめる'}</button><button id="psG">中断してホームへ</button>`; o.querySelector('#psC').onclick = btResume; o.querySelector('#psG').onclick = btHome; };
+  if(ask) conf(); else base();
+}
+function btPause(){
+  if(!state || state.over || pvp.on || window.__paused) return;
+  const sc = document.getElementById('screen-battle'); if(!sc || !sc.classList.contains('active')) return;
+  window.__paused = true; pauseTimers();
+  try{ document.getAnimations().forEach(a => { try{ if(a.playState === 'running') a.pause(); }catch(e){} }); }catch(e){}
+  psOpen(true, false);
+}
+function btResume(){
+  psClose();
+  if(window.__paused){
+    window.__paused = false; resumeTimers();
+    try{ document.getAnimations().forEach(a => { try{ if(a.playState === 'paused') a.play(); }catch(e){} }); }catch(e){}
+  }
+}
+function btHomeAsk(){
+  if(!state || state.over){ goToSelect(); return; }
+  if(window.__paused){ psOpen(true, true); return; }
+  if(pvp.on){ psOpen(false, true); return; }
+  window.__paused = true; pauseTimers();
+  try{ document.getAnimations().forEach(a => { try{ if(a.playState === 'running') a.pause(); }catch(e){} }); }catch(e){}
+  psOpen(true, true);
+}
+function btHome(){
+  psClose();
+  try{ if(state){ state.over = true; state._abort = true; } }catch(e){}
+  window.__paused = false; dropBattleTimers(); resumeTimers();
+  try{ document.getAnimations().forEach(a => { try{ if(a.playState === 'paused') a.play(); }catch(e){} }); }catch(e){}
+  resumeClear();
+  try{ if(autoOn){ autoOn = false; autoUI(); } }catch(e){}
+  try{ document.querySelectorAll('.cutin,.awk-ban,.v4modal').forEach(e => e.remove()); }catch(e){}
+  goToSelect();
+}
+Object.assign(window, { btPause, btResume, btHomeAsk, btHome });
+Hooks.on('battle:start', () => { try{ const b = $('btnPause'); if(b) b.style.display = pvp.on ? 'none' : ''; }catch(e){} });
 
 /* ---------- Ver4.23 セットボーナス（特定のキャラを揃えるとバフ＆報酬） ---------- */
 const CSETS = [
@@ -11742,7 +11870,7 @@ function autoKick(){
   clearTimeout(autoT); if(!autoOn) return;
   autoT = later(() => {
     try{
-      if(!autoOn || !state || state.over || state.turnLock || pvp.on) return;
+      if(window.__paused || !autoOn || !state || state.over || state.turnLock || pvp.on) return;
       const p = state.p, c = state.c;
       if(aiWantsGuard(p, c, 4)){ playerAction('guard'); return; }
       const ch = aiChoose(p, c, 4); playerAction(ch.action, ch.idx);
