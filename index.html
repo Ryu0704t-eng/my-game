@@ -3782,6 +3782,7 @@ const patchNotes = [
     "【2人対戦でもピンチ覚醒】2人対戦（1vs1・3vs3）でも、HPが20%以下になるとターン終了時に覚醒するようになりました（双方の画面で同じ結果になります）。",
     "【バトル画面にポーズ／ホームに戻るボタン】画面上部の ⏸ でバトルを一時停止（演出もタイマーも止まります）、🏠 でバトルを中断してホームに戻れます（中断した対戦は記録・報酬なし。2人対戦ではポーズなし）。",
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
+    "【難しい挑戦を楽しむ工夫】①挑戦の心得：HARD・EX・塔で負けると、同じステージの次の挑戦で攻撃・HPが+5%ずつ（最大+20%）上がり、勝つとリセット。②特性図鑑（クエスト画面）：特性を持つ敵に初めて勝つと🪙60とSRの書、同じ特性に5回勝つと「見切り」でその特性の効果が約4割弱まる。8種そろえると🪙400と神の書。③塔は10階ごとの初到達ボーナス（🪙階数×4とSR〜SSR装備/書）。",
     "【高難易度：敵の特性】強い敵に「特性」が付くようになりました。再生（毎ターンHP4%回復）・反射（受けたダメージの15%を跳ね返す）・堅牢（被ダメ-15%）・吸血（与ダメの30%回復）・神速（必殺技のチャージが速い）・逆上（HP半分以下で攻撃+30%）・不屈（一度だけHP8%で耐える）・浄化（状態異常を毎ターン消す）の8種。ステージごとに特性は固定なので、対策して挑めます。",
     "【特性がつく場所】HARDの後半ステージ（1〜2個）、EX-2以降（1〜3個）、無限の塔8階以降（1〜3個。ボス階は+1）。対戦画面では敵の名前の横に「特性N」と出て、開始時にログで内容が分かります。",
     "【EX-7〜9を追加】「神域の入口」「虚無の回廊」「終焉の彼方」。敵の攻撃は約3.1〜3.6倍・HPは約5.4〜6.8倍で、特性は3つ。クリア報酬に黒滅の大剣・天使の羽翼・星詠のオーブと運命の書。ランクLv21・23・25が目安です。",
@@ -9585,7 +9586,7 @@ function questHTML(){
     (qMode === 'h' ? '<div class="v4small" style="color:#ff9a7a">HARDモード：敵がさらに強く（攻×1.35・HP×1.4・Lv5）。報酬は🪙2倍・ドロップ+1・高レア寄り。NORMALで同じステージをクリアすると挑戦できます。</div>' : '') +
     `<div class="v4small">敵は章が進むほど強くなります。装備・技の書は戦闘に反映されます（PvPには反映されません）。</div>
     <div class="v4card" style="margin-top:6px"><div class="v4small"><b style="color:#ffe27a">★の集め方</b>（1ステージ最大★3）<br>🏁 クリア＝★1　／　❤ 残りHP40%以上でクリア＝★2　／　⚡ 12ターン以内でクリア＝★3<br>黄色く光っているのが達成済み。★を増やすと🪙ボーナス、★3で「⏩掃討」が使えます。</div></div>`;
-  h += questQuickHTML() + dailyHTML2() + ruleHTML() + trainHTML() + towerHTML() + exHTML();
+  h += questQuickHTML() + dailyHTML2() + ruleHTML() + trainHTML() + towerHTML() + exHTML() + traitDexHTML();
   let nextShown = false;
   CHAPTERS.forEach((ch, ci) => {
     const th = CH_THEME[ci % CH_THEME.length], qs = LQ.filter(q => q.ch === ci);
@@ -12990,9 +12991,9 @@ calcDamage = function(att, def){
   const r = _cd24.apply(this, arguments);
   try{
     if(r && r.dmg > 0 && state && state.quest && state.quest.traits){
-      if(def === state.c && hasTrait('armor')) r.dmg = Math.max(1, Math.round(r.dmg * .85));
+      if(def === state.c && hasTrait('armor')) r.dmg = Math.max(1, Math.round(r.dmg * (1 - .15 * tf('armor'))));
       if(att === state.c && hasTrait('fury') && state.c.hp <= state.c.maxHp * .5){
-        r.dmg = Math.round(r.dmg * 1.3);
+        r.dmg = Math.round(r.dmg * (1 + .3 * tf('fury')));
         if(!state._furyLog){ state._furyLog = 1; addLog(`${state.c.data.name} は逆上した！ 攻撃が上がった！`, 'result'); }
       }
     }
@@ -13008,11 +13009,11 @@ resolveAction = function(side){
     try{
       const dEn = bc - state.c.hp, dPl = bp - state.p.hp;
       if(hasTrait('thorns') && side === 'player' && dEn > 0 && state.p.hp > 0){
-        const b = Math.max(1, Math.round(dEn * .15)); state.p.hp = Math.max(1, state.p.hp - b);
+        const b = Math.max(1, Math.round(dEn * .15 * tf('thorns'))); state.p.hp = Math.max(1, state.p.hp - b);
         addLog(`${state.c.data.name} の反射！ ${b} のダメージを受けた`, 'result');
       }
       if(hasTrait('vamp') && side === 'cpu' && dPl > 0 && state.c.hp > 0){
-        const h = Math.max(1, Math.round(dPl * .3)); state.c.hp = Math.min(state.c.maxHp, state.c.hp + h);
+        const h = Math.max(1, Math.round(dPl * .3 * tf('vamp'))); state.c.hp = Math.min(state.c.maxHp, state.c.hp + h);
         addLog(`${state.c.data.name} の吸血！ HPが ${h} 回復`, 'result');
       }
       if(hasTrait('grit') && state.c.hp <= 0 && !state.c._grit){
@@ -13026,7 +13027,7 @@ resolveAction = function(side){
 Hooks.on('round:end', () => {
   try{
     const c = state && state.c; if(!c || !c._traits || c.hp <= 0 || pvp.on) return;
-    if(hasTrait('regen')){ const h = Math.round(c.maxHp * .04); c.hp = Math.min(c.maxHp, c.hp + h); }
+    if(hasTrait('regen')){ const h = Math.round(c.maxHp * .04 * tf('regen')); c.hp = Math.min(c.maxHp, c.hp + h); }
     if(hasTrait('purge')){ c.poisonTurns = 0; c.burnTurns = 0; ['atk', 'def', 'spd'].forEach(k => { if(c.mods[k] < 1){ c.mods[k] = 1; c.modTurns[k] = 0; } }); }
     if(hasTrait('swift') && c.ultCd > 0) c.ultCd = Math.max(0, c.ultCd - 1);
   }catch(e){}
@@ -13038,6 +13039,69 @@ fighterHTML = function(f, isP){
   return h;
 };
 
+
+/* ---------- Ver4.24b 難しい挑戦を楽しむ工夫：挑戦の心得（連敗ボーナス）・特性図鑑・塔のマイルストーン ---------- */
+const tf = id => ((S.trDex || {})[id] | 0) >= 5 ? .6 : 1;     // 特性ごとに5回勝つと「見切り」：その特性の効果が約4割弱まる
+const hardQ = q => !!(q && (q.ex || q.tower || q.hard));
+/* 挑戦の心得：同じステージで負けるたびに、次の挑戦で攻撃・HPが+5%ずつ（最大+20%）。勝つとリセット */
+const _sb24b = startBattle;
+startBattle = function(){
+  _sb24b.apply(this, arguments);
+  try{
+    const q = state && state.quest;
+    if(q && hardQ(q) && !pvp.on){
+      const n = Math.min(4, ((S.lossB || {})[q.id]) | 0);
+      if(n > 0){
+        const m = 1 + .05 * n;
+        state.p.statMul = (state.p.statMul || 1) * m; state.p.maxHp = Math.round(state.p.maxHp * m); state.p.hp = state.p.maxHp;
+        addLog(`挑戦の心得：これまでの敗北から学び、攻撃とHPが +${n * 5}% 上がった！`, 'skill');
+        later(() => toast(`挑戦の心得 +${n * 5}%（勝つとリセット）`), 1200);
+        renderBattleUI();
+      }
+    }
+  }catch(e){ console.warn('lossB', e); }
+};
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state) return; const q = state.quest; if(!q || !hardQ(q)) return;
+    S.lossB = S.lossB || {};
+    if(info.won) delete S.lossB[q.id]; else S.lossB[q.id] = Math.min(4, ((S.lossB[q.id]) | 0) + 1);
+    save();
+  }catch(e){}
+});
+/* 特性図鑑：特性を持つ敵に勝つと記録。初めて勝つと報酬、5回で見切り、8種そろえると大報酬 */
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state || !info.won) return; const q = state.quest; if(!q || !q.traits || !q.traits.length) return;
+    const d = S.trDex = S.trDex || {}; S.trRw = S.trRw || {}; let coins = 0; const drops = [], msg = [];
+    q.traits.forEach(id => {
+      const before = d[id] | 0; d[id] = before + 1;
+      if(before === 0){ coins += 60; drops.push(pickItemOfRarity('SR', 1)); msg.push(`特性「${TRAIT_BY[id].n}」を記録`); }
+      if(before + 1 === 5){ coins += 120; msg.push(`特性「${TRAIT_BY[id].n}」を見切った（効果が弱まる）`); }
+    });
+    if(!S.trRw.all && TRAITS.every(t => (d[t.id] | 0) >= 1)){ S.trRw.all = 1; coins += 400; drops.push('bk5'); msg.push('特性図鑑コンプリート！'); }
+    if(coins){ S.coins += coins; }
+    drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
+    if(msg.length) later(() => toast(`${msg.join(' / ')}　🪙+${coins}${drops.length ? '・アイテム' + drops.length + '個' : ''}`), 5600);
+  }catch(e){ console.warn('trdex', e); }
+});
+function traitDexHTML(){
+  try{
+    const d = S.trDex || {}, got = TRAITS.filter(t => (d[t.id] | 0) > 0).length;
+    return `<div class="tw-card"><div class="tw-h">特性図鑑</div><div class="v4small" style="color:#fff">特性を持つ敵に勝つと記録されます。初めて勝つと🪙とSRの書、同じ特性に5回勝つと「見切り」でその特性の効果が約4割弱まります。8種そろえると🪙と神の書。（${got}/${TRAITS.length}）<br>負けたステージには「挑戦の心得」が付き、次の挑戦で攻撃・HPが+5%ずつ（最大+20%）上がります。</div>
+      <div class="qz-chips" style="margin-top:6px">${TRAITS.map(t => { const n = d[t.id] | 0; return `<span style="${n ? '' : 'opacity:.5'}" title="${esc(t.d)}">${t.n} ${n ? n + '勝' + (n >= 5 ? '・見切り' : '') : '未記録'}</span>`; }).join('')}</div></div>`;
+  }catch(e){ return ''; }
+}
+/* 無限の塔：10階ごとのマイルストーン報酬（初めて到達したときだけ） */
+Hooks.on('battle:end', info => {
+  try{
+    if(info.pvp || !state || !info.won) return; const q = state.quest; if(!q || !q.tower || q.tower % 10) return;
+    const t = S.tower = S.tower || { best:0, runs:0 }; if((t.ms | 0) >= q.tower) return; t.ms = q.tower;
+    const coins = q.tower * 4, it = pickItemOfRarity(q.tower >= 30 ? 'SSR' : 'SR', .3);
+    S.coins += coins; addItem(it, 1); S.seen[it] = 1; save();
+    later(() => toast(`塔 ${q.tower}階 到達ボーナス！ 🪙+${coins}・${ITEMS[it].n}`), 5600);
+  }catch(e){ console.warn('tower ms', e); }
+});
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
