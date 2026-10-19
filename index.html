@@ -2480,6 +2480,9 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 .psov .btnrow{display:flex;gap:8px;margin-top:14px;}.psov .btnrow button{flex:1;}
 .speedbar #btnPause,.speedbar #btnHome{padding-left:9px;padding-right:9px;font-size:.85rem;}
 @media (max-width:420px){.speedbar{gap:3px;}.speedbar button{padding:5px 4px;font-size:.62rem;}.speedbar #btnPause,.speedbar #btnHome{padding:5px 3px;min-width:30px;font-size:.8rem;}}
+
+/* Ver4.24 敵の特性 */
+.tr-badge{display:inline-block;margin-right:4px;padding:0 5px;border-radius:6px;background:linear-gradient(#a02a3a,#5a0a18);color:#ffd0c8;font-size:.56rem;font-weight:900;letter-spacing:.04em;vertical-align:middle;}
 </style>
 </head>
 <body>
@@ -3779,6 +3782,11 @@ const patchNotes = [
     "【2人対戦でもピンチ覚醒】2人対戦（1vs1・3vs3）でも、HPが20%以下になるとターン終了時に覚醒するようになりました（双方の画面で同じ結果になります）。",
     "【バトル画面にポーズ／ホームに戻るボタン】画面上部の ⏸ でバトルを一時停止（演出もタイマーも止まります）、🏠 でバトルを中断してホームに戻れます（中断した対戦は記録・報酬なし。2人対戦ではポーズなし）。",
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
+    "【高難易度：敵の特性】強い敵に「特性」が付くようになりました。再生（毎ターンHP4%回復）・反射（受けたダメージの15%を跳ね返す）・堅牢（被ダメ-15%）・吸血（与ダメの30%回復）・神速（必殺技のチャージが速い）・逆上（HP半分以下で攻撃+30%）・不屈（一度だけHP8%で耐える）・浄化（状態異常を毎ターン消す）の8種。ステージごとに特性は固定なので、対策して挑めます。",
+    "【特性がつく場所】HARDの後半ステージ（1〜2個）、EX-2以降（1〜3個）、無限の塔8階以降（1〜3個。ボス階は+1）。対戦画面では敵の名前の横に「特性N」と出て、開始時にログで内容が分かります。",
+    "【EX-7〜9を追加】「神域の入口」「虚無の回廊」「終焉の彼方」。敵の攻撃は約3.1〜3.6倍・HPは約5.4〜6.8倍で、特性は3つ。クリア報酬に黒滅の大剣・天使の羽翼・星詠のオーブと運命の書。ランクLv21・23・25が目安です。",
+    "【無限の塔の深層】31階からは1階ごとに敵がさらに強くなります（攻撃+5%・HP+8%ずつ）。12階以降は敵のレベルが最大になります。",
+    "【2人対戦の覚醒ずれ対策】毎ターン、相手の「覚醒済みか」「HP」を一緒に送り、自分の画面とずれていたら合わせるようにしました（相手の画面で覚醒が起きない不具合の保険です）。",
     "【キャラのレベル（Lv1〜99）】キャラごとにレベルが付きました。バトルで経験値が入り（勝利+24／敗北+8／クエスト勝利+16／修行の間は勝利で3倍／ガチャのダブり+40）、1Lvごとに HP・攻撃・防御 +0.3%（Lv99で約+29%）、会心率も少しUP（CPU戦・クエストのみ。2人対戦は対象外）。相手もあなたのLvに合わせて少し強くなります（通常戦は自分の強化の約8割、クエストは約5割）。装備画面と図鑑でLvを確認できます。",
     "【覚醒の条件がわかりやすく】図鑑のキャラ詳細に「覚醒の条件」を追加。①覚醒Lv＝そのキャラで勝つ／ガチャでダブると+1勝（3勝でLv1・8勝でLv2・15勝でLv3）、②ピンチ覚醒＝バトル中HPが20%以下で1回だけ発動、を進み具合つきで表示します。",
     "【覚醒のタイミング】ピンチ覚醒はターンの終わりに発動するようにしました（敵の技の演出と重なりません）。覚醒したあと、技ボタンの名前と説明が覚醒後の技に切り替わらない問題も修正。",
@@ -8103,12 +8111,19 @@ function pvpStart(seed){
   pvpStatus('');
   startBattle();
 }
+/* 相手の「覚醒済み」「HP」を毎ターン受け取り、こちらの画面とずれていたら合わせる（覚醒が片方の画面だけ起きない不具合の保険） */
+function pvpFixOpp(m){
+  if(!state || state.over || !state.c) return;
+  if(m.aw && !state.c._awk){ state.c._forceAw = 1; if(typeof awakenCheck === 'function') awakenCheck(); }
+  if(typeof m.hp === 'number' && m.hp > 0 && Math.round(state.c.hp) !== m.hp){ state.c.hp = Math.min(state.c.maxHp, m.hp); try{ renderBattleUI(); }catch(e){} }
+}
 function pvpCheckInbox(){
   if(!state || !pvp.on || pvp.oppChoice) return;
   const i = pvp.inbox.findIndex(m => m.t === 'act' && m.n === state.roundCount);
   if(i >= 0){
     const m = pvp.inbox.splice(i,1)[0];
     pvp.oppChoice = { action:m.action, idx:m.idx };
+    try{ pvpFixOpp(m); }catch(e){ console.warn('pvpFixOpp', e); }
     pvpTryResolve();
   }
 }
@@ -8149,8 +8164,9 @@ function pvpPlayerAction(action, skillIdx){
   state.turnLock = true;
   updateActionAvailability();
   pvp.myChoice = { action, idx:skillIdx };
-  pvp.lastAct = { n:state.roundCount, action, idx:skillIdx };
-  pvpSend({ t:'act', n:state.roundCount, action, idx:skillIdx });
+  const _sy = { aw: state.p._awk ? 1 : 0, hp: Math.round(state.p.hp) };
+  pvp.lastAct = { n:state.roundCount, action, idx:skillIdx, aw:_sy.aw, hp:_sy.hp };
+  pvpSend({ t:'act', n:state.roundCount, action, idx:skillIdx, aw:_sy.aw, hp:_sy.hp });
   pvpWaitMsg('相手の行動を待っています…');
   pvpTryResolve();
 }
@@ -8401,7 +8417,7 @@ function pvpPushAct(m){
   if(!state || m.n < state.roundCount) return;
   if(pvp.inbox.some(x => x.t === 'act' && x.n === m.n)) return;
   if(m.n === state.roundCount && pvp.oppChoice) return;
-  pvp.inbox.push({ t:'act', n:m.n, action:m.action, idx:m.idx });
+  pvp.inbox.push({ t:'act', n:m.n, action:m.action, idx:m.idx, aw:m.aw, hp:m.hp });
   pvpCheckInbox();
 }
 function pvpPushRep(m){
@@ -9583,7 +9599,7 @@ function questHTML(){
       h += `<div class="qz-n ${rec ? 'done' : ''} ${open ? '' : 'lock'} ${isNext ? 'next' : ''} ${q.boss ? 'boss' : ''}" data-n="${qi + 1}">${eim ? `<img src="${eim}">` : ''}
         <div class="v4sp"><div class="nm">${q.name}${q.boss ? ' <span class="v4tag rar-SSR">BOSS</span>' : ''}</div>
         <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div>
-        <div class="qz-chips"><span style="${rankNow() < (q.req | 0) ? 'color:#ff8a8a' : ''}">ランクLv${q.req | 0}〜</span><span>Lv${q.lv}</span><span>攻×${q.mul}</span><span>HP×${q.hpMul}</span><span>🪙${q.coins}</span><span>${wtxt}${q.boss ? '×3' : ''}</span></div>
+        <div class="qz-chips"><span style="${rankNow() < (q.req | 0) ? 'color:#ff8a8a' : ''}">ランクLv${q.req | 0}〜</span><span>Lv${q.lv}</span><span>攻×${q.mul}</span><span>HP×${q.hpMul}</span><span>🪙${q.coins}</span><span>${wtxt}${q.boss ? '×3' : ''}</span>${traitChips(q)}</div>
         <div class="v4stars">${st}${rec ? `<span class="v4small"> ${rec.clears}回</span>` : ''}</div>${sbadge(rec)}${autoLine(q)}</div>
         <div class="qz-bt">${rec && rec.stars >= 3 ? `<button class="secondary sw" onclick="V47.sweep('${q.id}')">⏩掃討</button>` : ''}<button ${open ? '' : 'disabled'} onclick="V4.startQuest('${q.id}')">${open ? '挑戦' : '🔒'}</button></div></div>`;
     });
@@ -11488,7 +11504,7 @@ function awakenCheck(){
   try{
     if(!state || state.over) return false;
     [['player', state.p], ['cpu', state.c]].forEach(([side, f]) => {
-      if(!f || f._awk || f.hp <= 0 || f.hp > f.maxHp * .2 || !f.data || !f.data.skills) return;
+      if(!f || f._awk || f.hp <= 0 || (f.hp > f.maxHp * .2 && !f._forceAw) || !f.data || !f.data.skills) return;
       f._awk = 1; any = true; try{ localStorage.setItem('battleArena_bc', '覚醒の処理中:' + Date.now()); }catch(e){}
       if(f.data.exChar){ asuraAwaken(side, f); return; }
       if(f.data.isCustom){ customAwaken(side, f); return; }
@@ -12160,7 +12176,7 @@ function exHTML(){
   EX_STAGES.forEach((d, k) => {
     const i = k + 1, q = exQuest(i), en = charData(q.enemy), eim = en && portraitOf(en), cl = !!S.ex.cl[i], open = exOpenStage(i);
     h += `<div class="v4row ex-row" style="margin-top:8px;opacity:${open ? 1 : .5}">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>EX-${i} ${esc(d.n)}</b> ${cl ? '<span class="v4tag rar-SSR">CLEAR</span>' : ''}
-      <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div><div class="qz-chips"><span style="${rankNow() < 7 + i * 2 ? 'color:#ff8a8a' : ''}">ランクLv${7 + i * 2}〜</span><span>Lv5</span><span>最初の3T無敵</span><span>攻×${d.mul}</span><span>HP×${d.hp}</span></div>
+      <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div><div class="qz-chips"><span style="${rankNow() < 7 + i * 2 ? 'color:#ff8a8a' : ''}">ランクLv${7 + i * 2}〜</span><span>Lv5</span><span>最初の3T無敵</span><span>攻×${d.mul}</span><span>HP×${d.hp}</span>${traitChips(q)}</div>
       <div class="v4small">🎁 ${cl ? '<s>' : ''}🪙${d.coins}・${esc(exDropText(i))}${cl ? '</s>（受取済）' : ''}</div></div>
       <button ${open ? '' : 'disabled'} onclick="V47.ex(${i})">${open ? '挑戦' : '🔒'}</button></div>`;
   });
@@ -12901,6 +12917,126 @@ const _ush2 = updateSelectHeader;
 updateSelectHeader = function(){ _ush2.apply(this, arguments); rosterApply(); };
 const _ss2 = showScreen;
 showScreen = function(id){ if(id === 'screen-select' && typeof selectMode !== 'undefined' && selectMode === 'player') rosterOpen = false; const r = _ss2.apply(this, arguments); rosterApply(); return r; };
+
+
+/* ---------- Ver4.24 高難易度：敵の「特性」・EX-7〜9・塔の深層 ---------- */
+const TRAITS = [
+  { id:'regen',  n:'再生',   d:'毎ターン、最大HPの4%を回復する' },
+  { id:'thorns', n:'反射',   d:'受けたダメージの15%を相手に跳ね返す' },
+  { id:'armor',  n:'堅牢',   d:'受けるダメージが15%減る' },
+  { id:'vamp',   n:'吸血',   d:'与えたダメージの30%を回復する' },
+  { id:'swift',  n:'神速',   d:'必殺技のチャージが毎ターン余分に1進む' },
+  { id:'fury',   n:'逆上',   d:'HPが半分以下になると攻撃が30%上がる' },
+  { id:'grit',   n:'不屈',   d:'一度だけ、倒されてもHP8%で踏みとどまる' },
+  { id:'purge',  n:'浄化',   d:'毎ターン、状態異常と能力ダウンを自分で消す' }
+];
+const TRAIT_BY = {}; TRAITS.forEach(t => { TRAIT_BY[t.id] = t; });
+function pickTraits(key, n){
+  return TRAITS.map(t => t.id).sort((a, b) => hashS(key + a) - hashS(key + b)).slice(0, Math.max(0, Math.min(3, n | 0)));
+}
+function traitChips(q){
+  return (q && q.traits && q.traits.length) ? q.traits.map(id => `<span style="color:#ff9a7a" title="${esc(TRAIT_BY[id].d)}">特性：${TRAIT_BY[id].n}</span>`).join('') : '';
+}
+function traitLine(q){
+  return (q && q.traits && q.traits.length) ? `<div class="v4small" style="color:#ffb59a;margin-top:4px">${q.traits.map(id => `<b>${TRAIT_BY[id].n}</b>＝${esc(TRAIT_BY[id].d)}`).join('<br>')}</div>` : '';
+}
+/* HARD：後半のステージに特性 */
+const _bq24 = buildQuests;
+buildQuests = function(){
+  _bq24.apply(this, arguments);
+  (QUESTS_H || []).forEach(q => { if(q.traits) return; q.traits = pickTraits('h' + q.id, q.boss ? (q.g >= 15 ? 2 : 1) : (q.g >= 15 ? 1 : 0)); });
+};
+/* EX：特性＋EX-7〜9を追加（HP・攻撃は上の補正後の値で指定） */
+EX_STAGES.push(
+  { n:'神域の入口', mul:3.10, hp:5.40, coins:4000, items:['w_ex2', 'bk6'] },
+  { n:'虚無の回廊', mul:3.30, hp:6.00, coins:4500, items:['a_ex2', 'bk6'] },
+  { n:'終焉の彼方', mul:3.60, hp:6.80, coins:6000, items:['c_ex3', 'bk6', 'bk6'] }
+);
+const EX_TRAIT_N = [0, 1, 1, 2, 2, 3, 3, 3, 3];
+const _exq24 = exQuest;
+exQuest = function(i){ const q = _exq24.apply(this, arguments); q.traits = pickTraits('ex' + i, EX_TRAIT_N[i - 1] || 0); return q; };
+/* 塔：8階から特性、30階からは階ごとに急激に強くなる */
+const _twq24 = towerQuest;
+towerQuest = function(f){
+  const q = _twq24.apply(this, arguments);
+  const n = Math.min(3, (f >= 35 ? 3 : f >= 20 ? 2 : f >= 8 ? 1 : 0) + (q.boss && f >= 8 ? 1 : 0));
+  q.traits = pickTraits('tw' + f, n);
+  if(f >= 12) q.lv = 5;
+  if(f > 30){ q.mul = +(q.mul + (f - 30) * 0.05).toFixed(2); q.hpMul = +(q.hpMul + (f - 30) * 0.08).toFixed(2); }
+  return q;
+};
+const _twh24 = towerHTML;
+towerHTML = function(){
+  let h = _twh24.apply(this, arguments);
+  try{ const f = ((S.tower || {}).best | 0) + 1, q = towerQuest(f); h = h.replace(`</div></div><button onclick="V47.tower(${f})"`, `</div>${traitLine(q)}</div><button onclick="V47.tower(${f})"`); }catch(e){}
+  return h;
+};
+/* 戦闘への反映 */
+const hasTrait = id => { try{ const q = state && state.quest; return !!(q && !pvp.on && q.traits && q.traits.indexOf(id) >= 0); }catch(e){ return false; } };
+const _sb24 = startBattle;
+startBattle = function(){
+  _sb24.apply(this, arguments);
+  try{
+    const q = state && state.quest;
+    if(q && q.traits && q.traits.length && !pvp.on){
+      state.c._traits = q.traits.slice();
+      addLog(`敵の特性：${q.traits.map(id => TRAIT_BY[id].n + '（' + TRAIT_BY[id].d + '）').join(' / ')}`, 'result');
+      renderBattleUI();
+    }
+  }catch(e){ console.warn('trait start', e); }
+};
+const _cd24 = calcDamage;
+calcDamage = function(att, def){
+  const r = _cd24.apply(this, arguments);
+  try{
+    if(r && r.dmg > 0 && state && state.quest && state.quest.traits){
+      if(def === state.c && hasTrait('armor')) r.dmg = Math.max(1, Math.round(r.dmg * .85));
+      if(att === state.c && hasTrait('fury') && state.c.hp <= state.c.maxHp * .5){
+        r.dmg = Math.round(r.dmg * 1.3);
+        if(!state._furyLog){ state._furyLog = 1; addLog(`${state.c.data.name} は逆上した！ 攻撃が上がった！`, 'result'); }
+      }
+    }
+  }catch(e){}
+  return r;
+};
+const _ra24 = resolveAction;
+resolveAction = function(side){
+  const on = state && state.quest && state.quest.traits && state.quest.traits.length && !pvp.on && state.c && state.p;
+  const bp = on ? state.p.hp : 0, bc = on ? state.c.hp : 0;
+  const r = _ra24.apply(this, arguments);
+  if(on){
+    try{
+      const dEn = bc - state.c.hp, dPl = bp - state.p.hp;
+      if(hasTrait('thorns') && side === 'player' && dEn > 0 && state.p.hp > 0){
+        const b = Math.max(1, Math.round(dEn * .15)); state.p.hp = Math.max(1, state.p.hp - b);
+        addLog(`${state.c.data.name} の反射！ ${b} のダメージを受けた`, 'result');
+      }
+      if(hasTrait('vamp') && side === 'cpu' && dPl > 0 && state.c.hp > 0){
+        const h = Math.max(1, Math.round(dPl * .3)); state.c.hp = Math.min(state.c.maxHp, state.c.hp + h);
+        addLog(`${state.c.data.name} の吸血！ HPが ${h} 回復`, 'result');
+      }
+      if(hasTrait('grit') && state.c.hp <= 0 && !state.c._grit){
+        state.c._grit = 1; state.c.hp = Math.max(1, Math.round(state.c.maxHp * .08));
+        addLog(`${state.c.data.name} は不屈の闘志で踏みとどまった！`, 'result');
+      }
+    }catch(e){ console.warn('trait act', e); }
+  }
+  return r;
+};
+Hooks.on('round:end', () => {
+  try{
+    const c = state && state.c; if(!c || !c._traits || c.hp <= 0 || pvp.on) return;
+    if(hasTrait('regen')){ const h = Math.round(c.maxHp * .04); c.hp = Math.min(c.maxHp, c.hp + h); }
+    if(hasTrait('purge')){ c.poisonTurns = 0; c.burnTurns = 0; ['atk', 'def', 'spd'].forEach(k => { if(c.mods[k] < 1){ c.mods[k] = 1; c.modTurns[k] = 0; } }); }
+    if(hasTrait('swift') && c.ultCd > 0) c.ultCd = Math.max(0, c.ultCd - 1);
+  }catch(e){}
+});
+const _fh24 = fighterHTML;
+fighterHTML = function(f, isP){
+  let h = _fh24.apply(this, arguments);
+  try{ if(f && f._traits && f._traits.length) h = h.replace(/(<span class="name"[^>]*>)/, '$1<span class="tr-badge">特性' + f._traits.length + '</span>'); }catch(e){}
+  return h;
+};
 
 /* ---------- 公開API ---------- */
 ensureScreen();
