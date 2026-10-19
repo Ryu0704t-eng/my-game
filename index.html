@@ -2483,6 +2483,22 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 
 /* Ver4.24 敵の特性 */
 .tr-badge{display:inline-block;margin-right:4px;padding:0 5px;border-radius:6px;background:linear-gradient(#a02a3a,#5a0a18);color:#ffd0c8;font-size:.56rem;font-weight:900;letter-spacing:.04em;vertical-align:middle;}
+
+/* Ver4.25 新モーション */
+.mot-drop{animation:motDrop 1s ease-in-out !important;}
+@keyframes motDrop{0%{transform:translate(0,0);}18%{transform:translate(-18px,-24px) scale(.95);}36%{transform:translate(calc(var(--dx)*.5),-280px) scale(.8);opacity:.2;}38%{transform:translate(var(--dx),-280px);opacity:0;}52%{transform:translate(var(--dx),-4px) scale(1.28,.78);opacity:1;filter:brightness(2.2);}68%{transform:translate(var(--dx),0) scale(1);filter:brightness(1);}100%{transform:translate(0,0);}}
+.mot-sway{animation:motSway .76s ease-in-out !important;}
+@keyframes motSway{0%{transform:translateX(0);}14%{transform:translateX(calc(var(--dx)*.35)) skewX(-16deg);opacity:.55;}28%{transform:translateX(calc(var(--dx)*.15)) skewX(10deg);opacity:1;}48%{transform:translateX(var(--dx)) skewX(-22deg);filter:brightness(1.9);}70%{transform:translateX(calc(var(--dx)*.9)) skewX(0);filter:brightness(1);}100%{transform:translateX(0);}}
+.mot-uppercut{animation:motUpper .9s ease-in-out !important;}
+@keyframes motUpper{0%{transform:translate(0,0);}18%{transform:translate(calc(var(--dx)*.9),10px) scale(1.1,.86);}38%{transform:translate(var(--dx),-120px) rotate(-18deg) scale(.95,1.18);filter:brightness(1.9);}56%{transform:translate(var(--dx),-130px) rotate(-6deg);}82%{transform:translate(calc(var(--dx)*.4),-8px) rotate(0);}100%{transform:translate(0,0);filter:brightness(1);}}
+.mot-tackle{animation:motTackle .76s ease-in-out !important;}
+@keyframes motTackle{0%{transform:translateX(0);}26%{transform:translateX(-48px) scale(1.07,.93);}46%{transform:translateX(var(--dx)) scale(1.2,.88);filter:brightness(1.9);}62%{transform:translateX(calc(var(--dx)*.9)) scale(1);}100%{transform:translateX(0);filter:brightness(1);}}
+.mot-backstab{animation:motBack .9s ease-in-out !important;}
+@keyframes motBack{0%{transform:translateX(0);opacity:1;}14%{transform:translateX(0) scale(.7,1.2);opacity:0;filter:blur(4px);}34%{transform:translateX(calc(var(--dx)*1.4));opacity:0;}44%{transform:translateX(calc(var(--dx)*1.4));opacity:1;filter:blur(0);}60%{transform:translateX(calc(var(--dx)*.85)) scale(1.2,.9);filter:brightness(2.2);}100%{transform:translateX(0);opacity:1;filter:brightness(1);}}
+.mot-thrust{animation:motThrust .7s ease-in-out !important;}
+@keyframes motThrust{0%{transform:translateX(0);}28%{transform:translateX(-32px) scale(.94,1.06);}48%{transform:translateX(calc(var(--dx)*1.05)) scale(1.4,.8);filter:brightness(2.1);}68%{transform:translateX(var(--dx)) scale(1.1,.95);}100%{transform:translateX(0);filter:brightness(1);}}
+.mot-roll{animation:motRoll .9s ease-in-out !important;}
+@keyframes motRoll{0%{transform:translate(0,0) rotate(0);}58%{transform:translate(var(--dx),0) rotate(720deg);filter:brightness(1.5);}74%{transform:translate(calc(var(--dx)*.9),-26px) rotate(745deg);}100%{transform:translate(0,0) rotate(720deg);filter:brightness(1);}}
 </style>
 </head>
 <body>
@@ -3782,6 +3798,9 @@ const patchNotes = [
     "【2人対戦でもピンチ覚醒】2人対戦（1vs1・3vs3）でも、HPが20%以下になるとターン終了時に覚醒するようになりました（双方の画面で同じ結果になります）。",
     "【バトル画面にポーズ／ホームに戻るボタン】画面上部の ⏸ でバトルを一時停止（演出もタイマーも止まります）、🏠 でバトルを中断してホームに戻れます（中断した対戦は記録・報酬なし。2人対戦ではポーズなし）。",
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
+    "【フィールド6種を追加】古代神殿（お互いの被ダメ-10%）・天空の祭壇（必殺技のダメージ+15%）・時計塔の頂（3ターンごとにCTが進む）・風の高原（HPが少ない方の素早さ+15%）・荒れ狂う海（HPが多い方の強化が毎ターン吹き飛ぶ）・虚無の裂け目（回復が半分）。合計21種になり、バトル前に選べます。",
+    "【技の種類を17種追加】通常11（窮鼠の一撃・誘爆・重力井戸・影縫い・癒しの一閃・先手の構え・地割れ・紅の誓い・旋風連・呪焔・報復の刃）と必殺6（背水の陣・大爆轟・特異点・時戻し・覇王の威光・大洪水）。「HPが少ないほど強い」「敵が火傷・毒だと強い」「敵の現在HPを削る」といった新しい効果もあります。キャラ作成でも選べます。",
+    "【モーション7種を追加】急降下・残像ステップ・昇竜・体当たり・背面突き・突き・転がり。キャラのタイプや技の効果（貫通・吸収・気絶・火傷など）に合わせて選ばれます。これまで「構える」だけだった後発の技（連撃・毒・火傷など）にも攻撃モーションが付き、回復・バリア・強化の技は効果音も正しく鳴るようにしました。",
     "【難しい挑戦を楽しむ工夫】①挑戦の心得：HARD・EX・塔で負けると、同じステージの次の挑戦で攻撃・HPが+5%ずつ（最大+20%）上がり、勝つとリセット。②特性図鑑（クエスト画面）：特性を持つ敵に初めて勝つと🪙60とSRの書、同じ特性に5回勝つと「見切り」でその特性の効果が約4割弱まる。8種そろえると🪙400と神の書。③塔は10階ごとの初到達ボーナス（🪙階数×4とSR〜SSR装備/書）。",
     "【高難易度：敵の特性】強い敵に「特性」が付くようになりました。再生（毎ターンHP4%回復）・反射（受けたダメージの15%を跳ね返す）・堅牢（被ダメ-15%）・吸血（与ダメの30%回復）・神速（必殺技のチャージが速い）・逆上（HP半分以下で攻撃+30%）・不屈（一度だけHP8%で耐える）・浄化（状態異常を毎ターン消す）の8種。ステージごとに特性は固定なので、対策して挑めます。",
     "【特性がつく場所】HARDの後半ステージ（1〜2個）、EX-2以降（1〜3個）、無限の塔8階以降（1〜3個。ボス階は+1）。対戦画面では敵の名前の横に「特性N」と出て、開始時にログで内容が分かります。",
@@ -6887,7 +6906,7 @@ function figInner(side){
   const f = getFigEl(side);
   return f ? f.querySelector('.standee-img, .standee-emoji') : null;
 }
-const MOT_DUR = {dash:640, jump:840, ult:1180, cast:720, spin:720, slash:780, warp:950, shoot:550, slam:950, rush:700, whirl:800, dive:900, beam:750, barrage:800, flip:850, pounce:800, zigzag:700, spiral:900, charge:950, vault:900, blink:800};
+const MOT_DUR = {drop:1000, sway:760, uppercut:900, tackle:760, backstab:900, thrust:700, roll:900, dash:640, jump:840, ult:1180, cast:720, spin:720, slash:780, warp:950, shoot:550, slam:950, rush:700, whirl:800, dive:900, beam:750, barrage:800, flip:850, pounce:800, zigzag:700, spiral:900, charge:950, vault:900, blink:800};
 function playAttackMotion(side, kind, color, targetSide){
   const inner = figInner(side), slot = getFigEl(side);
   const defSlot = getFigEl(side === 'player' ? 'cpu' : 'player');
@@ -7354,10 +7373,10 @@ function speak(side, event, forceText){
 
 /* resolveAction のラッパー：モーション・ふきだしを付ける */
 const MOTION_SETS = {
-  cute:['spin','dash','jump','shoot','flip','whirl','pounce','spiral'], soft:['shoot','jump','dash','spin','beam','blink','vault'], fierce:['slam','dash','spin','slash','rush','dive','charge','pounce'],
-  cool:['warp','slash','dash','jump','dive','barrage','zigzag','blink'], noble:['slash','shoot','jump','warp','beam','whirl','vault','spiral'], mystic:['shoot','warp','spin','jump','beam','barrage','blink','spiral']
+  cute:['spin','dash','jump','shoot','flip','whirl','pounce','spiral','roll','sway'], soft:['shoot','jump','dash','spin','beam','blink','vault','sway','tackle'], fierce:['slam','dash','spin','slash','rush','dive','charge','pounce','drop','uppercut','tackle','thrust'],
+  cool:['warp','slash','dash','jump','dive','barrage','zigzag','blink','backstab','sway','thrust'], noble:['slash','shoot','jump','warp','beam','whirl','vault','spiral','thrust','uppercut'], mystic:['shoot','warp','spin','jump','beam','barrage','blink','spiral','drop','backstab']
 };
-const MOTION_DELAY = {dash:180, jump:340, ult:560, cast:0, spin:300, slash:320, warp:400, shoot:340, slam:460, rush:90, whirl:380, dive:520, beam:380, barrage:340, flip:440, pounce:420, zigzag:360, spiral:480, charge:520, vault:470, blink:380};
+const MOTION_DELAY = {drop:560, sway:320, uppercut:420, tackle:360, backstab:520, thrust:300, roll:520, dash:180, jump:340, ult:560, cast:0, spin:300, slash:320, warp:400, shoot:340, slam:460, rush:90, whirl:380, dive:520, beam:380, barrage:340, flip:440, pounce:420, zigzag:360, spiral:480, charge:520, vault:470, blink:380};
 const DMG_SK = ['dmg','multi','drain','execute','gamble','sacrifice','pierce','breaker','regenhit','surge'];
 const TYPE_MOTION = {pierce:['charge','zigzag','blink'], breaker:['pounce','charge','slam'], regenhit:['spiral','pounce','vault'], surge:['zigzag','vault','rush'], multi:['rush','barrage','whirl'], drain:['dive','warp','beam'], execute:['dive','slash','warp'], gamble:['flip','jump','whirl'], sacrifice:['rush','slam','dive']};
 function motionFor(c, action, idx){
@@ -7374,15 +7393,20 @@ function resolveAction(actorSide, actor, target, action, skillIdx){
     kind = motionFor(actor.data, 'attack'); if(Math.random() < 0.8) evt = 'atk';
   } else if(action === 'skill'){
     const sk = actor.data.skills[skillIdx];
-    if(DMG_SK.includes(sk.type)){
-      if(TYPE_MOTION[sk.type]){ const ms = TYPE_MOTION[sk.type]; kind = ms[(nameHash(actor.data.name) + skillIdx) % ms.length]; }
-      else { kind = motionFor(actor.data, 'skill', skillIdx); if(Math.random() < 0.2) kind = pickOne(['beam','flip','whirl','dive','rush','pounce','zigzag','spiral','charge','vault','blink']); }
+    const _n2 = window.__NEWT2 ? window.__NEWT2[sk.type] : null;
+    if(DMG_SK.includes(sk.type) || (_n2 && _n2.m)){
+      if(_n2 && _n2.m && window.__newtMotion){ kind = window.__newtMotion(_n2, actor, skillIdx); motionHits = _n2.hits || 1; }
+      else if(TYPE_MOTION[sk.type]){ const ms = TYPE_MOTION[sk.type]; kind = ms[(nameHash(actor.data.name) + skillIdx) % ms.length]; }
+      else { kind = motionFor(actor.data, 'skill', skillIdx); if(Math.random() < 0.2) kind = pickOne(['beam','flip','whirl','dive','rush','pounce','zigzag','spiral','charge','vault','blink','drop','sway','uppercut','tackle','backstab','thrust','roll']); }
       if(sk.type === 'multi') motionHits = sk.hits || 3;
       moveLine = sk.name + '！';
     }
     else if(sk.type === 'heal' || sk.type === 'cleanse' || sk.type === 'regen' || sk.type === 'refresh'){ evt = 'heal'; }
     else if(sk.type === 'shield' || sk.type === 'counter'){ evt = 'guard'; }
     else if(sk.type.startsWith('buff')){ evt = 'buff'; }
+    else if(_n2 && (_n2.heal || _n2.regen || _n2.cleanse)){ evt = 'heal'; }
+    else if(_n2 && (_n2.shield || _n2.counter)){ evt = 'guard'; }
+    else if(_n2 && (_n2.selfAtk || _n2.selfDef || _n2.selfSpd || _n2.cdCut || _n2.cdReset)){ evt = 'buff'; }
     else { evt = 'curse'; }
   } else if(action === 'guard'){
     kind = 'cast'; evt = 'guard';
@@ -11298,6 +11322,25 @@ Object.assign(NEWT2, {
   asAw4:   { aw:1, n:'修羅・闘神降臨', selfAtk:.4, selfDef:.3, selfSpd:.2, heal:.2, dur:3, cd:4 },
   asAwUlt: { aw:1, ult:1, n:'修羅・天昇滅却', m:[2.6, 2.6], burn:[.1, 3], pierce:.4, cd:4 }
 });
+Object.assign(NEWT2, {
+  lastditch:{ n:'窮鼠の一撃', m:[1.15, 1.25], wrath:1.5, cd:4 },
+  detonate: { n:'誘爆', m:[1.0, 1.1], ignite:1.6, cd:3 },
+  gravwell: { n:'重力井戸', m:[.7, .8], gravity:.12, cd:4 },
+  shadowbind:{ n:'影縫い', m:[.6, .7], foeSpd:.3, cdAdd:1, dur:2, cd:4 },
+  mendcut:  { n:'癒しの一閃', m:[.7, .8], heal:.1, cd:3 },
+  tempo:    { n:'先手の構え', selfSpd:.25, shield:.1, cdCut:1, dur:2, cd:4 },
+  quake:    { n:'地割れ', m:[.7, .8], foeDef:.2, stun:1, cd:5 },
+  crimson:  { n:'紅の誓い', selfAtk:.15, heal:.08, regen:.02, dur:3, cd:5 },
+  cyclone:  { n:'旋風連', m:[.5, .55], hits:4, pierce:.15, cd:4 },
+  hexflame: { n:'呪焔', foeAtk:.15, burn:[.05, 3], cd:4 },
+  vendetta: { n:'報復の刃', m:[.85, .95], counter:3, selfAtk:.1, dur:2, cd:4 },
+  uCrisis:  { ult:1, n:'背水の陣', m:[1.4, 1.5], wrath:1.35, selfDef:.2, dur:3, cd:5 },
+  uBlast:   { ult:1, n:'大爆轟', m:[1.1, 1.2], ignite:1.6, burn:[.05, 3], cd:5 },
+  uSingular:{ ult:1, n:'特異点', m:[.8, .9], gravity:.16, stun:1, cd:5 },
+  uRewind:  { ult:1, n:'時戻し', heal:.3, cdReset:1, cleanse:1, cd:6 },
+  uDominion:{ ult:1, n:'覇王の威光', m:[1.0, 1.1], foeAtk:.25, foeDef:.25, foeSpd:.25, dur:3, cd:5 },
+  uDeluge:  { ult:1, n:'大洪水', m:[1.0, 1.1], hits:3, foeSpd:.3, shield:.15, cd:5 }
+});
 const NEWT2D = {
   twin:'2回連続で斬りつける', flurry:'4回連続で撃ち込む', vamp:'与えたダメージの半分ぶん、HPを吸い取る', frost:'攻撃しつつ、敵の素早さを下げる', toxic:'攻撃して毒を与える。毎ターンじわじわ削る', flame:'攻撃して火傷を与える。毎ターン削る', shock:'攻撃して敵を1ターン気絶させる（CT長め）',
   ironwall:'防御を上げて、反撃の構えを取る', rally:'攻撃と防御を同時に上げる', meditate:'HPを回復し、状態異常も治す', sacrifice:'自分のHPを削って大ダメージを与える', finisher:'敵のHPが少ないほど大ダメージ', timewarp:'他の技のCTを縮め、素早さを上げる', weaken:'敵の攻撃・防御・素早さをまとめて下げる',
@@ -11322,6 +11365,14 @@ Object.assign(NEWT2D, {
   asAw1:'防御を一部無視する炎の拳', asAw2:'5連続で炎の拳を叩き込む', asAw3:'防御を大きく貫き、火傷を与える',
   asAw4:'攻撃・防御・素早さを大きく上げ、HPを回復する', asAwUlt:'防御を貫く超大ダメージ＋強力な火傷'
 });
+Object.assign(NEWT2D, {
+  lastditch:'自分のHPが半分を切っていると、威力が大きく上がる一撃', detonate:'敵が火傷か毒のとき、威力が大きく上がる', gravwell:'攻撃しつつ、敵の現在HPの一部を追加で削る',
+  shadowbind:'攻撃し、敵の素早さを下げて技のCTも延ばす', mendcut:'攻撃しながら、自分のHPも少し回復する', tempo:'素早さを上げ、バリアを張り、他の技のCTも縮める',
+  quake:'攻撃して敵の防御を下げ、気絶させる', crimson:'攻撃を上げ、HPを回復してリジェネも付ける', cyclone:'防御を一部無視する4連続の風',
+  hexflame:'敵の攻撃を下げ、火傷も与える', vendetta:'攻撃しつつ、反撃の構えと攻撃アップ',
+  uCrisis:'HPが少ないほど真価を発揮する大ダメージ。防御も上がる', uBlast:'敵が火傷・毒だと超威力。火傷も与える', uSingular:'敵の現在HPを大きく削り、気絶させる',
+  uRewind:'大回復＋状態異常解除＋全ての技のCTをリセット', uDominion:'大ダメージ＋敵の攻撃・防御・素早さを大きく下げる', uDeluge:'3連続の大波で敵の素早さを下げ、バリアも張る'
+});
 Object.keys(NEWT2D).forEach(k => { if(NEWT2[k]) NEWT2[k].d = NEWT2D[k]; });
 const pcT = v => Math.round(v * 100) + '%';
 function comboText(sp, a){
@@ -11329,6 +11380,9 @@ function comboText(sp, a){
   const p = [], m = a && a.mult;
   if(m) p.push(sp.hits > 1 ? `威力×${m.toFixed(2)}（${sp.hits}連続）` : `威力×${m.toFixed(2)}`);
   if(sp.exec) p.push(`敵HP40%未満で×${sp.exec}`);
+  if(sp.wrath) p.push(`自分のHP50%未満で×${sp.wrath}`);
+  if(sp.ignite) p.push(`敵が火傷・毒だと×${sp.ignite}`);
+  if(sp.gravity) p.push(`敵の現在HPの${pcT(sp.gravity)}を追加ダメージ`);
   if(sp.pierce) p.push(`防御${pcT(sp.pierce)}無視`);
   if(sp.drain) p.push(`与ダメの${pcT(sp.drain)}回復`);
   if(sp.recoil) p.push(`反動：自分のHP-${pcT(sp.recoil)}`);
@@ -11372,7 +11426,7 @@ function comboText(sp, a){
     if(kind === 'attack' || !a || !NEWT2[a.type]) return _av2(a, kind, c, p);
     const sp = NEWT2[a.type], dmgOf = m => { const r = estDamage(c, p, m); return (r[0] + r[1]) / 2; };
     const incR = estDamage(p, c, 1), inc = (incR[0] + incR[1]) / 2, base = dmgOf(1), miss = c.maxHp - c.hp;
-    let tot = a.mult ? dmgOf(a.mult * (sp.exec && p.hp / p.maxHp < .4 ? sp.exec : 1)) : 0, v = tot, def = !a.mult;
+    let tot = a.mult ? dmgOf(a.mult * (sp.exec && p.hp / p.maxHp < .4 ? sp.exec : 1) * (sp.wrath && c.hp / c.maxHp < .5 ? sp.wrath : 1) * (sp.ignite && ((p.burnTurns | 0) > 0 || (p.poisonTurns | 0) > 0) ? sp.ignite : 1)) : 0, v = tot, def = !a.mult;
     if(sp.drain) v += Math.min(miss, tot * sp.drain);
     if(sp.recoil) v -= c.maxHp * sp.recoil * (c.hp / c.maxHp < .4 ? 3 : 1);
     if(sp.heal) v += Math.min(miss, c.maxHp * sp.heal) * 1.1;
@@ -11390,6 +11444,7 @@ function comboText(sp, a){
     if(sp.stun) v += inc * .9;
     if(sp.dispel) v += (['atk', 'def', 'spd'].some(k => p.mods[k] > 1) || p.shield > 0) ? base * .6 : 0;
     if(sp.cdAdd) v += base * .3;
+    if(sp.gravity) v += p.hp * sp.gravity * .9;
     if(sp.unl) v = (c.hp / c.maxHp < .5) ? c.maxHp * .9 : -60;
     return { v, tot, def, inc };
   };
@@ -11408,6 +11463,8 @@ function comboText(sp, a){
       if(sk.mult){
         const hits = sp.hits || 1; let m = sk.mult / hits * (hits > 1 ? 1.15 : 1);
         if(sp.exec && target.hp / target.maxHp < .4){ m *= sp.exec; msg += '（トドメ特効！）'; }
+        if(sp.wrath && actor.hp / actor.maxHp < .5){ m *= sp.wrath; msg += '（背水の一撃！）'; }
+        if(sp.ignite && ((target.burnTurns | 0) > 0 || (target.poisonTurns | 0) > 0)){ m *= sp.ignite; msg += '（誘爆！）'; }
         const od = target.mods.def; if(sp.pierce) target.mods.def = od * (1 - sp.pierce);
         let crit = false, ev = 0;
         for(let i = 0; i < hits; i++){
@@ -11424,6 +11481,7 @@ function comboText(sp, a){
         } else { playDodgeAnim(ts, target.data); msg += ` ${target.data.name} にかわされた！`; }
       }
       const foeOk = !sk.mult || hitAny;
+      if(sp.gravity && hitAny && target.hp > 0){ const gv = Math.max(1, Math.round(target.hp * sp.gravity)); target.hp = Math.max(1, target.hp - gv); dealt += gv; popV = (popV || 0) + gv; msg += ` 重力で追加${gv}ダメージ！`; }
       if(sp.drain && dealt > 0){ const g = Math.round(dealt * sp.drain); actor.hp = Math.min(actor.maxHp, actor.hp + g); msg += ` HPを${g}吸収！`; }
       if(sp.recoil){ const r = Math.round(actor.maxHp * sp.recoil); actor.hp = Math.max(1, actor.hp - r); msg += ` 反動で${r}ダメージ…`; }
       if(sp.heal){ const h = Math.round(actor.maxHp * sp.heal); actor.hp = Math.min(actor.maxHp, actor.hp + h); msg += ` HPを${h}回復！`; if(popV === null){ popV = h; popHeal = true; } playStatusAnim(side, 'heal'); }
@@ -13102,6 +13160,103 @@ Hooks.on('battle:end', info => {
     later(() => toast(`塔 ${q.tower}階 到達ボーナス！ 🪙+${coins}・${ITEMS[it].n}`), 5600);
   }catch(e){ console.warn('tower ms', e); }
 });
+
+/* ---------- Ver4.25 モーション・フィールド・技の追加 ---------- */
+window.__NEWT2 = NEWT2;
+window.__newtMotion = function(sp, actor, idx){
+  const h = nameHash(actor.data.name) + (idx | 0);
+  let pool;
+  if(sp.hits > 2) pool = ['rush', 'barrage', 'whirl', 'sway', 'zigzag'];
+  else if(sp.gravity) pool = ['drop', 'slam', 'beam'];
+  else if(sp.stun) pool = ['slam', 'uppercut', 'tackle', 'drop'];
+  else if(sp.drain) pool = ['dive', 'backstab', 'warp', 'beam'];
+  else if(sp.exec || sp.wrath) pool = ['backstab', 'dive', 'slash', 'thrust'];
+  else if(sp.pierce) pool = ['thrust', 'charge', 'zigzag', 'blink'];
+  else if(sp.burn || sp.ignite) pool = ['shoot', 'beam', 'spiral', 'drop'];
+  else if(sp.recoil) pool = ['rush', 'slam', 'tackle'];
+  else if(sp.counter) pool = ['uppercut', 'slash', 'thrust'];
+  else pool = ['dash', 'slash', 'tackle', 'sway', 'jump', 'roll', 'pounce'];
+  return pool[h % pool.length];
+};
+['pierce', 'breaker', 'drain', 'execute', 'surge', 'sacrifice'].forEach(k => {
+  const add = { pierce:'thrust', breaker:'drop', drain:'backstab', execute:'backstab', surge:'sway', sacrifice:'tackle' }[k];
+  if(TYPE_MOTION[k] && TYPE_MOTION[k].indexOf(add) < 0) TYPE_MOTION[k].push(add);
+});
+const _pam25 = playAttackMotion;
+playAttackMotion = function(side, kind, color, targetSide){
+  const r = _pam25.apply(this, arguments);
+  try{
+    if(['sway', 'tackle', 'thrust', 'roll', 'backstab', 'uppercut', 'drop'].indexOf(kind) >= 0){
+      const slot = getFigEl(side);
+      if(slot){ const tr = document.createElement('div'); tr.className = 'dashtrail'; slot.appendChild(tr); setTimeout(() => tr.remove(), 600); }
+    }
+    if(kind === 'drop' || kind === 'uppercut'){
+      _origSetTimeout(() => { try{ const st = document.getElementById('stage'); st.classList.remove('screenshake'); void st.offsetWidth; st.classList.add('screenshake'); }catch(e){} }, (kind === 'drop' ? 560 : 380) / speedNow());
+    }
+  }catch(e){}
+  return r;
+};
+/* 新フィールド6種 */
+SCENES.push(
+  {sky:['#3a2a14','#a8743a','#f0d49a'], orb:['#fff2c0',70,34,70], far:['arena','#6a4a2a'], near:['arena','#2a1a0c'], floor:['#8a6a3a','#2a1c0c'], fx:'wisp'},
+  {sky:['#fff0c8','#9ad0ff','#4a7ae0'], orb:['#ffffff',50,30,90], far:['city','#7aa8e0'], near:['arena','#2a4a8a'], floor:['#e8e0c0','#7a8ab0'], fx:'petal'},
+  {sky:['#1a0f08','#5a3a1a','#d09a4a'], orb:['#ffe8a0',50,46,100], far:['city','#4a2a14'], near:['city','#180a04',true], floor:['#5a3a1a','#1a0c04'], fx:'ember'},
+  {sky:['#bfe8ff','#7ac0f0','#e8fff0'], orb:['#ffffff',24,24,50], far:['mount','#6aa8c8'], near:['trees','#2a6a4a'], floor:['#6ab04a','#1a4a22'], fx:'petal'},
+  {sky:['#0a1a2a','#1a4a6a','#4a8aa0'], orb:['#d8f0ff',28,22,46], far:['mount','#0e2a3a'], near:['mount','#05121c'], floor:['#1a5a7a','#06202e'], fx:'bubble'},
+  {sky:['#000000','#14081e','#3a1060'], orb:['#c8a0ff',50,36,110], far:null, near:null, floor:['#1a0a30','#05020a'], fx:'wisp'}
+);
+FIELDS.push(
+  {id:'temple', icon:'🏛', name:'古代神殿', desc:'お互いの受けるダメージ-10%（長期戦になりやすい）', color:'#d9b46a'},
+  {id:'altar', icon:'⛩', name:'天空の祭壇', desc:'必殺技のダメージがお互いに+15%', color:'#9ad0ff'},
+  {id:'clock', icon:'⏳', name:'時計塔の頂', desc:'3ターンごとに、お互いの技のクールタイムが1進む', color:'#ffb35a'},
+  {id:'wind', icon:'🍃', name:'風の高原', desc:'HPが少ない方の素早さ+15%（先手を取りやすい）', color:'#9affc0'},
+  {id:'storm', icon:'🌊', name:'荒れ狂う海', desc:'毎ターン終了時、HPが多い方の強化とバリアが吹き飛ぶ', color:'#6ac0ff'},
+  {id:'void', icon:'🕳', name:'虚無の裂け目', desc:'お互いのHP回復の効果が半分になる', color:'#c8a0ff'}
+);
+Object.assign(FIELD_LINES, {
+  temple:['静かな神殿だね…','古い石の匂い','ここは落ち着く'], altar:['空が近い…！','風が気持ちいい','神様に見られてるかも'], clock:['カチ、カチ…って音が','時間が早く進む？','針の音が響く…'],
+  wind:['風が強い！','髪が乱れる〜','追い風だ！'], storm:['波が荒い…！','潮の匂いがする','ずぶ濡れだ！'], void:['何もない…','吸い込まれそう','静かすぎる…']
+});
+const _afe25 = applyFieldEffects;
+applyFieldEffects = function(){
+  _afe25.apply(this, arguments);
+  const id = fieldId(); if(!id || !state) return;
+  const fs = [state.p, state.c], side = f => f === state.p ? 'player' : 'cpu';
+  if(id === 'clock' && (state.roundCount + 1) % 3 === 0){
+    fs.forEach(f => { if(f.hp > 0){ f.skillCd = f.skillCd.map(c => Math.max(0, c - 1)); f.ultCd = Math.max(0, f.ultCd - 1); } });
+    addLog('⏳ 時計塔の鐘が鳴り、お互いの技のクールタイムが進んだ', 'skill'); fieldPop('⏳ 時が進む', '#ffb35a');
+  } else if(id === 'storm'){
+    const high = fs.filter(f => f.hp > 0 && fs.some(o => o !== f && fieldLow(o)));
+    if(high.length){
+      let any = false;
+      high.forEach(f => { if(f.shield > 0){ f.shield = 0; f.shieldTurns = 0; any = true; } ['atk', 'def', 'spd'].forEach(k => { if(f.mods[k] > 1){ f.mods[k] = 1; f.modTurns[k] = 0; any = true; } }); });
+      if(any){ addLog(`🌊 荒波：HPが多い ${high[0].data.name} の強化とバリアが吹き飛んだ`, 'hit'); fieldPop('🌊 荒波', '#6ac0ff'); }
+    }
+  }
+};
+const _cd25 = calcDamage;
+calcDamage = function(att, def){
+  const r = _cd25.apply(this, arguments);
+  try{ if(r && r.dmg > 0 && fieldId() === 'temple') r.dmg = Math.max(1, Math.round(r.dmg * .9)); }catch(e){}
+  return r;
+};
+const _es25 = effSpd;
+effSpd = function(f){
+  let v = _es25.apply(this, arguments);
+  try{ if(fieldId() === 'wind' && fieldLow(f)) v *= 1.15; }catch(e){}
+  return v;
+};
+const _ra25 = resolveAction;
+resolveAction = function(side, actor, target, action){
+  const id = fieldId(), vd = id === 'void', al = id === 'altar' && action === 'ult';
+  const fs = vd ? [state.p, state.c] : [], b = fs.map(f => f.hp), tb = al ? target.hp : 0;
+  const r = _ra25.apply(this, arguments);
+  try{
+    if(vd) fs.forEach((f, i) => { if(f.hp > b[i] && f.hp > 0){ f.hp = b[i] + Math.round((f.hp - b[i]) * .5); } });
+    if(al){ const dealt = tb - target.hp; if(dealt > 0 && target.hp > 0){ const ex = Math.max(1, Math.round(dealt * .15)); target.hp = Math.max(0, target.hp - ex); addLog(`⛩ 祭壇の力で必殺技の威力が上がった！（+${ex}）`, 'result'); } }
+  }catch(e){ console.warn('field25', e); }
+  return r;
+};
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
