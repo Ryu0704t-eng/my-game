@@ -2524,6 +2524,11 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 .tgc.cmd{border-color:#ffd24a;box-shadow:0 0 8px #ffd24a;} .tgc.tgt{border-color:#ff6a5a;box-shadow:0 0 8px #ff6a5a;} .tgc.ko{filter:grayscale(1) brightness(.5);}
 .tagmsg{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);z-index:7;max-width:94%;text-align:center;font-size:.62rem;font-weight:800;color:#fff;background:rgba(0,0,0,.62);padding:3px 10px;border-radius:10px;line-height:1.4;pointer-events:none;}
 .tagmsg:empty{display:none;}
+
+/* Ver4.32 行動予告・連鎖 */
+.telchip{position:absolute;right:6px;bottom:46px;z-index:8;max-width:62%;font-size:.6rem;font-weight:800;color:#fff;background:rgba(40,0,0,.72);border:1px solid rgba(255,140,120,.6);padding:2px 8px;border-radius:10px;line-height:1.35;pointer-events:none;}
+.telchip:empty{display:none;}
+.tgc{position:relative;} .tgc em{position:absolute;top:2px;right:2px;width:9px;height:9px;border-radius:50%;border:1px solid #fff;box-shadow:0 0 5px #fff;}
 </style>
 </head>
 <body>
@@ -3826,6 +3831,12 @@ const patchNotes = [
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
     "【キャラガチャ】自分で作ったキャラも、ガチャの排出対象に入りました（提供割合の一覧にも表示）。作ったキャラはもう持っているので、引くと「凸」が上がります。作ったキャラのレアリティはランダムに決まっています。",
     "【新ステージ「試練の間」】プレイヤースキルが必要なギミック付きステージを8つ追加（クエスト画面）。装備・Lv・凸・技の書・絆の補正がなくなり全員が同条件で戦う。ギミック：予告攻撃（3ターンごとに大技、約2.5倍。ガードで軽減）／封印（4ターンごとに技が通常攻撃になる）／鏡の盾（約7割軽減＋一部が自分に返る）／見切り（同じ行動の連続で半減）／時間制限。予告は画面に表示される。「試練の王」の初回クリアでEXキャラ「セラフィナ」が確定で仲間になる。",
+    "【データの引き継ぎ】「⋯ その他」→「データの引き継ぎ」で、コイン・キャラ・装備・自作キャラ・記録など全データをファイルに書き出し／復元できます。機種変更やブラウザのデータ消去に備えられます（復元前のデータは自動で控えを残します）。",
+    "【敵の行動予告】クエスト・塔・EX・試練の戦闘で、敵が次に出す行動（通常攻撃／技名／必殺技／ガード）が画面に表示されます。予告どおりに敵は動くので、ガードや強化のタイミングを読めます。",
+    "【タッグ戦の連鎖反応】2対2タッグ戦で、攻撃を受けた体に属性の印がつき、印がついている間に別の属性で攻撃すると追加ダメージの「連鎖反応」（蒸発・延焼・灼光・煉獄・開花・屈折・渦潮・光合成・腐朽・双極）が発動。延焼・煉獄は火傷、腐朽は毒、開花・光合成は攻撃側が回復。敵チームの連鎖も同じく発動します。",
+    "【縛りチャレンジ】試練の間に、条件つきの試練を4つ追加（試練の王のクリア後に挑戦）：無傷の間（回復禁止）／脆き身の間（ガード禁止・被ダメ2倍）／短期決戦の間（6ターン以内・回復禁止）／縛りの王（回復禁止・ガード禁止・12ターン以内）。",
+    "【キャラ作成：潜在能力解放】作るキャラに「潜在能力解放」を持たせられます（技④が一度きりの全解放に。HP全回復・全ステータスと技が強化）。解放後の画像も登録でき、使うと見た目が変わります。",
+    "【キャラ作成：技の再編集】すでに作ったキャラも、キャラ詳細の「✏ 技・潜在能力解放を編集」から、技の名前・効果・必殺技・パッシブ・画像・潜在能力解放をいつでも作り直せます（名前とステータスはそのまま）。",
     "【やり込み：週間ミッション】「⋯ その他」→「やり込み」に、毎週月曜に更新される週間ミッション5つ（勝利25回／クエスト等で勝利8回／キャラガチャ10回／タッグ戦・2人対戦で勝利3回／試練で勝利2回）を追加。報酬は🪙600〜800＋凸の欠片や技の書・装備、全部達成ボーナスは🪙2000＋🧩5＋SSRの書。",
     "【やり込み：キャラマスタリー】キャラごとの勝利数（5・15・30・60・100勝）で段階報酬（🪙300〜2000＋🧩凸の欠片1〜3）。全キャラの100勝マスターを目指せます。",
     "【試練の間に★評価】各試練に「規定ターン以内でクリア」「HP半分以上で勝利」の★を追加。初めて達成するたびに🪙250（余裕の勝利★は🧩+1も）。",
@@ -10517,7 +10528,7 @@ function randRarFor(name){
 }
 function mineBuild(m){
   return { name: m.name, role: m.role, emoji: m.emoji, c1: m.c1, c2: m.c2, quote: m.quote, element: m.element, isCustom: true,
-    stats: Object.assign({}, m.stats), skills: m.skills, ultimate: m.ultimate, passive: m.passive ? ccPasObj(m.passive.type, m.passive.val) : undefined, cardImg: m.photo || null, img: m.photo || null, fullImg: m.photo || null };
+    stats: Object.assign({}, m.stats), skills: m.skills, ultimate: m.ultimate, passive: m.passive ? ccPasObj(m.passive.type, m.passive.val) : undefined, cardImg: m.photo || null, img: m.photo || null, fullImg: m.photo || null, unlImg: m.unlImg || undefined };
 }
 function mineApply(){
   const have = new Set(allChars().map(c => c.name));
@@ -10601,7 +10612,8 @@ function ccSave(){
   if(mineLoad().length >= MINE_MAX){ toast(`作れるのは${MINE_MAX}体までです`); return; }
   const names = cc.names.map((n, i) => (n || '').trim() || (i < 4 ? ccSkName() : ccUltName()));
   const skills = cc.sk.map((s, i) => Object.assign({}, s, { name: names[i] })), ult = Object.assign({}, cc.ul, { name: names[4] });
-  const m = { name, role: cc.role, emoji: cc.emoji, c1: hsl2hex(cc.hue, .7, .55), c2: hsl2hex((cc.hue + 30) % 360, .55, .18), quote: cc.quote, element: cc.element, stats: cc.stats, skills, ultimate: ult, photo: cc.photo, passive: (() => { const x = (cc.pas != null && cc.pas >= 0) ? CC_PAS[cc.pas] : pick(CC_PAS); return { type:x[0], val:x[1] }; })() };
+  if(cc.unl) skills[3] = Object.assign({}, { name:'潜在能力全解放', type:'unleash', cd:99, desc:'一度きり！HP全回復・全ステータス上昇・全ての技が強化・イラストが覚醒' }, { name: names[3] });
+  const m = { name, role: cc.role, emoji: cc.emoji, c1: hsl2hex(cc.hue, .7, .55), c2: hsl2hex((cc.hue + 30) % 360, .55, .18), quote: cc.quote, element: cc.element, stats: cc.stats, skills, ultimate: ult, photo: cc.photo, unlImg: (cc.unl && cc.unlImg) || undefined, passive: (() => { const x = (cc.pas != null && cc.pas >= 0) ? CC_PAS[cc.pas] : pick(CC_PAS); return { type:x[0], val:x[1] }; })() };
   const all = mineLoad(); all.push(m);
   try{ localStorage.setItem(LS_MINE, JSON.stringify(all)); }catch(e){ toast('保存できませんでした（容量不足の可能性。画像を小さくするか、不要なキャラを削除してください）'); return; }
   const c = mineBuild(m); roster.push(c); RAR_OVR[c.name] = randRarFor(c.name);
@@ -10612,7 +10624,7 @@ function ccSave(){
 }
 
 /* ---- 作ったキャラの共有コード（この端末のキャラを友達の端末へ） ---- */
-const CC_TYPES = {}; CC_SK.concat(CC_UL).forEach(f => { const x = f(); CC_TYPES[x.type] = x.desc; });
+const CC_TYPES = {}; CC_SK.concat(CC_UL).forEach(f => { const x = f(); CC_TYPES[x.type] = x.desc; }); CC_TYPES.unleash = '一度きり！HP全回復・全ステータス上昇・全ての技が強化・イラストが覚醒';
 const CC_NUMK = { mult:[.3, 2.2], val:[.03, .8], dur:[1, 5], turns:[1, 5], cd:[1, 5], hits:[2, 6], healVal:[.05, .5], buffVal:[.05, .5], shieldVal:[.05, .5] };
 function ccSanitizeSk(x, ult){
   if(!x || typeof x.type !== 'string' || !CC_TYPES[x.type]) return null;
@@ -11763,7 +11775,7 @@ function exUnlockChar(n){
 Object.keys(EXDEFS).forEach(n => { try{ if(lsGet(LS_UNLOCKED, []).includes(n)) exUnlockChar(n); }catch(e){} });
 function unleashApply(side, f){
   const d = f.data;
-  const uk = d.name + '・解放', nd = Object.assign({}, d, { cardImg:portraits[uk], img:standees[uk], fullImg:standees[uk] });
+  const uk = d.name + '・解放', ui = d.unlImg || standees[uk] || d.img, nd = Object.assign({}, d, { cardImg:d.unlImg || portraits[uk] || d.cardImg, img:ui, fullImg:ui });
   const up = x => x == null ? x : +(x * 1.12).toFixed(2);
   nd.skills = d.skills.map(s => s.type === 'unleash' ? Object.assign({}, s, { name:'潜在能力全解放（使用済み）', desc:'一度きりの技。すでに解放済み' }) : Object.assign({}, s, { name:'解放・' + s.name, mult:up(s.mult), val:up(s.val), cd:Math.max(1, (s.cd || 2) - 1) }));
   nd.ultimate = Object.assign({}, d.ultimate, { name:'解放・' + d.ultimate.name, mult:up(d.ultimate.mult), val:up(d.ultimate.val), cd:3 });
@@ -11801,7 +11813,7 @@ Hooks.on('battle:end', info => {
 
 /* ---------- 対戦の自動保存と再開（バトル中に急にホームへ戻ったとき用） ---------- */
 const LS_RESUME = 'battleArena_resume_v1';
-const rsStrip = o => JSON.parse(JSON.stringify(o, (k, v) => (k === 'img' || k === 'cardImg' || k === 'fullImg') ? undefined : v));
+const rsStrip = o => JSON.parse(JSON.stringify(o, (k, v) => (k === 'img' || k === 'cardImg' || k === 'fullImg' || k === 'unlImg') ? undefined : v));
 function resumeSave(force){
   try{
     if(!state || state.over || pvp.on || teamMode || !selected || !cpuFighterData || !state.p || !state.c) return;
@@ -11818,14 +11830,14 @@ function resumeRead(){ try{ const d = JSON.parse(localStorage.getItem(LS_RESUME)
 function resumeGo(){
   const d = resumeRead(); document.querySelectorAll('.v4modal').forEach(e => e.remove()); if(!d) return; resumeClear();
   const base = n => allChars().find(c => c.name === n) || ((EXDEFS && EXDEFS[n]) ? exPlace(n) : null);
-  const img = o => { const b = base(o.name); return Object.assign({}, o, b ? { img:b.img, cardImg:b.cardImg, fullImg:b.fullImg } : {}); };
+  const img = o => { const b = base(o.name); return Object.assign({}, o, b ? { img:b.img, cardImg:b.cardImg, fullImg:b.fullImg, unlImg:b.unlImg } : {}); };
   const fx = f => Object.assign({}, f, { data:img(f.data) });
   try{
     selected = img(d.sel); cpuFighterData = img(d.cpu); if(d.lv) cpuLevel = d.lv; teamMode = false; pendingQuest = d.q || null;
     startBattle();
     Object.assign(state.p, fx(d.p)); Object.assign(state.c, fx(d.c));
     state.roundCount = d.rc || 0; state.escalation = d.esc || 1; if(d.field) state.field = d.field;
-    try{ const fg = document.getElementById('stageFigures').children; [[fg[0], state.p, 0], [fg[1], state.c, 1]].forEach(([el, f, i]) => { if(el && f._unl){ const u = standees[f.data.name + '・解放'] || standees['アスラ・解放']; el.innerHTML = `<img class="standee-img${i ? ' cpuflip' : ''}" src="${u}">`; } }); }catch(e){}
+    try{ const fg = document.getElementById('stageFigures').children; [[fg[0], state.p, 0], [fg[1], state.c, 1]].forEach(([el, f, i]) => { if(el && f._unl){ const u = f.data.unlImg || standees[f.data.name + '・解放'] || standees['アスラ・解放']; el.innerHTML = `<img class="standee-img${i ? ' cpuflip' : ''}" src="${u}">`; } }); }catch(e){}
     try{ if(d.q && d.q.boss) setBoss(true); }catch(e){}
     renderBattleUI(); try{ updateTurnBadge(); }catch(e){}
     addLog(`⏪ 中断した対戦を再開しました（ターン${state.roundCount + 1}）`, 'result');
@@ -12227,11 +12239,11 @@ if(S.lite === undefined){
 }
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('grind', '🏆', 'やり込み', (wkReadyN() + msReadyN()) ? '🎁 受取あり！' : '週間ミッション・マスタリー')}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('tag', '⚔', '2対2タッグ戦', '2体同時に戦う')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}${b('lite', '⚡', '軽量モード', liteOn() ? 'ON（タップでOFF）　動きの飾りを減らします' : 'OFF（タップでON）　重いときにどうぞ')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('grind', '🏆', 'やり込み', (wkReadyN() + msReadyN()) ? '🎁 受取あり！' : '週間ミッション・マスタリー')}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('bk', '💾', 'データの引き継ぎ', 'バックアップ・復元')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('tag', '⚔', '2対2タッグ戦', '2体同時に戦う')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}${b('lite', '⚡', '軽量モード', liteOn() ? 'ON（タップでOFF）　動きの飾りを減らします' : 'OFF（タップでON）　重いときにどうぞ')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), grind:() => V47.grind(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), tag:() => { showScreen('screen-select'); startTagPick(); }, pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); }, lite:() => { S.lite = liteOn() ? 0 : 1; save(); liteApply(); toast(liteOn() ? '軽量モードをONにしました' : '軽量モードをOFFにしました'); } };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), bk:() => V47.backup(), grind:() => V47.grind(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), tag:() => { showScreen('screen-select'); startTagPick(); }, pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); }, lite:() => { S.lite = liteOn() ? 0 : 1; save(); liteApply(); toast(liteOn() ? '軽量モードをONにしました' : '軽量モードをOFFにしました'); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
@@ -13408,6 +13420,9 @@ const GIMS = {
   seal:   { n:'封印',     d:'4ターンごとに、技と必殺技が封印されて通常攻撃になる。直前に予告が出る' },
   mirror: { n:'鏡の盾',   d:'5ターン周期で2ターンのあいだ、敵に与えるダメージが約7割減り、一部が自分に返ってくる' },
   chain:  { n:'見切り',   d:'同じ行動を2回続けると、ダメージが半減する（ガードをはさむとリセット）' },
+  noheal: { n:'回復禁止', d:'戦闘中、自分のHPが回復しない（バリアはOK）。覚醒の回復も無効' },
+  noguard:{ n:'ガード禁止', d:'ガードが使えない' },
+  glass:  { n:'ガラスの身体', d:'敵から受けるダメージが2倍（そのぶん敵の攻撃力は低め）' },
   limit:  { n:'時間制限', d:'決められたターン以内に倒さないと失敗' }
 };
 const TRIALS = [
@@ -13420,16 +13435,23 @@ const TRIALS = [
   { n:'鏡と時の回廊', gim:['mirror', 'limit'], limit:13, mul:1.05, hp:1.80, coins:400, items:['SSR', 'SSR'], rw:'SSRの装備・書×2' },
   { n:'試練の王',     gim:['tele', 'mirror', 'chain', 'limit'], limit:16, mul:1.10, hp:2.00, coins:600, items:['bk5', 'bk6'], rw:'神の書・運命の書・EXキャラ「セラフィナ」（確定）' }
 ];
-const TRIAL_PAR = [7, 8, 9, 7, 9, 10, 11, 13];
+TRIALS.push(
+  { n:'無傷の間',     gim:['noheal'],                      mul:1.00, hp:1.60, coins:400, items:['SSR'],       rw:'SSRの装備・書' },
+  { n:'脆き身の間',   gim:['noguard', 'glass'],            mul:0.55, hp:1.40, coins:450, items:['SSR', 'SR'], rw:'SSR＋SRの装備・書' },
+  { n:'短期決戦の間', gim:['limit', 'noheal'], limit:6,    mul:1.00, hp:0.90, coins:500, items:['SSR', 'SSR'], rw:'SSRの装備・書×2' },
+  { n:'縛りの王',     gim:['noheal', 'noguard', 'limit'], limit:12, mul:0.90, hp:1.60, coins:800, items:['bk6', 'bk6'], rw:'運命の書×2' }
+);
+const TRIAL_PAR = [7, 8, 9, 7, 9, 10, 11, 13, 9, 6, 5, 10];
 function trialQuest(i){
   const d = TRIALS[i - 1], names = allChars().filter(c => !c.isCustom && !c.exChar).map(c => c.name).sort((a, b) => nameHash(a + 'tr') - nameHash(b + 'tr'));
-  return { id:'tr' + i, trial:i, name:`試練${i} ${d.n}`, ch:0, idx:0, g:12, boss:i === TRIALS.length, enemy:names[(i * 5 + 1) % names.length], lv:4, mul:d.mul, hpMul:d.hp, coins:d.coins, w:{ N:0, R:0, SR:50, SSR:50 }, drops:0, gim:d.gim.slice(), limit:d.limit || 0 };
+  return { id:'tr' + i, trial:i, name:`試練${i} ${d.n}`, ch:0, idx:0, g:12, boss:i === 8 || i === 12, enemy:names[(i * 5 + 1) % names.length], lv:4, mul:d.mul, hpMul:d.hp, coins:d.coins, w:{ N:0, R:0, SR:50, SSR:50 }, drops:0, gim:d.gim.slice(), limit:d.limit || 0 };
 }
 function trialHTML(){
   try{
     const T = S.trial || { cl:{} }, cl = T.cl || {};
     let h = `<div class="tw-card ex-card"><div class="tw-h">試練の間（プレイヤースキル）</div><div class="v4small" style="color:#fff">装備・キャラLv・凸・技の書・絆の補正がなくなり、<b>全員が同じ条件</b>で戦います。強さではなく、ステージのギミックを読んで動けるかが勝負。負けるたびに「挑戦の心得」で少し有利になります。<br>最後の「試練の王」を初めてクリアすると、<b style="color:#ffd24a">EXキャラ「セラフィナ」</b>が確定で仲間になります。</div>`;
     TRIALS.forEach((d, k) => {
+      if(k === 8) h += '<div class="v4h" style="margin-top:12px">縛りチャレンジ（試練の王をクリアすると挑戦できます）</div>';
       const i = k + 1, q = trialQuest(i), en = charData(q.enemy), eim = en && portraitOf(en), done = !!cl[i], open = i === 1 || !!cl[i - 1];
       const ds = d.gim.map(g => g === 'limit' ? `${d.limit}ターン以内に倒さないと失敗` : GIMS[g].d).join('<br>');
       h += `<div class="v4row ex-row" style="margin-top:8px;opacity:${open ? 1 : .5}">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>試練${i} ${esc(d.n)}</b> ${done ? '<span class="v4tag rar-SSR">CLEAR</span>' : ''}
@@ -13468,6 +13490,9 @@ function gimHud(q){
   if(m.sealed){ L.push('<b class="g-r">技が封印中（通常攻撃のみ）</b>'); T.push('技が封印された！'); } else if(m.sealWarn){ L.push('<span class="g-y">次のターン、技が封印される</span>'); T.push('次のターン、技が封印される'); }
   if(m.mirror){ L.push('<b class="g-r">鏡の盾：攻撃は控えよう</b>'); T.push('鏡の盾が展開中！ 攻撃すると返ってくる'); } else if(m.mirrorWarn){ L.push('<span class="g-y">次のターンから鏡の盾</span>'); T.push('次のターンから鏡の盾が展開される'); }
   if(q.gim.indexOf('chain') >= 0) L.push('<span class="g-b">同じ行動の連続は見切られる</span>');
+  if(q.gim.indexOf('noheal') >= 0) L.push('<span class="g-b">回復禁止</span>');
+  if(q.gim.indexOf('noguard') >= 0) L.push('<span class="g-b">ガード禁止</span>');
+  if(q.gim.indexOf('glass') >= 0) L.push('<span class="g-r">被ダメージ2倍</span>');
   if(q.limit) L.push(`<span class="g-b">残り ${m.left} ターン</span>`);
   h.innerHTML = L.join('<br>');
   T.forEach(t => addLog('⚠ ' + t, 'result'));
@@ -13503,6 +13528,7 @@ beginRound = function(){
         addLog('時間切れ…！ 制限ターン以内に倒せなかった', 'result'); state.p.hp = 0; state.turnLock = true; renderBattleUI(); finishBattle(false); return;
       }
       state.gm = Object.assign(state.gm || {}, { teleWarn:false, fire:false, sealWarn:false, sealed:false, mirrorWarn:false, mirror:false }, gimFlags(q, state.roundCount));
+      if(q.gim.indexOf('noheal') >= 0){ const g = state.gm; if(g.cap == null) g.cap = state.p.maxHp; if(state.p.hp > g.cap) state.p.hp = g.cap; else g.cap = state.p.hp; }
       gimHud(q);
     }
   }catch(e){ console.warn('trial round', e); }
@@ -13512,6 +13538,7 @@ const _pa26 = playerAction;
 playerAction = function(action, idx){
   try{
     const q = state && state.quest;
+    if(q && q.trial && !pvp.on && q.gim.indexOf('noguard') >= 0 && action === 'guard'){ toast('ガード禁止の試練です'); return; }
     if(q && q.trial && !pvp.on && state.gm && state.gm.sealed && (action === 'skill' || action === 'ult')){ toast('封印中！ 通常攻撃になります'); return _pa26.call(this, 'attack', null); }
   }catch(e){}
   return _pa26.apply(this, arguments);
@@ -13523,6 +13550,7 @@ calcDamage = function(att, def){
     const q = state && state.quest;
     if(q && q.trial && !pvp.on && state.gm && r && r.dmg > 0){
       const m = state.gm;
+      if(att === state.c && q.gim.indexOf('glass') >= 0) r.dmg = Math.round(r.dmg * 2);
       if(att === state.c && m.fire) r.dmg = Math.round(r.dmg * (def.guarding ? 1.5 : 2.5));
       if(att === state.p && def === state.c){
         if(m.mirror) r.dmg = Math.max(1, Math.round(r.dmg * .3));
@@ -13542,6 +13570,7 @@ resolveAction = function(side){
   }
   const eb = on ? state.c.hp : 0;
   const r = _ra26.apply(this, arguments);
+  if(on && q.gim.indexOf('noheal') >= 0){ const g = state.gm; if(g.cap == null) g.cap = state.p.maxHp; if(state.p.hp > g.cap) state.p.hp = g.cap; else g.cap = state.p.hp; }
   if(on && side === 'player'){
     try{
       const dEn = eb - state.c.hp;
@@ -13568,7 +13597,7 @@ Hooks.on('battle:end', info => {
       first = !T.cl[q.trial]; T.cl[q.trial] = 1;
       if(first){
         gain = d.coins; drops = d.items.map(r => /^(N|R|SR|SSR)$/.test(r) ? pickItemOfRarity(r, .4) : r); addExp(60);
-        if(q.trial === TRIALS.length && !isOwned('セラフィナ')){ if(exUnlockChar('セラフィナ')) sera = true; }
+        if(q.trial === 8 && !isOwned('セラフィナ')){ if(exUnlockChar('セラフィナ')) sera = true; }
       } else { gain = 60; if(Math.random() < .2) drops = [pickItemOfRarity('SR', .5)]; addExp(15); }
     }
     S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
@@ -13777,7 +13806,7 @@ function tgHud(){
   const card = (f, side, k) => {
     const d = f.data, img = d.cardImg || d.img, pc = Math.max(0, Math.round(f.hp / f.maxHp * 100));
     const cls = (f.hp <= 0 ? 'ko ' : '') + (side === 'c' && TG.tgt === k && f.hp > 0 && act ? 'tgt ' : '') + (side === 'p' && TG.ci === k && act ? 'cmd ' : '');
-    return `<div class="tgc ${cls}" ${side === 'c' ? `onclick="V47.tgT(${k})"` : ''}>${img ? `<img src="${img}">` : `<span>${d.emoji}</span>`}<i><b style="width:${pc}%"></b></i></div>`;
+    return `<div class="tgc ${cls}" ${side === 'c' ? `onclick="V47.tgT(${k})"` : ''}>${img ? `<img src="${img}">` : `<span>${d.emoji}</span>`}<i><b style="width:${pc}%"></b></i>${f._mk && f.hp > 0 ? `<em style="background:${ELEMS[f._mk.e].col}"></em>` : ''}</div>`;
   };
   h.innerHTML = `<div class="tgg">${TG.P.map((f, k) => card(f, 'p', k)).join('')}</div><div class="tgg">${TG.C.map((f, k) => card(f, 'c', k)).join('')}</div>`;
   m.innerHTML = act && TG.P[TG.ci] && TG.C[TG.tgt] ? `<b>${esc(TG.P[TG.ci].data.name)}</b> の行動（${TG.ci + 1}/2）　対象：<b>${esc(TG.C[TG.tgt].data.name)}</b>${tgAlive(TG.C).length > 1 ? '<br>敵のアイコンをタップで攻撃対象を変更' : ''}` : '';
@@ -13848,7 +13877,7 @@ function tgEnd(){
   if(tgCheckEnd()) return;
   const aP = tgAlive(TG.P), aC = tgAlive(TG.C), n = Math.max(aP.length, aC.length);
   for(let k = 0; k < n; k++){ state.p = aP[k % aP.length]; state.c = aC[k % aC.length]; try{ applyFieldEffects(); }catch(e){ console.warn('tag field', e); } }
-  [].concat(TG.P, TG.C).forEach(f => { if(f.hp > 0) endTurnTick(f); });
+  [].concat(TG.P, TG.C).forEach(f => { if(f.hp > 0) endTurnTick(f); if(f._mk){ f._mk.t--; if(f._mk.t <= 0) f._mk = null; } });
   state.roundCount++;
   Hooks.emit('round:end', { round: state.roundCount });
   if(state.roundCount % ESC_EVERY === 0){ state.escalation = 1 + Math.floor(state.roundCount / ESC_EVERY) * ESC_STEP; addLog(`⚡ 戦闘が長引いている！ 双方の火力が上昇した！（×${state.escalation.toFixed(2)}）`, 'result'); }
@@ -13881,6 +13910,7 @@ startBattle = function(){
     TG.P = [state.p, p2]; TG.C = [state.c, c2]; TG.ci = 0; TG.tgt = 0; TG.shown = { p:state.p, c:state.c };
     addLog(`⚔ 2対2タッグ戦！ ${TG.pd[0].name}＆${TG.pd[1].name}  VS  ${TG.cd[0].name}＆${TG.cd[1].name}`, 'result');
     addLog('毎ターン、2体それぞれに行動を選び、敵のアイコンをタップして攻撃対象を決めます。素早い順に4体が行動します。', 'skill');
+    addLog('⚡ 連鎖反応：攻撃を受けた体には属性の印（アイコンの小さな丸）がつきます。印がついている間に「別の属性」で攻撃すると、追加ダメージ（蒸発・延焼・双極など）が出ます。属性の違う2体で組むと有利！', 'skill');
     tgHud(); renderBattleUI();
   }catch(e){ console.warn('tag start', e); }
 };
@@ -13978,6 +14008,209 @@ Object.assign(window.V47, {
   msOne(name){ const r = msClaim(name); if(r.n){ save(); toast(`🏅 ${name} マスタリー報酬 🪙${r.c}・🧩${r.sh}`); } grindOpen('ms'); },
   msAll(){ let c = 0, sh = 0; roster.filter(x => isOwned(x.name)).forEach(x => { const r = msClaim(x.name); c += r.c; sh += r.sh; }); save(); if(c) toast(`🏅 マスタリー報酬 🪙${c}・🧩${sh}`); grindOpen('ms'); }
 });
+
+/* ---------- Ver4.30 キャラ作成：潜在能力解放（解放後の画像つき）・作ったキャラの技の編集 ---------- */
+const UNL_SK = (name) => Object.assign({}, { name:'潜在能力全解放', type:'unleash', cd:99, desc:'一度きり！HP全回復・全ステータス上昇・全ての技が強化・イラストが覚醒' }, { name });
+function ccResize(im, mx){
+  const k = Math.min(1, mx / Math.max(im.naturalWidth || im.width, im.naturalHeight || im.height)), cv = document.createElement('canvas');
+  cv.width = Math.max(1, Math.round((im.naturalWidth || im.width) * k)); cv.height = Math.max(1, Math.round((im.naturalHeight || im.height) * k));
+  const x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, cv.width, cv.height); x.drawImage(im, 0, 0, cv.width, cv.height);
+  return cv.toDataURL('image/jpeg', .82);
+}
+const _ccBuild30 = ccBuild;
+ccBuild = function(){
+  _ccBuild30.apply(this, arguments);
+  try{
+    const m = $('ccBox'); if(!m || !cc) return;
+    const sc = m.querySelector('#ccStats'), card = sc && sc.closest('.v4card');
+    const html = `<div class="v4card" id="ccUnl"><label class="v4small" style="display:block"><input type="checkbox" id="ccUnlCk" ${cc.unl ? 'checked' : ''} onchange="V47.unlSet(this.checked)"> <b>潜在能力解放を持たせる</b></label>
+      <div class="v4small">技④が「潜在能力全解放」（一度きり）になります。使うとHP全回復・全ステータスと全ての技が強化され、見た目が解放後の画像に変わります。技④の効果はこれに置き換わります。</div>
+      <div style="display:${cc.unl ? 'flex' : 'none'};gap:10px;align-items:center;margin-top:6px"><div class="cc-ph" onclick="document.getElementById('ccUnlFile').click()">${cc.unlImg ? `<img src="${cc.unlImg}">` : '<span>🔥<br>解放後の<br>画像を選ぶ</span>'}</div><input type="file" id="ccUnlFile" accept="image/*" style="display:none" onchange="V47.unlPhoto(this)"><div class="v4small">覚醒（解放）後の姿の画像。決めなければ見た目は変わりません。</div></div></div>`;
+    if(card) card.insertAdjacentHTML('beforebegin', html);
+    if(cc.unl){ const bs = m.querySelectorAll('.cc-pickbtn'); if(bs[3]){ bs[3].disabled = true; bs[3].innerHTML = '効果：潜在能力全解放（固定）'; } }
+    if(cc.edit){
+      const h = m.querySelector('.v4h'); if(h) h.textContent = '✏ ' + cc.edit + ' の技を編集';
+      m.querySelectorAll('button').forEach(b => {
+        const oc = b.getAttribute('onclick') || '';
+        if(/V47\.rAll|V47\.shareOpen/.test(oc)) b.remove();
+        else if(/V47\.save\(\)/.test(oc)){ b.setAttribute('onclick', 'V47.saveEdit()'); b.textContent = '✅ 変更を保存'; }
+      });
+      const pub = m.querySelector('#ccPub'); if(pub && pub.parentElement) pub.parentElement.remove();
+      if(card) card.remove();
+      const nm = m.querySelector('#ccName'); if(nm){ nm.disabled = true; const dc = nm.parentElement && nm.parentElement.querySelector('.cc-dice'); if(dc) dc.remove(); }
+      m.querySelectorAll('.cc-pickbtn').forEach((b, i) => { if(!b.disabled && cc.ef[i] < 0 && cc.sk[i] !== undefined){ const x = i < 4 ? cc.sk[i] : cc.ul, sp = NEWT2[x.type]; b.innerHTML = `効果：${esc(sp ? sp.n : x.type)}（いまの技）　▼ 選び直す`; } });
+    }
+  }catch(e){ console.warn('ccBuild30', e); }
+};
+function ccEditOpen(name){
+  const m = mineLoad().find(x => x.name === name); if(!m){ toast('このキャラは編集できません'); return; }
+  const idxOf = x => CC_SK.findIndex(f => f().type === x.type);
+  cc = { photo:m.photo || null, name:m.name, names:m.skills.map(x => x.name).concat(m.ultimate.name), ef:m.skills.map(idxOf).concat(CC_UL.findIndex(f => f().type === m.ultimate.type)),
+    stats:Object.assign({}, m.stats), sk:m.skills.map(x => Object.assign({}, x)), ul:Object.assign({}, m.ultimate), role:m.role, emoji:m.emoji, quote:m.quote, element:m.element,
+    hue:0, pas:m.passive ? CC_PAS.findIndex(x => x[0] === m.passive.type) : -1, unl:m.skills[3] && m.skills[3].type === 'unleash', unlImg:m.unlImg || null, edit:name };
+  if(cc.unl) cc.ef[3] = -1;
+  if(curModal && curModal.remove) curModal.remove();
+  curModal = modal('<div id="ccBox"></div>'); ccBuild();
+}
+function ccSaveEdit(){
+  if(!cc || !cc.edit) return;
+  const all = mineLoad(), i = all.findIndex(x => x.name === cc.edit); if(i < 0){ toast('保存できませんでした'); return; }
+  const old = all[i], names = cc.names.map((n, k) => (n || '').trim() || (k < 4 ? ccSkName() : ccUltName()));
+  const skills = cc.sk.map((x, k) => Object.assign({}, x, { name:names[k] })), ult = Object.assign({}, cc.ul, { name:names[4] });
+  if(cc.unl) skills[3] = UNL_SK(names[3]);
+  else if(skills[3].type === 'unleash') skills[3] = Object.assign({}, pick(CC_SK.slice(1))(), { name:names[3] });
+  const m2 = Object.assign({}, old, { skills, ultimate:ult, photo:cc.photo, unlImg:(cc.unl && cc.unlImg) || undefined });
+  const oldPi = old.passive ? CC_PAS.findIndex(x => x[0] === old.passive.type) : -1;
+  if(cc.pas >= 0 && cc.pas !== oldPi) m2.passive = { type:CC_PAS[cc.pas][0], val:CC_PAS[cc.pas][1] };
+  all[i] = m2;
+  try{ localStorage.setItem(LS_MINE, JSON.stringify(all)); }catch(e){ toast('保存できませんでした（容量不足の可能性。画像を小さくしてください）'); return; }
+  const c = roster.find(x => x.name === cc.edit); if(c) Object.assign(c, mineBuild(m2));
+  const nm = cc.edit; cc = null; if(curModal && curModal.remove){ curModal.remove(); curModal = null; }
+  try{ renderRoster(); updateSelectHeader(); }catch(e){}
+  toast(`✏ 「${esc(nm)}」を更新しました`);
+  try{ const ix = roster.findIndex(x => x.name === nm); if(ix >= 0) openDetail(ix); }catch(e){}
+}
+Object.assign(window.V47, {
+  unlSet(v){ cc.unl = !!v; ccBuild(); },
+  unlPhoto(inp){
+    const f = inp.files && inp.files[0]; if(!f) return;
+    const rd = new FileReader();
+    rd.onload = () => { const im = new Image(); im.onload = () => { try{ cc.unlImg = ccResize(im, 420); ccBuild(); }catch(e){ toast('画像を取り込めませんでした'); } }; im.onerror = () => toast('画像を読み込めませんでした'); im.src = rd.result; };
+    rd.readAsDataURL(f);
+  },
+  editChar: ccEditOpen, saveEdit: ccSaveEdit
+});
+const _od30 = openDetail;
+openDetail = function(idx){
+  _od30.apply(this, arguments);
+  try{
+    const c = roster[idx], el = document.getElementById('detailContent'), del = el && el.querySelector('button[onclick^="deleteCharacter"]');
+    if(c && c.isCustom && del && !el.querySelector('.cc-editbtn')){ const b = document.createElement('button'); b.className = 'secondary cc-editbtn'; b.textContent = '✏ 技・潜在能力解放を編集'; b.onclick = () => V47.editChar(c.name); del.before(b); }
+  }catch(e){ console.warn('edit btn', e); }
+};
+
+/* ---------- Ver4.31 データの引き継ぎ（バックアップ／復元） ---------- */
+const BK_SKIP = /^(battleArena_resume_v1|battleArena_bc)$/;
+function bkCollect(){ const o = {}; for(let i = 0; i < localStorage.length; i++){ const k = localStorage.key(i); if(!BK_SKIP.test(k)) o[k] = localStorage.getItem(k); } return o; }
+function bkEncode(){ return 'BA1:' + btoa(unescape(encodeURIComponent(JSON.stringify({ t:Date.now(), d:bkCollect() })))); }
+function bkDecode(txt){
+  txt = String(txt || '').trim(); if(txt.indexOf('BA1:') !== 0) throw new Error('形式が違います');
+  const o = JSON.parse(decodeURIComponent(escape(atob(txt.slice(4))))); if(!o || typeof o.d !== 'object') throw new Error('データが壊れています'); return o;
+}
+function backupOpen(){
+  let n = 0, sz = 0; try{ const d = bkCollect(); n = Object.keys(d).length; Object.keys(d).forEach(k => { sz += d[k].length; }); }catch(e){}
+  if(curModal && curModal.remove) curModal.remove();
+  curModal = modal(`<div class="v4h" style="margin-top:0">💾 データの引き継ぎ</div>
+    <div class="v4small" style="margin-bottom:8px">このゲームのデータは、いま使っているブラウザの中にだけ保存されています。機種変更やブラウザのデータ消去に備えて、ファイルに書き出しておくと安心です（コイン・キャラ・装備・自作キャラ・記録など全部）。<br>現在のデータ：${n}項目・約${Math.round(sz / 1024)}KB</div>
+    <button style="width:100%;margin-bottom:6px" onclick="V47.bkSave()">📤 ファイルに書き出す</button>
+    <button class="secondary" style="width:100%;margin-bottom:10px" onclick="V47.bkCopy()">📋 コードをコピー</button>
+    <div class="v4small" style="margin-bottom:4px">復元：書き出したファイルを選ぶか、コードを貼り付け（<b style="color:#ff9a7a">いまのデータは上書きされます</b>）</div>
+    <input type="file" id="bkFile" accept=".txt,text/plain" style="width:100%;margin-bottom:6px" onchange="V47.bkFile(this)">
+    <textarea id="bkTxt" class="cc-in" rows="3" placeholder="BA1:…（コードを貼り付け）" style="width:100%"></textarea>
+    <button class="secondary" style="width:100%;margin-top:6px" onclick="V47.bkLoad(document.getElementById('bkTxt').value)">📥 このコードで復元する</button>`);
+}
+function bkRestore(txt){
+  let o; try{ o = bkDecode(txt); }catch(e){ toast('復元できませんでした：' + e.message); return; }
+  const n = Object.keys(o.d).length, when = o.t ? new Date(o.t).toLocaleString('ja-JP') : '不明';
+  if(!confirm(`${when} のデータ（${n}項目）で、いまのデータを上書きして復元します。よろしいですか？`)) return;
+  try{ const old = bkEncode(); localStorage.setItem('battleArena_backupBeforeRestore', old); }catch(e){}
+  try{ Object.keys(o.d).forEach(k => localStorage.setItem(k, o.d[k])); }catch(e){ toast('復元の途中で容量が足りなくなりました'); return; }
+  toast('復元しました。再読み込みします…'); setTimeout(() => location.reload(), 900);
+}
+Object.assign(window.V47, {
+  backup: backupOpen, bkCode: bkEncode,
+  bkSave(){
+    try{
+      const blob = new Blob([bkEncode()], { type:'text/plain' }), a = document.createElement('a'), d = new Date(), z = x => String(x).padStart(2, '0');
+      a.href = URL.createObjectURL(blob); a.download = `battle-backup-${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}.txt`;
+      document.body.appendChild(a); a.click(); setTimeout(() => { a.remove(); URL.revokeObjectURL(a.href); }, 1000); toast('書き出しました（ファイルを大切に保管してください）');
+    }catch(e){ toast('書き出せませんでした：' + e.message); }
+  },
+  bkCopy(){ try{ const t = bkEncode(); (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('コードをコピーしました'), () => toast('コピーできませんでした。「ファイルに書き出す」を使ってください')); }catch(e){ toast('コピーできませんでした'); } },
+  bkFile(inp){ const f = inp.files && inp.files[0]; if(!f) return; const rd = new FileReader(); rd.onload = () => bkRestore(rd.result); rd.readAsText(f); },
+  bkLoad: bkRestore
+});
+
+/* ---------- Ver4.32 敵の行動予告（クエスト戦）・タッグ戦の属性連鎖 ---------- */
+function telChip(t){
+  const st = document.getElementById('stage'); if(!st) return;
+  let c = document.getElementById('telChip');
+  if(!t){ if(c) c.remove(); return; }
+  if(!c){ c = document.createElement('div'); c.id = 'telChip'; c.className = 'telchip'; st.appendChild(c); }
+  c.innerHTML = t;
+}
+function telPlan(){
+  if(!state) return; state.cpuPlan = null; telChip('');
+  if(state.over || pvp.on || TG.on || !state.quest || state.turnLock) return;
+  const c = state.c, p = state.p; if(!c || !p || c.hp <= 0) return;
+  if(c.stunned){ telChip('👁 敵は気絶中'); return; }
+  if(state.cpuGuardUsed){ telChip('👁 敵：🛡 ガード'); return; }
+  const ch = aiChoose(c, p, cpuLevel); state.cpuPlan = ch;
+  const nm = ch.action === 'ult' ? '★ ' + c.data.ultimate.name : ch.action === 'skill' ? '✦ ' + c.data.skills[ch.idx].name : '⚔ 通常攻撃';
+  telChip('👁 敵の次の行動：<b>' + esc(nm) + '</b>');
+}
+const _br32 = beginRound;
+beginRound = function(){
+  const r = _br32.apply(this, arguments);
+  try{ telPlan(); }catch(e){ console.warn('telPlan', e); }
+  return r;
+};
+const _cd32 = cpuDecideAndAct;
+cpuDecideAndAct = function(cb){
+  try{
+    const pl = state && state.cpuPlan; telChip('');
+    if(state) state.cpuPlan = null;
+    if(pl && !pvp.on && !TG.on && state.c && !state.c.stunned && !state.cpuGuardUsed){
+      const c = state.c;
+      if(pl.action === 'attack' || (pl.action === 'skill' && c.skillCd[pl.idx] <= 0) || (pl.action === 'ult' && c.ultCd <= 0)){
+        actD('cpu', c, state.p, pl.action, pl.idx, cb || function(){}); return;
+      }
+    }
+  }catch(e){ console.warn('cpuPlan', e); }
+  return _cd32.apply(this, arguments);
+};
+Hooks.on('battle:end', () => { try{ telChip(''); }catch(e){} });
+const _sb32 = startBattle;
+startBattle = function(){ try{ telChip(''); }catch(e){} return _sb32.apply(this, arguments); };
+
+/* タッグ戦：別の属性の味方が続けて同じ敵を攻撃すると「連鎖反応」で追加ダメージ */
+const REACT = {
+  'fire:water':  { n:'蒸発',   m:1.35 },
+  'fire:grass':  { n:'延焼',   m:1.15, burn:1 },
+  'fire:light':  { n:'灼光',   m:1.25 },
+  'dark:fire':   { n:'煉獄',   m:1.15, burn:1 },
+  'grass:water': { n:'開花',   m:1.2,  heal:.06 },
+  'light:water': { n:'屈折',   m:1.25 },
+  'dark:water':  { n:'渦潮',   m:1.25 },
+  'grass:light': { n:'光合成', m:1.2,  heal:.06 },
+  'dark:grass':  { n:'腐朽',   m:1.15, poison:1 },
+  'dark:light':  { n:'双極',   m:1.4 }
+};
+const reactOf = (a, b) => REACT[a + ':' + b] || REACT[b + ':' + a];
+const _ra32 = resolveAction;
+resolveAction = function(side, actor, target){
+  const on = TG.on && state && state.tag === TG && actor && target && actor !== target;
+  const hb = on ? target.hp : 0;
+  const r = _ra32.apply(this, arguments);
+  if(on){
+    try{
+      const dmg = hb - target.hp, e = actor.data.element;
+      if(dmg > 0 && e && ELEMS[e]){
+        const mk = target._mk;
+        if(mk && mk.t > 0 && mk.e !== e && reactOf(mk.e, e)){
+          const rc = reactOf(mk.e, e), extra = Math.round(dmg * (rc.m - 1)), tsd = TG.P.includes(target) ? 'player' : 'cpu', asd = tsd === 'player' ? 'cpu' : 'player';
+          target.hp = Math.max(0, target.hp - extra); target._mk = null;
+          addLog(`⚡ ${ELEMS[mk.e].name}×${ELEMS[e].name} 連鎖反応「${rc.n}」！ ${target.data.name} に追加で ${extra} ダメージ`, 'crit');
+          try{ showDmgPop(tsd, extra, true, false); fieldPop('⚡ ' + rc.n, '#ffe27a'); }catch(_){}
+          if(rc.burn && target.hp > 0){ target.burnTurns = Math.max(target.burnTurns || 0, 3); target.burnVal = .04; }
+          if(rc.poison && target.hp > 0){ target.poisonTurns = Math.max(target.poisonTurns || 0, 3); target.poisonVal = .04; }
+          if(rc.heal && actor.hp > 0){ const h = Math.round(actor.maxHp * rc.heal); actor.hp = Math.min(actor.maxHp, actor.hp + h); addLog(`💗 ${actor.data.name} は ${h} 回復した`, 'heal'); }
+        } else if(target.hp > 0){ target._mk = { e, t:2 }; }
+      }
+    }catch(e){ console.warn('react', e); }
+  }
+  return r;
+};
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
