@@ -2515,6 +2515,15 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
 
 .clvb{display:inline-block;font-size:.55rem;font-weight:900;padding:0 5px;margin-right:3px;border-radius:7px;background:#2a6cff;color:#fff;vertical-align:middle;line-height:1.5;}
 .lbx{margin:0;}
+
+/* Ver4.28 タッグ戦 */
+.taghud{position:absolute;bottom:34px;left:0;right:0;z-index:7;display:flex;justify-content:space-between;padding:0 6px;pointer-events:none;}
+.tgg{display:flex;gap:4px;} .tgc{position:relative;width:38px;pointer-events:auto;border-radius:8px;overflow:hidden;border:2px solid rgba(255,255,255,.35);background:#0008;}
+.tgc img{display:block;width:100%;height:38px;object-fit:cover;} .tgc span{display:block;height:38px;line-height:38px;text-align:center;font-size:1.1rem;}
+.tgc i{display:block;height:5px;background:#000a;} .tgc i b{display:block;height:100%;background:linear-gradient(90deg,#4be08a,#a8ff7a);}
+.tgc.cmd{border-color:#ffd24a;box-shadow:0 0 8px #ffd24a;} .tgc.tgt{border-color:#ff6a5a;box-shadow:0 0 8px #ff6a5a;} .tgc.ko{filter:grayscale(1) brightness(.5);}
+.tagmsg{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);z-index:7;max-width:94%;text-align:center;font-size:.62rem;font-weight:800;color:#fff;background:rgba(0,0,0,.62);padding:3px 10px;border-radius:10px;line-height:1.4;pointer-events:none;}
+.tagmsg:empty{display:none;}
 </style>
 </head>
 <body>
@@ -2625,6 +2634,7 @@ body.lite *{backdrop-filter:none !important;-webkit-backdrop-filter:none !import
     <h3 id="pvpMe">あなた：</h3>
     <div id="pvpRoomBox"><div class="patch-line"><b>🔑 合言葉で対戦</b>：<br>① 部屋を作る人が合言葉を決めて「部屋を作る」を押す<br>② 相手が同じ合言葉を入力して「入る」を押す → 自動でつながります。</div>
     <button style="width:100%;margin:6px 0" onclick="rankedMatch()">⚔ ランクマッチ（自動で相手を探す）</button><div class="patch-line" style="font-size:.7rem;opacity:.8;margin-bottom:6px">合言葉なしで、同じボタンを押した人と自動で対戦します。勝つとRP+20 / 負けると-12。見つからないときは自分が部屋を作って待ちます。</div>
+    <div class="patch-line" style="margin:6px 0"><b>📜 制限ルール</b>（部屋を作る人の設定が両者に使われます）<br><select id="pvpRule" class="pvp-pass" onchange="pvpRuleSet(this.value)"></select><div id="pvpRuleD" style="font-size:.7rem;opacity:.85;margin-top:2px"></div></div>
     <input id="pvpPass" class="pvp-pass" type="text" maxlength="30" placeholder="合言葉（4文字以上）" autocomplete="off" autocapitalize="off">
     <div class="btnrow" style="margin-top:8px"><button onclick="roomHost()">🏠 部屋を作る（合言葉を決める）</button><button class="secondary" onclick="roomJoin()">🚪 合言葉で入る</button></div></div>
     <div class="patch-line" style="margin-top:12px;opacity:.85">▼ <b style="color:#ffd24a">まず上の「合言葉」で試してください。</b>20秒以上たっても進まない・エラーが出る（ネットの制限などで自動接続できない）ときは、この「コード交換」で遊べます。<br>サーバー不要。片方が「部屋を作る」で出たコードを相手に送り、相手が「参加する」で返事のコードを返すと接続されます（LINEなどでコピペ）。対戦中に切れても、コードを交換し直せば続きから再開できます。回線（NAT）によっては接続できない場合があります。</div>
@@ -3816,6 +3826,16 @@ const patchNotes = [
     "【自作キャラ】覚醒しても技の名前・種類は変わらず、全ての技の威力が約+40%（回復も+40%）になります。作成画面の技の種類を追加（通常技+20種／必殺技+8種：強打・一騎討ち・吸収の刃・熾火・疫病・眩暈・守護の祈り・集中・生命の脈動・返し刃・武装破壊・烈風・流星・刈り取り・足止め・加護・棘の鎧・二重の呪い・突進・活力／流星群・深淵の咆哮・満開の祈り・断罪の刃・嵐の王・毒蛇の抱擁・狂戦士の咆哮・神罰）。自作キャラのレアリティは、作った時にランダムで決まります（N/R/SR/SSR。強さには影響しません）。",
     "【キャラガチャ】自分で作ったキャラも、ガチャの排出対象に入りました（提供割合の一覧にも表示）。作ったキャラはもう持っているので、引くと「凸」が上がります。作ったキャラのレアリティはランダムに決まっています。",
     "【新ステージ「試練の間」】プレイヤースキルが必要なギミック付きステージを8つ追加（クエスト画面）。装備・Lv・凸・技の書・絆の補正がなくなり全員が同条件で戦う。ギミック：予告攻撃（3ターンごとに大技、約2.5倍。ガードで軽減）／封印（4ターンごとに技が通常攻撃になる）／鏡の盾（約7割軽減＋一部が自分に返る）／見切り（同じ行動の連続で半減）／時間制限。予告は画面に表示される。「試練の王」の初回クリアでEXキャラ「セラフィナ」が確定で仲間になる。",
+    "【やり込み：週間ミッション】「⋯ その他」→「やり込み」に、毎週月曜に更新される週間ミッション5つ（勝利25回／クエスト等で勝利8回／キャラガチャ10回／タッグ戦・2人対戦で勝利3回／試練で勝利2回）を追加。報酬は🪙600〜800＋凸の欠片や技の書・装備、全部達成ボーナスは🪙2000＋🧩5＋SSRの書。",
+    "【やり込み：キャラマスタリー】キャラごとの勝利数（5・15・30・60・100勝）で段階報酬（🪙300〜2000＋🧩凸の欠片1〜3）。全キャラの100勝マスターを目指せます。",
+    "【試練の間に★評価】各試練に「規定ターン以内でクリア」「HP半分以上で勝利」の★を追加。初めて達成するたびに🪙250（余裕の勝利★は🧩+1も）。",
+    "【2人対戦の制限ルール】2人対戦の画面で「制限ルール」を選べるように：両者Lv最大／両者Lv1／必殺技なし／通常攻撃とガードのみ／HP2倍。部屋を作った人のルールが両者に使われます（ランクマッチは標準のみ）。",
+    "【新モード「2対2タッグ戦」】キャラ選択画面の「⚔ 2対2タッグ戦」（キャラ選択画面のいちばん上のボタン、またはホームの「⋯ その他」→「2対2タッグ戦」）から、2体を同時に出して戦えます。毎ターン、2体それぞれの行動（技・必殺技・ガード）を選び、敵のアイコンをタップして攻撃対象を決めます。ガードが先に、その後は素早い順に4体が行動。相手もランダムな2体で、CPUレベルの設定が反映されます。どちらかのチームが全滅したら決着（同時KOは挑戦者の勝ち）。勝つと2体ともにキャラ経験値が入ります。オート戦闘も使えます（攻撃対象はHPが低い敵）。自動バランス調整の対象外です。",
+    "【キャラ作成】技・必殺技の効果を選ぶ画面に、検索ボックスと分類ボタン（ダメージ／回復／強化など）を追加。数百種類から探しやすくなりました。",
+    "【特性の追加】敵の特性に「幻影（攻撃が15%で外れる）」「加速（ターンごとに攻撃+4%・最大+40%）」「業火（15%で火傷）」「猛毒（15%で毒）」「結界（開始時にHP15%のバリア）」を追加。キャラのパッシブにも「トドメ（HP半分以下の相手に+20%前後）」「弱点攻め」「会心強化」「万全の構え」を追加。",
+    "【ガチャ】「属性ガチャ」（選んだ属性のキャラだけ。1回350コイン）と「書ガチャ」（技の書。1回150コイン）を追加。どちらも10連でSR以上が1つ確定。",
+    "【キャラLv】戦闘画面とキャラ詳細に、キャラのレベル（Lv）を表示するようにしました。",
+    "【ガチャ以外の凸】勝利で手に入る「凸の欠片」（EX・塔・試練は多め、通常クエストは約4割で1個）か、コイン（約4000〜6000＋凸数ごとに増加）で、キャラ詳細から凸できるようになりました。",
     "【新ステージ「試練の間」（プレイヤースキル）】クエスト画面に、強さではなく「ギミックを読んで動けるか」が勝負のステージ8つを追加。装備・Lv・凸・技の書・絆の補正がなくなり、全員が同じ条件で戦います（負けるたびの「挑戦の心得」は有効）。ギミックは、予告攻撃（3ターンごとに敵の大技・約2.5倍、予告の次のターンにガードで約6割軽減）、封印（4ターンごとに技が使えず通常攻撃のみ）、鏡の盾（2ターン攻撃が約7割減＋反射）、見切り（同じ行動の連続でダメージ半減）、時間制限（10〜16ターン）。最後の「試練の王」を初クリアするとEXキャラ「セラフィナ」が確定で仲間に。",
     "【新EXキャラ「セラフィナ」】白銀の翼を持つ騎士。アスラと同じく、一度きりの「潜在能力全解放」で姿が変わり（HP全回復・全能力と技が強化）、HP20%以下では専用の覚醒「白銀覚醒」も発動します。EXステージをクリアすると稀にドロップ（アスラと同じ抽選で、未所持のEXキャラから選ばれます）。",
     "【自動調整の修正】装備・キャラのレベル・凸・絆の補正がかかった対戦（クエストなども含む）では、勝敗でキャラの数値が動く「自動調整」が働かないようにしました。これまで補正込みの勝敗で数値がぶれていた不具合の修正です。すでに動いてしまった数値は残っています。",
@@ -4227,6 +4247,18 @@ function startTeamPick(){
   updateSelectHeader();
 }
 
+function startTagPick(){
+  selectMode = 'tag-pick';
+  teamPicks = [];
+  renderRoster();
+  updateSelectHeader();
+}
+function confirmTagPick(){
+  if(teamPicks.length !== 2) return;
+  const t = teamPicks.slice(); selectMode = 'player'; teamPicks = [];
+  window.V47.tag(t);
+}
+
 function updateSelectHeader(){
   const label = document.getElementById('selectHeaderLabel');
   const btns = document.getElementById('selectHeaderButtons');
@@ -4241,6 +4273,7 @@ function updateSelectHeader(){
       <button class="secondary" onclick="openStats()">📊 戦績</button>
       <button class="secondary" onclick="openRanking()">🏆 ランキング</button>
       <button class="secondary" onclick="showDailyPickup()">🎴 今日のオススメ</button>
+      <button onclick="startTagPick()">⚔ 2対2タッグ戦（NEW）</button>
       <button class="secondary" onclick="startTeamPick()">👥 チーム対抗(3vs3)</button>
       <button class="secondary" onclick="startPvpPick()">🌐 2人対戦(1vs1)</button>
       <button class="secondary" onclick="startPvpTeamPick()">🌐 2人対戦(3vs3)</button>`;
@@ -4252,6 +4285,11 @@ function updateSelectHeader(){
   } else if(selectMode === 'pvp-pick'){
     label.textContent = '2人対戦で使うキャラを選択';
     btns.innerHTML = `<button class="secondary" onclick="goToSelect()">← やめる</button>`;
+  } else if(selectMode === 'tag-pick'){
+    label.textContent = `タッグを組む2体を選択（${teamPicks.length}/2）　2体同時に戦います`;
+    btns.innerHTML = `
+      <button class="secondary" onclick="goToSelect()">← やめる</button>
+      <button ${teamPicks.length===2?'':'disabled'} onclick="confirmTagPick()">⚔ この2体で挑む</button>`;
   } else if(selectMode === 'team-pick'){
     label.textContent = `チームを選択（${teamPicks.length}/3）`;
     btns.innerHTML = `
@@ -4288,7 +4326,7 @@ function renderRoster(){
   const sel = document.getElementById('rosterSort'); if(sel) sel.value = rosterSort;
   sortedRosterIdx().forEach(idx => { const c = roster[idx];
     const card = document.createElement('div');
-    const picked = (selectMode === 'team-pick' || selectMode === 'pvp-team-pick') && teamPicks.includes(c);
+    const picked = (selectMode === 'team-pick' || selectMode === 'pvp-team-pick' || selectMode === 'tag-pick') && teamPicks.includes(c);
     card.className = 'card' + (picked ? ' picked' : '');
     card.style.setProperty('--c1', c.c1);
     card.style.setProperty('--c2', c.c2);
@@ -4363,12 +4401,12 @@ function selectFromDetail(idx){
 }
 
 function onRosterCardClick(idx){
-  if(selectMode === 'team-pick' || selectMode === 'pvp-team-pick'){
+  if(selectMode === 'team-pick' || selectMode === 'pvp-team-pick' || selectMode === 'tag-pick'){
     const c = roster[idx];
     const pos = teamPicks.indexOf(c);
     if(pos >= 0){
       teamPicks.splice(pos, 1);
-    } else if(teamPicks.length < 3){
+    } else if(teamPicks.length < (selectMode === 'tag-pick' ? 2 : 3)){
       teamPicks.push(c);
     }
     renderRoster();
@@ -7759,6 +7797,24 @@ function myTeamInfo(){
   return null;
 }
 let pvpWantTeam = false;
+/* 2人対戦の制限ルール（部屋を作った人のルールが両者に使われる） */
+const PVP_RULES = {
+  std:    { n:'標準',               d:'いつもの対戦（キャラの進化Lvはそのまま）' },
+  maxlv:  { n:'両者Lv最大',         d:'全員の進化Lvが最大。育成の差が出ない、純粋な読み合い' },
+  lv1:    { n:'両者Lv1（初期状態）', d:'全員の進化Lvが最低。育成していても関係ない' },
+  noult:  { n:'必殺技なし',         d:'必殺技が使えない。通常攻撃・技・ガードの勝負' },
+  noskill:{ n:'通常攻撃とガードのみ', d:'技と必殺技が使えない。攻撃かガードかの読み合い' },
+  hp2:    { n:'HP2倍（長期戦）',     d:'全員の最大HPが2倍。じっくり戦う' }
+};
+let pvpRuleSel = 'std';
+function pvpRuleSet(v){ pvpRuleSel = PVP_RULES[v] ? v : 'std'; const d = document.getElementById('pvpRuleD'); if(d) d.textContent = PVP_RULES[pvpRuleSel].d; }
+function pvpApplyRule(f){
+  const r = pvp.rule;
+  if(r === 'maxlv' || r === 'lv1'){ f.evoLv = r === 'maxlv' ? EVO.length - 1 : 0; f.evo = EVO[f.evoLv]; f.maxHp = Math.round(f.data.stats.hp * f.evo.hp); f.hp = f.maxHp; }
+  else if(r === 'hp2'){ f.maxHp *= 2; f.hp = f.maxHp; }
+  else if(r === 'noult'){ f.ultCd = 99; }
+  else if(r === 'noskill'){ f.skillCd = f.skillCd.map(() => 99); f.ultCd = 99; }
+}
 const pvp = { team:false, teamP:[], teamC:[], oppTeam:[], pi:0, ci:0, needMine:false, needOpp:false, cont:null, on:false, isHost:false, pc:null, dc:null, oppData:null, myChoice:null, oppChoice:null, inbox:[], resolving:false, rngState:1, started:false, lost:false, lastAct:null, lastRep:null, repSent:0, repGot:0, graceTimer:null, connTimer:null };
 function rnd(){
   if(!pvp.on) return Math.random();
@@ -7796,6 +7852,7 @@ function pvpStatus(html){
 }
 function openPvpScreen(){
   pvpEnd();
+  try{ const sel = document.getElementById('pvpRule'); if(sel){ sel.innerHTML = Object.keys(PVP_RULES).map(k => `<option value="${k}">${PVP_RULES[k].n}</option>`).join(''); sel.value = pvpRuleSel; pvpRuleSet(pvpRuleSel); } }catch(e){}
   selectMode = 'player';
   document.getElementById('pvpMe').textContent = pvpWantTeam ? ('あなたのチーム：' + playerTeamData.map(c=>c.name).join(' / ')) : ('あなたのキャラ：' + selected.name);
   document.getElementById('pvpChoose').style.display = 'flex'; { const b = document.getElementById('pvpRoomBox'); if(b) b.style.display = 'block'; }
@@ -8017,6 +8074,7 @@ function pvpHideChoose(){ document.getElementById('pvpChoose').style.display = '
 function pvpHostBack(){ pvpEnd(); openPvpScreen(); }
 let rkAuto = false, rkHosting = false;
 function rankedMatch(){
+  pvpRuleSet('std'); try{ const sel = document.getElementById('pvpRule'); if(sel) sel.value = 'std'; }catch(e){}
   const pass = 'rankmatch-' + (pvpWantTeam ? '3v3' : '1v1') + '-v1';
   const inp = document.getElementById('pvpPass'); if(inp) inp.value = pass;
   rkAuto = true; rkHosting = false; roomJoin(pass);
@@ -8064,7 +8122,7 @@ async function roomJoin(pass, rc){
 }
 
 function pvpSendStart(seed){
-  pvpSend({ t:'start', seed, team: pvpWantTeam, data: (pvpWantTeam ? playerTeamData : [selected]).map(pvpSerialize) });
+  pvpSend({ t:'start', seed, rule: pvp.rule || pvpRuleSel, team: pvpWantTeam, data: (pvpWantTeam ? playerTeamData : [selected]).map(pvpSerialize) });
 }
 function pvpSendHello(n){
   if(pvp.on || !pvp.dc || pvp.dc.readyState !== 'open') return;
@@ -8126,7 +8184,7 @@ function pvpOnMessage(m){
     }
   } else if(m.t === 'start'){
     if(!pvp.isHost && !pvp.oppData && m.data){ pvp.oppTeam = m.data.map(pvpRebuild); pvp.oppData = pvp.oppTeam[0]; }   // helloが届いていなくてもstartに相手データを同梱
-    if(!pvp.isHost && pvp.oppData) pvpStart(m.seed);
+    if(!pvp.isHost && pvp.oppData) pvpStart(m.seed, m.rule);
   } else if(m.t === 'act'){
     pvpPushAct(m);
   } else if(m.t === 'rep'){
@@ -8138,8 +8196,9 @@ function pvpOnMessage(m){
     pvp.resumeAcked = true;
   }
 }
-function pvpStart(seed){
+function pvpStart(seed, rule){
   if(pvp.started) return;
+  pvp.rule = pvp.isHost ? pvpRuleSel : (PVP_RULES[rule] ? rule : 'std');
   pvp.started = true; pvp.lost = false; pvp.lastAct = pvp.lastRep = null; pvp.repSent = pvp.repGot = 0;
   const rb = document.getElementById('btnPvpRc'); if(rb) rb.style.display = '';
   pvp.on = true;
@@ -8156,6 +8215,13 @@ function pvpStart(seed){
   cpuFighterData = pvp.oppData;
   pvpStatus('');
   startBattle();
+  try{
+    if(pvp.rule !== 'std'){
+      (pvp.team ? pvp.teamP.concat(pvp.teamC) : [state.p, state.c]).forEach(pvpApplyRule);
+      renderBattleUI(); renderActionRow(); updateActionAvailability();
+      addLog(`📜 制限ルール：${PVP_RULES[pvp.rule].n}（${PVP_RULES[pvp.rule].d}）`, 'result');
+    }
+  }catch(e){ console.warn('pvp rule', e); }
 }
 /* 相手の「覚醒済み」「HP」を毎ターン受け取り、こちらの画面とずれていたら合わせる（覚醒が片方の画面だけ起きない不具合の保険） */
 function pvpFixOpp(m){
@@ -12161,11 +12227,11 @@ if(S.lite === undefined){
 }
 function moreOpen(){
   const b = (k, ic, t, d) => `<button class="mr-b" onclick="V47.moreGo('${k}')"><span>${ic}</span><b>${t}</b><small>${d}</small></button>`;
-  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}${b('lite', '⚡', '軽量モード', liteOn() ? 'ON（タップでOFF）　動きの飾りを減らします' : 'OFF（タップでON）　重いときにどうぞ')}</div>`);
+  curModal = modal(`<div class="v4h" style="margin-top:0">⋯ その他</div><div class="mr-g">${b('tower', '🗼', '無限の塔', '何階まで登れる？')}${b('rank', '🎖', 'ランク', 'EXPとランク報酬')}${b('rec', '📊', '記録', '戦績・統計')}${b('cs', '🎞', '演出集', (csReady() ? '🎁 報酬あり！' : '見つけたガチャ演出'))}${b('grind', '🏆', 'やり込み', (wkReadyN() + msReadyN()) ? '🎁 受取あり！' : '週間ミッション・マスタリー')}${b('make', '🎨', 'キャラ作成', '自分のキャラを作る')}${b('guide', '❓', '遊び方', 'ルール説明')}${b('roster', '⚔️', 'キャラを選んで対戦', 'CPUと戦う・キャラ一覧')}${b('tag', '⚔', '2対2タッグ戦', '2体同時に戦う')}${b('team', '👥', 'チーム対抗(3vs3)', '3体で戦う')}${b('pvp', '🌐', '2人対戦(1vs1)', 'ともだちと')}${b('pvpt', '🌐', '2人対戦(3vs3)', 'ともだちと')}${b('stats', '📊', '戦績', '勝敗の記録')}${b('rankg', '🏆', 'ランキング', 'みんなの順位')}${b('pick', '🎴', '今日のオススメ', 'ピックアップ')}${b('patch', '📋', 'パッチノート', '更新・調整履歴')}${b('prof', '👤', 'アカウント切り替え', '複数のセーブを使い分け')}${b('claim', '🎁', '報酬をまとめて受け取る', claimAllN() ? claimAllN() + '件 受け取れます' : '実績・絆・ミッション・演出集など')}${b('bond', '💞', '絆レベル', 'キャラとの絆・報酬')}${b('emo', '🙂', '絵文字の表示', S.emo ? 'ふつう（タップで少なめ）' : '少なめ（タップでふつう）')}${b('lite', '⚡', '軽量モード', liteOn() ? 'ON（タップでOFF）　動きの飾りを減らします' : 'OFF（タップでON）　重いときにどうぞ')}</div>`);
 }
 function moreGo(k){
   try{ if(curModal && curModal.remove) curModal.remove(); }catch(e){}
-  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); }, lite:() => { S.lite = liteOn() ? 0 : 1; save(); liteApply(); toast(liteOn() ? '軽量モードをONにしました' : '軽量モードをOFFにしました'); } };
+  const m = { tower:() => { V4.open('quest'); setTimeout(() => { const t = document.querySelector('.tw-card'); t && t.scrollIntoView({behavior:'smooth', block:'center'}); }, 200); }, rank:rankOpen, rec:() => V47.recOpen(), cs:() => V47.csOpen(), make:() => V47.open(), grind:() => V47.grind(), guide:() => V47.guide(), roster:rosterShow, team:() => startTeamPick(), tag:() => { showScreen('screen-select'); startTagPick(); }, pvp:() => startPvpPick(), pvpt:() => startPvpTeamPick(), stats:() => openStats(), rankg:() => openRanking(), pick:() => showDailyPickup(), patch:() => openPatchNotes(), bond:() => bondOpen(), claim:() => claimAll(), prof:() => profOpen(), emo:() => { S.emo = !S.emo; save(); location.reload(); }, lite:() => { S.lite = liteOn() ? 0 : 1; save(); liteApply(); toast(liteOn() ? '軽量モードをONにしました' : '軽量モードをOFFにしました'); } };
   later(() => { try{ m[k](); }catch(e){} }, 60);
 }
 
@@ -13354,6 +13420,7 @@ const TRIALS = [
   { n:'鏡と時の回廊', gim:['mirror', 'limit'], limit:13, mul:1.05, hp:1.80, coins:400, items:['SSR', 'SSR'], rw:'SSRの装備・書×2' },
   { n:'試練の王',     gim:['tele', 'mirror', 'chain', 'limit'], limit:16, mul:1.10, hp:2.00, coins:600, items:['bk5', 'bk6'], rw:'神の書・運命の書・EXキャラ「セラフィナ」（確定）' }
 ];
+const TRIAL_PAR = [7, 8, 9, 7, 9, 10, 11, 13];
 function trialQuest(i){
   const d = TRIALS[i - 1], names = allChars().filter(c => !c.isCustom && !c.exChar).map(c => c.name).sort((a, b) => nameHash(a + 'tr') - nameHash(b + 'tr'));
   return { id:'tr' + i, trial:i, name:`試練${i} ${d.n}`, ch:0, idx:0, g:12, boss:i === TRIALS.length, enemy:names[(i * 5 + 1) % names.length], lv:4, mul:d.mul, hpMul:d.hp, coins:d.coins, w:{ N:0, R:0, SR:50, SSR:50 }, drops:0, gim:d.gim.slice(), limit:d.limit || 0 };
@@ -13368,7 +13435,8 @@ function trialHTML(){
       h += `<div class="v4row ex-row" style="margin-top:8px;opacity:${open ? 1 : .5}">${eim ? `<img class="tw-en" src="${eim}">` : ''}<div class="v4sp"><b>試練${i} ${esc(d.n)}</b> ${done ? '<span class="v4tag rar-SSR">CLEAR</span>' : ''}
         <div class="v4small">敵：${esc(q.enemy)} ${en ? elemBadge(en, 10) : ''}</div>
         <div class="qz-chips">${d.gim.map(g => `<span style="color:#ffd9a0">${GIMS[g].n}${g === 'limit' ? d.limit + 'T' : ''}</span>`).join('')}</div>
-        <div class="v4small">${ds}</div><div class="v4small">🎁 ${done ? '<s>' : ''}🪙${d.coins}・${esc(d.rw)}${done ? '</s>（受取済）' : ''}</div></div>
+        <div class="v4small">${ds}</div><div class="v4small">🎁 ${done ? '<s>' : ''}🪙${d.coins}・${esc(d.rw)}${done ? '</s>（受取済）' : ''}</div>
+        <div class="v4small" style="color:#ffe07a">${[1, 2, 4].map(b => (((T.st || {})[i] | 0) & b) ? '★' : '☆').join('')}　★：${TRIAL_PAR[k]}ターン以内／HP半分以上で勝利（各🪙250）</div></div>
         <button ${open ? '' : 'disabled'} onclick="V47.trial(${i})">${open ? '挑戦' : '🔒'}</button></div>`;
     });
     return h + '</div>';
@@ -13491,8 +13559,12 @@ Hooks.on('battle:end', info => {
   try{
     if(info.pvp || !state) return; const q = state.quest; if(!q || !q.trial) return;
     const d = TRIALS[q.trial - 1], T = S.trial = S.trial || { cl:{}, runs:0 }; T.cl = T.cl || {};
-    let gain = 15, drops = [], first = false, sera = false;
+    let gain = 15, drops = [], first = false, sera = false, mask = 0, starGain = 0, starNew = [];
     if(info.won){
+      mask = 1 | ((info.rounds || 99) <= TRIAL_PAR[q.trial - 1] ? 2 : 0) | (state.p.hp >= state.p.maxHp * .5 ? 4 : 0);
+      T.st = T.st || {}; const old = T.st[q.trial] | 0, nw = mask & ~old & 6;
+      if(nw){ T.st[q.trial] = old | mask; if(nw & 2){ starGain += 250; starNew.push('スピード★'); } if(nw & 4){ starGain += 250; S.shards = (S.shards | 0) + 1; starNew.push('余裕の勝利★'); } S.coins += starGain; }
+      else T.st[q.trial] = old | mask;
       first = !T.cl[q.trial]; T.cl[q.trial] = 1;
       if(first){
         gain = d.coins; drops = d.items.map(r => /^(N|R|SR|SSR)$/.test(r) ? pickItemOfRarity(r, .4) : r); addExp(60);
@@ -13500,7 +13572,7 @@ Hooks.on('battle:end', info => {
       } else { gain = 60; if(Math.random() < .2) drops = [pickItemOfRarity('SR', .5)]; addExp(15); }
     }
     S.coins += gain; drops.forEach(id => { addItem(id, 1); S.seen[id] = 1; }); save();
-    waitIdle(() => trialResult({ q, won:info.won, gain, drops, first, sera }));
+    waitIdle(() => trialResult({ q, won:info.won, gain, drops, first, sera, mask, starGain, starNew }));
   }catch(e){ console.warn('trial end', e); }
 });
 function trialResult(r){
@@ -13510,6 +13582,7 @@ function trialResult(r){
     <div class="v4small" style="text-align:center">${esc(r.q.name)}${r.won && r.first ? '　（初回報酬）' : ''}${r.won ? '' : '<br>画面の予告をよく見て、ガード・攻撃・待つ、を使い分けよう（負けるたびに少し有利になります）'}</div>
     <div class="v4card"><div class="v4h" style="margin-top:0">獲得</div><div>🪙 コイン <b style="color:#ffd24a">+${r.gain}</b></div>
     ${r.drops.map(id => `<div class="v4row" style="margin-top:6px"><div class="v4ico rar-${ITEMS[id].r}">${itemIcon(id)}</div><div class="v4sp"><span class="v4tag rar-${ITEMS[id].r}">${ITEMS[id].r}</span>${esc(ITEMS[id].n)}</div></div>`).join('')}
+    ${r.won ? `<div class="v4small" style="margin-top:6px">★ クリア ${(r.mask & 2) ? '★' : '☆'} ${TRIAL_PAR[r.q.trial - 1]}ターン以内 ${(r.mask & 4) ? '★' : '☆'} HP半分以上で勝利${r.starNew.length ? `<br><b style="color:#ffd24a">${r.starNew.join('・')} 初達成！ 🪙+${r.starGain}${r.starNew.indexOf('余裕の勝利★') >= 0 ? '・🧩+1' : ''}</b>` : ''}</div>` : ''}
     ${r.sera ? '<div class="v4row" style="margin-top:8px"><div class="v4sp"><b style="color:#ffd24a">EXキャラ「セラフィナ」が仲間になりました！</b></div></div>' : ''}</div>
     <div class="btnrow"><button class="secondary" id="ptB1">クエスト一覧へ</button><button id="ptB2">${nx ? `試練${nx}へ` : '同じキャラでリトライ'}</button></div></div>`;
   document.body.appendChild(ov);
@@ -13682,6 +13755,229 @@ gachaHTML = function(){
     <div class="v4small" style="margin-top:6px">10連はSR以上が1冊確定　／　所持 🪙${S.coins}</div></div>`;
 };
 Object.assign(window.V47, { gzEl(k){ gzEl = k; view('gacha'); }, elemPull: elemGachaPull, bookPull: bookGachaPull });
+
+/* ---------- Ver4.28 2対2タッグ戦：2体を同時に出して戦う ---------- */
+const TG = { on:false, starting:false, P:[], C:[], pd:[], cd:[], cmds:[], q:[], ci:0, tgt:0, shown:{} };
+const tgAlive = a => a.filter(f => f.hp > 0);
+function tgFocus(side, f){
+  if(side === 'player') state.p = f; else state.c = f;
+  const key = side === 'player' ? 'p' : 'c', slot = getFigEl(side);
+  if(slot && TG.shown[key] !== f){
+    TG.shown[key] = f; const d = f.data;
+    slot.innerHTML = d.img ? `<img class="standee-img" src="${d.img}">` : `<div class="standee-emoji">${d.emoji}</div>`;
+    slot.style.animation = '';
+  }
+  if(slot) slot.style.filter = f.hp <= 0 ? 'grayscale(.8) brightness(.6)' : '';
+}
+function tgHud(){
+  const st = document.getElementById('stage'); if(!st || !TG.on) return;
+  let h = document.getElementById('tagHud'); if(!h){ h = document.createElement('div'); h.id = 'tagHud'; h.className = 'taghud'; st.appendChild(h); }
+  let m = document.getElementById('tagMsg'); if(!m){ m = document.createElement('div'); m.id = 'tagMsg'; m.className = 'tagmsg'; st.appendChild(m); }
+  const act = !state.turnLock && !state.over;
+  const card = (f, side, k) => {
+    const d = f.data, img = d.cardImg || d.img, pc = Math.max(0, Math.round(f.hp / f.maxHp * 100));
+    const cls = (f.hp <= 0 ? 'ko ' : '') + (side === 'c' && TG.tgt === k && f.hp > 0 && act ? 'tgt ' : '') + (side === 'p' && TG.ci === k && act ? 'cmd ' : '');
+    return `<div class="tgc ${cls}" ${side === 'c' ? `onclick="V47.tgT(${k})"` : ''}>${img ? `<img src="${img}">` : `<span>${d.emoji}</span>`}<i><b style="width:${pc}%"></b></i></div>`;
+  };
+  h.innerHTML = `<div class="tgg">${TG.P.map((f, k) => card(f, 'p', k)).join('')}</div><div class="tgg">${TG.C.map((f, k) => card(f, 'c', k)).join('')}</div>`;
+  m.innerHTML = act && TG.P[TG.ci] && TG.C[TG.tgt] ? `<b>${esc(TG.P[TG.ci].data.name)}</b> の行動（${TG.ci + 1}/2）　対象：<b>${esc(TG.C[TG.tgt].data.name)}</b>${tgAlive(TG.C).length > 1 ? '<br>敵のアイコンをタップで攻撃対象を変更' : ''}` : '';
+}
+function tgBeginRound(){
+  if(!state || state.over || state.tag !== TG) return;
+  TG.cmds = []; try{ updateTurnBadge(); }catch(e){} tgNext(0);
+}
+function tgNext(i){
+  while(i < 2 && (TG.P[i].hp <= 0 || TG.P[i].stunned)){
+    if(TG.P[i].hp > 0 && TG.P[i].stunned){ TG.P[i].stunned = false; addLog(`💫 ${TG.P[i].data.name} は気絶していて動けない！`, 'skill'); }
+    i++;
+  }
+  if(i >= 2){ tgResolve(); return; }
+  TG.ci = i;
+  const ca = tgAlive(TG.C);
+  if(!TG.C[TG.tgt] || TG.C[TG.tgt].hp <= 0) TG.tgt = TG.C.indexOf(ca[0]);
+  tgFocus('player', TG.P[i]); tgFocus('cpu', TG.C[TG.tgt]);
+  state.turnLock = false; renderActionRow(); renderBattleUI(); updateActionAvailability(); tgHud();
+}
+function tgCommand(action, idx){
+  if(state.over || state.turnLock) return;
+  let k = TG.tgt;
+  try{ if(autoOn){ const ca = tgAlive(TG.C).sort((a, b) => a.hp - b.hp); k = TG.C.indexOf(ca[0]); } }catch(e){}
+  TG.cmds.push({ side:'p', f:TG.P[TG.ci], tgt:TG.C[k], action, idx });
+  state.turnLock = true; updateActionAvailability(); tgHud();
+  setTimeout(() => tgNext(TG.ci + 1), 250);
+}
+function tgResolve(){
+  state.turnLock = true; updateActionAvailability();
+  const aP = tgAlive(TG.P), cm = TG.cmds.slice();
+  TG.C.forEach(c => {
+    if(c.hp <= 0) return;
+    if(c.stunned){ c.stunned = false; addLog(`💫 ${c.data.name} は気絶していて動けない！`, 'skill'); return; }
+    let t = aP.slice().sort((a, b) => a.hp / a.maxHp - b.hp / b.maxHp)[0];
+    if(aP.length > 1 && Math.random() < .4) t = aP[Math.floor(Math.random() * aP.length)];
+    if(!t) return;
+    state.c = c; state.p = t;
+    const a = aiWantsGuard(c, t, cpuLevel) ? { action:'guard' } : aiChoose(c, t, cpuLevel);
+    cm.push({ side:'c', f:c, tgt:t, action:a.action, idx:a.idx });
+  });
+  const gs = cm.filter(x => x.action === 'guard'), rest = cm.filter(x => x.action !== 'guard').sort((a, b) => (effSpd(b.f) - effSpd(a.f)) || (Math.random() - .5));
+  TG.q = gs.concat(rest);
+  addLog(`── ターン${state.roundCount + 1} ──`, 'skill');
+  tgRun(0);
+}
+function tgRun(i){
+  if(!state || state.over || state.tag !== TG) return;
+  if(tgCheckEnd()) return;
+  if(i >= TG.q.length){ tgEnd(); return; }
+  const cmd = TG.q[i];
+  if(cmd.f.hp <= 0){ tgRun(i + 1); return; }
+  let tgt = cmd.tgt;
+  if(cmd.action !== 'guard' && tgt.hp <= 0){ const al = tgAlive(cmd.side === 'p' ? TG.C : TG.P); if(!al.length){ tgRun(i + 1); return; } tgt = al[0]; }
+  const pf = cmd.side === 'p' ? cmd.f : tgt, cf = cmd.side === 'p' ? tgt : cmd.f;
+  tgFocus('player', pf); tgFocus('cpu', cf); renderBattleUI(); tgHud();
+  actD(cmd.side === 'p' ? 'player' : 'cpu', cmd.f, tgt, cmd.action, cmd.idx, () => {
+    renderBattleUI();
+    if(tgt.hp <= 0 && !tgt._tgko){ tgt._tgko = 1; addLog(`💀 ${tgt.data.name} は倒れた！`, 'result'); tgFocus(TG.P.includes(tgt) ? 'player' : 'cpu', tgt); }
+    tgHud();
+    setTimeout(() => tgRun(i + 1), ACTION_ANIM_MS);
+  });
+}
+function tgEnd(){
+  [].concat(TG.P, TG.C).forEach(f => { if(f.hp > 0 && (f.poisonTurns > 0 || f.burnTurns > 0)){ const sd = TG.P.includes(f) ? 'player' : 'cpu'; tgFocus(sd, f); applyPoisonTick(f, sd); } });
+  renderBattleUI();
+  if(!tgAlive(TG.P).length && !tgAlive(TG.C).length){ TG.P[0].hp = 1; addLog(`✨ ${TG.P[0].data.name} は紙一重で踏みとどまった！（同時KOは挑戦者の勝ち）`, 'result'); }
+  if(tgCheckEnd()) return;
+  const aP = tgAlive(TG.P), aC = tgAlive(TG.C), n = Math.max(aP.length, aC.length);
+  for(let k = 0; k < n; k++){ state.p = aP[k % aP.length]; state.c = aC[k % aC.length]; try{ applyFieldEffects(); }catch(e){ console.warn('tag field', e); } }
+  [].concat(TG.P, TG.C).forEach(f => { if(f.hp > 0) endTurnTick(f); });
+  state.roundCount++;
+  Hooks.emit('round:end', { round: state.roundCount });
+  if(state.roundCount % ESC_EVERY === 0){ state.escalation = 1 + Math.floor(state.roundCount / ESC_EVERY) * ESC_STEP; addLog(`⚡ 戦闘が長引いている！ 双方の火力が上昇した！（×${state.escalation.toFixed(2)}）`, 'result'); }
+  if(tgCheckEnd()) return;
+  renderBattleUI(); tgBeginRound();
+}
+function tgCheckEnd(){
+  const pa = tgAlive(TG.P), ca = tgAlive(TG.C);
+  if(pa.length && ca.length) return false;
+  if(state.over) return true;
+  const won = pa.length > 0;
+  tgFocus('player', pa[0] || TG.P[0]); tgFocus('cpu', ca[0] || TG.C[0]); renderBattleUI();
+  state.turnLock = true; selected = TG.pd[0]; cpuFighterData = TG.cd[0];
+  const t0 = teamMode, p0 = playerTeamData; teamMode = true; playerTeamData = TG.pd.slice();
+  try{ finishBattle(won); }finally{ teamMode = t0; playerTeamData = p0; }
+  tgHud();
+  return true;
+}
+const _sb28 = startBattle;
+startBattle = function(){
+  const isTag = TG.starting; TG.starting = false; TG.on = isTag; TG.shown = {};
+  try{ const o = document.getElementById('tagHud'); if(o) o.remove(); const m = document.getElementById('tagMsg'); if(m) m.remove(); }catch(e){}
+  _sb28.apply(this, arguments);
+  if(!isTag) return;
+  try{
+    state.tag = TG;
+    const p2 = makeFighter(TG.pd[1]); try{ applyToFighter(p2); }catch(e){ console.warn('tag apply', e); }
+    const c2 = makeCpuFighter(TG.cd[1]);
+    try{ ensurePassive(TG.pd[1]); ensurePassive(TG.cd[1]); }catch(e){}
+    TG.P = [state.p, p2]; TG.C = [state.c, c2]; TG.ci = 0; TG.tgt = 0; TG.shown = { p:state.p, c:state.c };
+    addLog(`⚔ 2対2タッグ戦！ ${TG.pd[0].name}＆${TG.pd[1].name}  VS  ${TG.cd[0].name}＆${TG.cd[1].name}`, 'result');
+    addLog('毎ターン、2体それぞれに行動を選び、敵のアイコンをタップして攻撃対象を決めます。素早い順に4体が行動します。', 'skill');
+    tgHud(); renderBattleUI();
+  }catch(e){ console.warn('tag start', e); }
+};
+const _br28 = beginRound;
+beginRound = function(){
+  if(TG.on && state && state.tag === TG && !pvp.on){ tgBeginRound(); return; }
+  return _br28.apply(this, arguments);
+};
+const _pa28 = playerAction;
+playerAction = function(action, idx){
+  if(TG.on && state && state.tag === TG && !pvp.on){
+    if(action === 'attack' || action === 'skill' || action === 'ult' || action === 'guard') return tgCommand(action, idx);
+    return;
+  }
+  return _pa28.apply(this, arguments);
+};
+const _ab28 = autoBalanceAfterMatch;
+autoBalanceAfterMatch = function(){ if(TG.on) return; return _ab28.apply(this, arguments); };
+function startTag(pd){
+  if(!pd || pd.length !== 2){ return; }
+  const pool = roster.filter(c => pd.indexOf(c) < 0 && !c.exChar);
+  for(let i = pool.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
+  if(pool.length < 2){ toast('相手にするキャラが足りません'); return; }
+  TG.pd = pd.slice(); TG.cd = [pool[0], pool[1]];
+  selected = pd[0]; cpuFighterData = TG.cd[0]; teamMode = false; pendingQuest = null; TG.starting = true;
+  startBattle();
+}
+Object.assign(window.V47, { tag: startTag, tgT(k){ if(!TG.on || !state || state.turnLock || state.over || !TG.C[k] || TG.C[k].hp <= 0) return; TG.tgt = k; tgFocus('cpu', TG.C[k]); renderBattleUI(); tgHud(); } });
+
+/* ---------- Ver4.29 やり込み：週間ミッション・キャラマスタリー ---------- */
+const WK_TASKS = [
+  { id:'win',   n:'バトルに勝利する',                       need:25, rw:{ c:600, sh:2 } },
+  { id:'clear', n:'クエスト・塔・EX・試練で勝利する',       need:8,  rw:{ c:800, sh:2 } },
+  { id:'gacha', n:'キャラガチャを引く（属性ガチャ含む）',   need:10, rw:{ c:500, sh:1 } },
+  { id:'duo',   n:'2対2タッグ戦か2人対戦で勝利する',        need:3,  rw:{ c:700, it:'bk3' } },
+  { id:'trial', n:'試練の間で勝利する',                     need:2,  rw:{ c:800, it:'SR' } }
+];
+const WK_ALL = { c:2000, sh:5, it:'bk4' };
+const wkWeek = () => Math.floor((Date.now() + 9 * 3600e3 - 4 * 86400e3) / (7 * 86400e3));
+function wkEnsure(){ const w = wkWeek(); if(!S.wk || S.wk.id !== w){ S.wk = { id:w, p:{}, cl:{}, g0:S.cpulls | 0 }; save(); } return S.wk; }
+function wkProg(id){ const w = wkEnsure(); return id === 'gacha' ? Math.max(0, (S.cpulls | 0) - w.g0) : (w.p[id] | 0); }
+function wkGive(rw){
+  S.coins += rw.c || 0; if(rw.sh) S.shards = (S.shards | 0) + rw.sh;
+  if(rw.it){ const id = /^(N|R|SR|SSR)$/.test(rw.it) ? pickItemOfRarity(rw.it, .3) : rw.it; addItem(id, 1); S.seen[id] = 1; return id; }
+}
+const rwText = rw => `🪙${rw.c}${rw.sh ? '・🧩' + rw.sh : ''}${rw.it ? '・' + (/^bk/.test(rw.it) ? ITEMS[rw.it].n : rw.it + 'の装備・書') : ''}`;
+function wkReadyN(){ try{ wkEnsure(); let n = WK_TASKS.filter(t => wkProg(t.id) >= t.need && !S.wk.cl[t.id]).length; if(!S.wk.cl.all && WK_TASKS.every(t => S.wk.cl[t.id])) n++; return n; }catch(e){ return 0; } }
+Hooks.on('battle:end', info => {
+  try{
+    if(!info.won || !state) return;
+    const w = wkEnsure(), q = state.quest, add = k => { w.p[k] = (w.p[k] | 0) + 1; };
+    add('win'); if(q) add('clear'); if(q && q.trial) add('trial'); if(TG.on || info.pvp) add('duo');
+    save();
+  }catch(e){}
+});
+const MS_T = [[5, 300, 1], [15, 500, 1], [30, 800, 2], [60, 1200, 2], [100, 2000, 3]];
+const msGot = n => ((S.ms || {})[n] | 0);
+function msReady(name){ const w = evoWins(name), g = msGot(name); return MS_T.filter((t, i) => i >= g && w >= t[0]).length; }
+function msReadyN(){ try{ return roster.filter(c => isOwned(c.name)).reduce((a, c) => a + msReady(c.name), 0); }catch(e){ return 0; } }
+function msClaim(name){
+  S.ms = S.ms || {}; let c = 0, sh = 0, n = 0;
+  MS_T.forEach((t, i) => { if(i >= msGot(name) && evoWins(name) >= t[0]){ c += t[1]; sh += t[2]; S.ms[name] = i + 1; n++; } });
+  if(n){ S.coins += c; S.shards = (S.shards | 0) + sh; }
+  return { n, c, sh };
+}
+let grindTab = 'wk';
+function grindOpen(tab){
+  grindTab = tab || grindTab; wkEnsure();
+  const tb = (k, t, n) => `<button class="${grindTab === k ? '' : 'secondary'}" style="flex:1" onclick="V47.grind('${k}')">${t}${n ? ` <i class="fr">${n}</i>` : ''}</button>`;
+  let body = '';
+  if(grindTab === 'wk'){
+    const left = Math.max(0, Math.ceil(((wkWeek() + 1) * 7 * 86400e3 + 4 * 86400e3 - 9 * 3600e3 - Date.now()) / 86400e3));
+    body = `<div class="v4small" style="margin-bottom:6px">毎週月曜に更新（あと約${left}日）。全部達成でボーナス！</div>` + WK_TASKS.map(t => {
+      const p = Math.min(t.need, wkProg(t.id)), ok = p >= t.need, cl = !!S.wk.cl[t.id];
+      return `<div class="v4card"><div class="v4row"><div class="v4sp"><b>${esc(t.n)}</b><div class="v4small">${p}/${t.need}　🎁 ${rwText(t.rw)}</div><div class="v4bar"><i style="width:${Math.round(p / t.need * 100)}%"></i></div></div><button ${ok && !cl ? '' : 'disabled'} onclick="V47.wkClaim('${t.id}')">${cl ? '済' : '受取'}</button></div></div>`;
+    }).join('') + (() => { const all = WK_TASKS.every(t => S.wk.cl[t.id]), cl = !!S.wk.cl.all; return `<div class="v4card" style="border:1px solid #ffd24a"><div class="v4row"><div class="v4sp"><b>全部達成ボーナス</b><div class="v4small">🎁 ${rwText(WK_ALL)}</div></div><button ${all && !cl ? '' : 'disabled'} onclick="V47.wkClaim('all')">${cl ? '済' : '受取'}</button></div></div>`; })();
+  } else {
+    const own = roster.filter(c => isOwned(c.name)).map(c => ({ c, w:evoWins(c.name), g:msGot(c.name), r:msReady(c.name) })).sort((a, b) => (b.r > 0) - (a.r > 0) || b.w - a.w);
+    body = `<div class="v4small" style="margin-bottom:6px">キャラを使って勝つたびに熟練度が上がります（勝利数 5・15・30・60・100 で報酬：🪙＋🧩凸の欠片）。全キャラのマスターを目指そう！</div>
+      <button style="width:100%;margin-bottom:6px" ${msReadyN() ? '' : 'disabled'} onclick="V47.msAll()">受け取れる報酬をぜんぶ受け取る（${msReadyN()}件）</button>` +
+      own.map(x => { const nx = MS_T[Math.min(x.g, MS_T.length - 1)], im = portraitOf(x.c) || fullOf(x.c), done = x.g >= MS_T.length;
+        return `<div class="v4row" style="margin:4px 0">${im ? `<img class="tw-en" src="${im}">` : ''}<div class="v4sp"><b>${esc(x.c.name)}</b> <span class="v4small">${'★'.repeat(x.g)}${'☆'.repeat(MS_T.length - x.g)}</span><div class="v4small">${x.w}勝${done ? '（マスター！）' : ` / 次 ${nx[0]}勝 🪙${nx[1]}・🧩${nx[2]}`}</div></div><button ${x.r ? '' : 'disabled'} onclick="V47.msOne('${esc(x.c.name)}')">${x.r ? '受取' : '－'}</button></div>`; }).join('');
+  }
+  if(curModal && curModal.remove) curModal.remove();
+  curModal = modal(`<div class="v4h" style="margin-top:0">🏆 やり込み</div><div style="display:flex;gap:6px;margin-bottom:8px">${tb('wk', '週間ミッション', wkReadyN())}${tb('ms', 'キャラマスタリー', msReadyN())}</div>${body}`);
+}
+Object.assign(window.V47, {
+  grind: grindOpen,
+  wkClaim(id){
+    wkEnsure(); if(S.wk.cl[id]) return;
+    if(id === 'all'){ if(!WK_TASKS.every(t => S.wk.cl[t.id])) return; S.wk.cl.all = 1; wkGive(WK_ALL); toast('🏆 全部達成ボーナス！ ' + rwText(WK_ALL)); }
+    else { const t = WK_TASKS.find(x => x.id === id); if(!t || wkProg(id) < t.need) return; S.wk.cl[id] = 1; wkGive(t.rw); toast('🎁 ' + rwText(t.rw)); }
+    save(); grindOpen();
+  },
+  msOne(name){ const r = msClaim(name); if(r.n){ save(); toast(`🏅 ${name} マスタリー報酬 🪙${r.c}・🧩${r.sh}`); } grindOpen('ms'); },
+  msAll(){ let c = 0, sh = 0; roster.filter(x => isOwned(x.name)).forEach(x => { const r = msClaim(x.name); c += r.c; sh += r.sh; }); save(); if(c) toast(`🏅 マスタリー報酬 🪙${c}・🧩${sh}`); grindOpen('ms'); }
+});
 /* ---------- 公開API ---------- */
 ensureScreen();
 try{ updateSelectHeader(); }catch(e){}
